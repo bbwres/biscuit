@@ -1,0 +1,2 @@
+org.springframework.context.ApplicationContextInitializer=\
+cn.bbwres.biscuit.mybatis.application.MybatisConfigurationInitializer
