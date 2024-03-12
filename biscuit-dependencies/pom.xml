@@ -28,6 +28,7 @@
         <dynamic.datasource.version>4.3.0</dynamic.datasource.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <fastjson.version>1.2.83</fastjson.version>
+        <springdoc.version>1.7.0</springdoc.version>
 
     </properties>
 
@@ -84,6 +85,21 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-webmvc-core</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-security</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
 
         </dependencies>
