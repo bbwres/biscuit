@@ -1,2 +1,5 @@
 org.springframework.context.ApplicationContextInitializer=\
 cn.bbwres.biscuit.mybatis.application.MybatisConfigurationInitializer
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+cn.bbwres.biscuit.mybatis.config.MybatisPlusAutoConfigure

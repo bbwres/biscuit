@@ -12,14 +12,6 @@ public class SystemBusinessRuntimeException extends RuntimeException {
 
     private String respType;
 
-    public SystemBusinessRuntimeException(String message) {
-        super(message);
-    }
-
-    public SystemBusinessRuntimeException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 
     public SystemBusinessRuntimeException(String respType, String message) {
         super(message);
