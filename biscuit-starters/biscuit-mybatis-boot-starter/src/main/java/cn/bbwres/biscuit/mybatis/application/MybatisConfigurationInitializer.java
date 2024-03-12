@@ -2,7 +2,8 @@ package cn.bbwres.biscuit.mybatis.application;
 
 import cn.bbwres.biscuit.application.AbstractBiscuitApplicationContextInitializer;
 import cn.bbwres.biscuit.mybatis.handler.BiscuitMybatisEnumTypeHandler;
-import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
+import com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler;
 import org.apache.ibatis.type.EnumTypeHandler;
 import org.apache.ibatis.type.TypeHandler;
 import org.slf4j.Logger;
@@ -30,13 +31,14 @@ public class MybatisConfigurationInitializer extends AbstractBiscuitApplicationC
      */
     @Override
     protected Object afterInitialization(ConfigurableApplicationContext applicationContext, Object bean, String beanName) throws BeansException {
-        if (bean instanceof MybatisConfiguration) {
-            MybatisConfiguration configuration = (MybatisConfiguration) bean;
-            TypeHandler<?> typeHandler = configuration.getTypeHandlerRegistry().getTypeHandler(Enum.class);
+        if (bean instanceof MybatisPlusProperties) {
+            MybatisPlusProperties mybatisPlusProperties = (MybatisPlusProperties) bean;
+            TypeHandler<?> typeHandler = mybatisPlusProperties.getConfiguration().getTypeHandlerRegistry().getTypeHandler(Enum.class);
             LOG.info("MybatisConfigurationInitializer:old: typeHandler = {}", typeHandler);
-            if (typeHandler == null || EnumTypeHandler.class.equals(typeHandler.getClass())) {
+            if (typeHandler == null || EnumTypeHandler.class.equals(typeHandler.getClass())
+                    || CompositeEnumTypeHandler.class.equals(typeHandler.getClass())) {
                 //默认的枚举处理类为空，或者为默认的枚举处理类，则替换为自定义的枚举处理类
-                configuration.getTypeHandlerRegistry().setDefaultEnumTypeHandler(BiscuitMybatisEnumTypeHandler.class);
+                mybatisPlusProperties.getConfiguration().getTypeHandlerRegistry().setDefaultEnumTypeHandler(BiscuitMybatisEnumTypeHandler.class);
                 LOG.info("MybatisConfigurationInitializer:new: typeHandler = {}", BiscuitMybatisEnumTypeHandler.class);
             }
             return bean;

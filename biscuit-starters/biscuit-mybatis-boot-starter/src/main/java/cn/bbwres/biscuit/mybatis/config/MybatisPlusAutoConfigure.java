@@ -66,4 +66,5 @@ public class MybatisPlusAutoConfigure {
                                                       MybatisProperties mybatisProperties) {
         return new DefaultTenantLineHandler(mybatisTenantProperties, mybatisProperties);
     }
+
 }
