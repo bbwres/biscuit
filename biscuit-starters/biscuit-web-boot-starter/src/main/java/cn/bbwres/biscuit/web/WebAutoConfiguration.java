@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.web;
 
 import cn.bbwres.biscuit.web.handler.BiscuitHandlerExceptionResolver;
+import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
@@ -28,6 +30,7 @@ import java.time.format.DateTimeFormatter;
  * @author zhanglinfeng
  */
 @AutoConfiguration
+@EnableConfigurationProperties(BiscuitWebProperties.class)
 public class WebAutoConfiguration {
 
 
@@ -37,21 +40,20 @@ public class WebAutoConfiguration {
      * @return
      */
     @Bean
-    public ObjectMapper objectMapper() {
+    public ObjectMapper objectMapper(BiscuitWebProperties properties) {
 
         JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(properties.getDateTimeFormat())));
+        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(properties.getDateFormat())));
+        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(properties.getTimeFormat())));
 
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(properties.getDateTimeFormat())));
+        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(properties.getDateFormat())));
+        javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(properties.getTimeFormat())));
 
 
         ObjectMapper objectMapper = new ObjectMapper()
-                //TODO 设置时间格式，此处增加到配置
-                .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).registerModule(new JavaTimeModule());
+                .setDateFormat(new SimpleDateFormat(properties.getDateTimeFormat())).registerModule(new JavaTimeModule());
         //设置不序列化为空的字段
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         //反序列化未知字段不报错
@@ -84,6 +86,16 @@ public class WebAutoConfiguration {
     @Bean
     public BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver(ObjectMapper objectMapper) {
         return new BiscuitHandlerExceptionResolver(objectMapper);
+    }
+
+    /**
+     * 请求处理
+     *
+     * @return
+     */
+    @Bean
+    public WebFrameworkUtils httpRequestHandler() {
+        return new WebFrameworkUtils();
     }
 
 

@@ -7,7 +7,7 @@ import java.io.Serializable;
  *
  * @author zhanglinfeng
  */
-public class UserBaseInfo implements Serializable {
+public class UserBaseInfo<T> implements Serializable {
 
     private static final long serialVersionUID = 2330611822113249402L;
     /**
@@ -25,6 +25,11 @@ public class UserBaseInfo implements Serializable {
      * 租户id
      */
     private String tenantId;
+
+    /**
+     * 用户信息
+     */
+    private T userInfo;
 
 
     public String getUserId() {
@@ -49,5 +54,13 @@ public class UserBaseInfo implements Serializable {
 
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
+    }
+
+    public T getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(T userInfo) {
+        this.userInfo = userInfo;
     }
 }

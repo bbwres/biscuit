@@ -53,8 +53,7 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
      * @return a corresponding ModelAndView to forward to, or {@code null} for default processing
      */
     @Override
-    protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response,
-                                                           HandlerMethod handlerMethod, Exception ex) {
+    protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
 
         String message = ex.getMessage();
         String errorCode = HttpStatus.INTERNAL_SERVER_ERROR.value() + "";
@@ -65,6 +64,10 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
             return resultModelAndView(errorCode, message);
         }
         if (ex instanceof MissingServletRequestParameterException) {
+            errorCode = ParamsCheckRuntimeException.DEFAULT_ERROR_CODE;
+            return resultModelAndView(errorCode, message);
+        }
+        if (ex instanceof IllegalArgumentException) {
             errorCode = ParamsCheckRuntimeException.DEFAULT_ERROR_CODE;
             return resultModelAndView(errorCode, message);
         }
