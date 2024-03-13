@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.bbwres.biscuit.web.swagger.SwaggerAutoConfiguration
+cn.bbwres.biscuit.web.swagger.SwaggerAutoConfiguration,\
+cn.bbwres.biscuit.web.WebAutoConfiguration
