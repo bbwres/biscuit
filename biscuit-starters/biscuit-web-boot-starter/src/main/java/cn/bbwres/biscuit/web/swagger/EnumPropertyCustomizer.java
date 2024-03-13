@@ -33,7 +33,7 @@ public class EnumPropertyCustomizer implements PropertyCustomizer {
      * @return
      */
     @Override
-    public Schema customize(Schema property, AnnotatedType type) {
+    public Schema<?> customize(Schema property, AnnotatedType type) {
         // 检查实例并转换
         if (type.getType() instanceof SimpleType) {
             SimpleType fieldType = (SimpleType) type.getType();
