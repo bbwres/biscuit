@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.web.controller;
 
 import cn.bbwres.biscuit.exception.ParamsCheckRuntimeException;
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.web.entity.Role;
 import cn.bbwres.biscuit.web.entity.RoleType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,14 +45,15 @@ public class UserController {
     @ApiResponse(description = "用户信息")
     @GetMapping("/userEx")
     public String userEx() {
-        throw new ParamsCheckRuntimeException("111", "参数错误");
+        throw new ParamsCheckRuntimeException(GlobalErrorCodeConstants.METHOD_NOT_ALLOWED.getCode(), "参数错误");
     }
 
     @Operation(summary = "i18n")
     @ApiResponse(description = "i18n")
     @GetMapping("/i18n")
     public String i18n() {
-        return messageSource.getMessage("111", null, "不知道填写啥",LocaleContextHolder.getLocale());
+        return messageSource.getMessage(GlobalErrorCodeConstants.METHOD_NOT_ALLOWED.getCode(),
+                null, "不知道填写啥", LocaleContextHolder.getLocale());
     }
 
 

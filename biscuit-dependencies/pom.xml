@@ -30,6 +30,7 @@
         <fastjson.version>1.2.83</fastjson.version>
         <springdoc.version>1.7.0</springdoc.version>
         <swagger.version>2.2.9</swagger.version>
+        <jsoup.version>1.17.2</jsoup.version>
 
     </properties>
 
@@ -99,6 +100,12 @@
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
 
         </dependencies>

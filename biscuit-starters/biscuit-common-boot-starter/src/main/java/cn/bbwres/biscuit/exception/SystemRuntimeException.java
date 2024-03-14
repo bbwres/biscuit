@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.exception;
 
 
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class SystemRuntimeException extends RuntimeException {
 
-    public static final String DEFAULT_ERROR_CODE = "500";
+    public static final String DEFAULT_ERROR_CODE = GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode();
 
     private static final long serialVersionUID = -6668831091899992624L;
 

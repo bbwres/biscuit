@@ -1,6 +1,8 @@
 package cn.bbwres.biscuit.exception;
 
 
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
+
 /**
  * 参数校验异常
  *
@@ -8,7 +10,7 @@ package cn.bbwres.biscuit.exception;
  */
 public class ParamsCheckRuntimeException extends SystemRuntimeException {
 
-    public static final String DEFAULT_ERROR_CODE = "400";
+    public static final String DEFAULT_ERROR_CODE = GlobalErrorCodeConstants.BAD_REQUEST.getCode();
     private static final long serialVersionUID = -6668831091899992624L;
 
     /**
