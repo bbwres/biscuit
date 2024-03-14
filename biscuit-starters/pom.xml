@@ -17,6 +17,7 @@
         <module>biscuit-mybatis-boot-starter</module>
         <module>biscuit-nacos-boot-starter</module>
         <module>biscuit-web-boot-starter</module>
+        <module>biscuit-gateway-boot-starter</module>
     </modules>
 
     <dependencies>

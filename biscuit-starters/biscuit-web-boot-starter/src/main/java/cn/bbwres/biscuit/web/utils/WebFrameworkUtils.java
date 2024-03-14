@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
+ * 待验证 todo
  * 获取请求的用户信息
  *
  * @author zhanglinfeng
