@@ -28,11 +28,7 @@ public class BiscuitWebProperties {
     /**
      * 用户信息的header名称
      */
-    private String userInfoHeaderName="X-User-Info";
-
-
-
-
+    private String userInfoHeaderName = "X-User-Info";
 
 
     public String getDateTimeFormat() {
@@ -66,4 +62,5 @@ public class BiscuitWebProperties {
     public void setUserInfoHeaderName(String userInfoHeaderName) {
         this.userInfoHeaderName = userInfoHeaderName;
     }
+    
 }
