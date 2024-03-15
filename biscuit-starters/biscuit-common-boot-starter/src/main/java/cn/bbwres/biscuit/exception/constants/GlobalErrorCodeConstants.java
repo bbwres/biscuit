@@ -16,6 +16,8 @@ public interface GlobalErrorCodeConstants {
     /**
      * 请求参数不正确
      */
+    ErrorCode GLOBAL_HTTP_CODE_PREFIX = new ErrorCode("100000", "http状态码前缀");
+
     ErrorCode BAD_REQUEST = new ErrorCode("100000400", "请求参数不正确");
     ErrorCode UNAUTHORIZED = new ErrorCode("100000401", "账号未登录");
     ErrorCode FORBIDDEN = new ErrorCode("100000403", "没有该操作权限");

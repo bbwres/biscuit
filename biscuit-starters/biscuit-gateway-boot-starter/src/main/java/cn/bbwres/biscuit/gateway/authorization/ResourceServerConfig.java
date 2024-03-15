@@ -6,6 +6,7 @@ import cn.bbwres.biscuit.utils.JsonUtil;
 import cn.bbwres.biscuit.vo.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.ObjectProvider;
@@ -14,7 +15,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,9 +25,9 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.web.server.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
-import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -63,7 +63,6 @@ public class ResourceServerConfig {
      */
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
-                                                            ServerAuthenticationConverter serverAuthenticationConverter,
                                                             GatewayProperties gatewayProperties,
                                                             AuthorizationManager authorizationManager,
                                                             ServerAccessDeniedHandler customServerAccessDeniedHandler,
@@ -71,7 +70,7 @@ public class ResourceServerConfig {
                                                             ReactiveAuthenticationManager jwtReactiveAuthenticationManager,
                                                             ObjectProvider<ReactiveOpaqueTokenIntrospector> reactiveOpaqueTokenIntrospector) {
         ServerHttpSecurity.OAuth2ResourceServerSpec serverSpec = http.oauth2ResourceServer()
-                .bearerTokenConverter(serverAuthenticationConverter);
+                .bearerTokenConverter(new ServerBearerTokenAuthenticationConverter());
         if (gatewayProperties.getUseJwtToken()) {
             serverSpec.jwt().authenticationManager(jwtReactiveAuthenticationManager);
         } else {
@@ -80,15 +79,19 @@ public class ResourceServerConfig {
             serverSpec.opaqueToken().introspector(introspector);
         }
 
-        //处理未经身份验证的请求并提供相应的响应
-        serverSpec.authenticationEntryPoint(customServerAuthenticationEntryPoint);
 
-        http.authorizeExchange()
-                //无需登录鉴权
-                .pathMatchers(gatewayProperties.getNoAuthUris()).permitAll()
-                //登录鉴权
-                .pathMatchers(gatewayProperties.getLoginAuthUris()).authenticated()
-                .pathMatchers(HttpMethod.OPTIONS).permitAll()
+        ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec = http.authorizeExchange();
+        if (ArrayUtils.isNotEmpty(gatewayProperties.getNoAuthUris())) {
+            //无需登录鉴权
+            authorizeExchangeSpec.pathMatchers(gatewayProperties.getNoAuthUris()).permitAll();
+        }
+        if (ArrayUtils.isNotEmpty(gatewayProperties.getLoginAuthUris())) {
+            //登录鉴权
+            authorizeExchangeSpec.pathMatchers(gatewayProperties.getLoginAuthUris()).authenticated();
+        }
+
+
+        authorizeExchangeSpec.pathMatchers(HttpMethod.OPTIONS).permitAll()
                 //鉴权管理器配置
                 .anyExchange().access(authorizationManager).and().exceptionHandling()
                 //处理未授权

@@ -20,4 +20,6 @@ public class GatewayConstant {
      * 查询参数
      */
     public static final String QUERY_PARAMS = "state";
+
+
 }
