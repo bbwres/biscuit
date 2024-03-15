@@ -4,7 +4,6 @@ import cn.bbwres.biscuit.gateway.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -13,11 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.jwt.BadJwtException;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
@@ -27,7 +23,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * token配置
@@ -54,16 +49,28 @@ public class TokenConfig {
                         .filter((a) -> a instanceof BearerTokenAuthenticationToken)
                         .cast(BearerTokenAuthenticationToken.class)
                         .map(BearerTokenAuthenticationToken::getToken)
-                        .flatMap((Function<String, Mono<Map<String, Object>>>)
-                                token -> Mono.justOrEmpty(resourceService.checkToken(token)))
-                        .flatMap(new Function<Map<String, Object>, Mono<AbstractAuthenticationToken>>() {
-                            @Override
-                            public Mono<AbstractAuthenticationToken> apply(Map<String, Object> stringObjectMap) {
-                                return null;
-                            }
-                        })
+                        .flatMap(this::makeRequest)
+                        .flatMap(this::parseToken)
                         .cast(Authentication.class)
                         .onErrorMap(JwtException.class, this::onError);
+            }
+
+            /**
+             * 创建请求
+             * @param token
+             * @return
+             */
+            private Mono<Map<String, Object>> makeRequest(String token) {
+                return Mono.justOrEmpty(resourceService.checkToken(token));
+            }
+
+            /**
+             *
+             * @param claims
+             * @return
+             */
+            private Mono<MapAuthentication> parseToken(Map<String, Object> claims) {
+                return Mono.justOrEmpty(new MapAuthentication(claims));
             }
 
             /**

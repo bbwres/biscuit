@@ -1,9 +1,5 @@
 package cn.bbwres.biscuit.gateway.service;
 
-import cn.bbwres.biscuit.gateway.entity.UserRole;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,12 +30,10 @@ public interface ResourceService {
     /**
      * 根据角色信息获取出当前角色拥有的资源信息
      *
-     * @param roleCode 角色编码
-     * @param clientId 客户端id
-     * @param tenantId 租户id
+     * @param roleId 角色id
      * @return
      */
-    List<String> getResourceByRole(String roleCode, String clientId, String tenantId);
+    List<String> getResourceByRole(String roleId);
 
 
     /**
@@ -61,28 +55,5 @@ public interface ResourceService {
         return getLoginUrl();
     }
 
-
-    /**
-     * 获取用户角色信息
-     * 默认从当前用户的token 中获取
-     *
-     * @param userId
-     * @param clientId
-     * @param authorities
-     * @return
-     */
-    default List<UserRole> getUserRoles(String userId, String clientId, List<Map<String, Object>> authorities) {
-        if (CollectionUtils.isEmpty(authorities)) {
-            return null;
-        }
-        List<UserRole> list = new ArrayList<>();
-        for (Map<String, Object> authority : authorities) {
-            list.add(new UserRole()
-                    .setClientId(clientId)
-                    .setRoleCode((String) authority.get("roleCode")));
-
-        }
-        return list;
-    }
 
 }

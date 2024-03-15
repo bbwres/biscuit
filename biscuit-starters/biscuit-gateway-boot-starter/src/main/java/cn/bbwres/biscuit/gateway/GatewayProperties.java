@@ -79,9 +79,9 @@ public class GatewayProperties {
     private Boolean session;
 
     /**
-     * 是否使用jwtToken 默认不使用
+     * 是否使用jwtToken 默认使用
      */
-    private Boolean useJwtToken = false;
+    private Boolean useJwtToken = true;
 
     /**
      * 根据传参的state 跳转到登录的url

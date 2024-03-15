@@ -1,15 +1,21 @@
 package cn.bbwres.biscuit.gateway.adapter;
 
+import cn.bbwres.biscuit.exception.SystemRuntimeException;
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
-import cn.bbwres.biscuit.gateway.exception.AccessRequestException;
+import cn.bbwres.biscuit.gateway.i18n.GatewayMessageSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -20,33 +26,50 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class ExtensionErrorAttributes extends DefaultErrorAttributes {
-    /**
-     * 接口请求
-     */
-    private static final String IS_ACCESS = "IS_ACCESS";
-
 
     private final GatewayProperties gatewayProperties;
+
+    protected MessageSourceAccessor messages = GatewayMessageSource.getAccessor();
 
     @Override
     public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = new LinkedHashMap<>();
         Throwable error = getError(request);
-        log.warn("当前请求发生异常!", error);
-        Boolean isAccess = request.exchange().getAttribute(IS_ACCESS);
-        if (isAccess != null && isAccess) {
-            if (error instanceof AccessRequestException) {
-                //接口请求异常
-                errorAttributes.put("status", ((AccessRequestException) error).getStatus().value());
-                errorAttributes.put("error", error.getMessage());
-            }
-            return errorAttributes;
+        log.warn("当前请求发生异常!{}", error.getMessage());
+        String message = error.getMessage();
+        String errorCode = getErrorCode(error);
+        String language = request.headers().firstHeader("Accept-Language");
+        Locale locale = LocaleContextHolder.getLocale();
+        if (language != null) {
+            locale = Locale.forLanguageTag(language);
         }
+
         //异常时清除mdc
         MDC.clear();
-        errorAttributes.put("status", 200);
-        errorAttributes.put("code", gatewayProperties.getSystemErrCode());
-        errorAttributes.put("msg", error.getMessage());
+        errorAttributes.put("resultCode", errorCode);
+        errorAttributes.put("resultMsg", messages.getMessage(errorCode, message,locale));
         return errorAttributes;
     }
+
+    /**
+     * 获取错误码
+     *
+     * @param error
+     * @return
+     */
+    private String getErrorCode(Throwable error) {
+        String errorCode = gatewayProperties.getSystemErrCode();
+
+        if (error instanceof SystemRuntimeException) {
+            SystemRuntimeException systemRuntimeException = (SystemRuntimeException) error;
+            errorCode = systemRuntimeException.getErrorCode();
+        }
+
+        if (error instanceof ResponseStatusException) {
+            ResponseStatusException responseStatusException = (ResponseStatusException) error;
+            errorCode = GlobalErrorCodeConstants.GLOBAL_HTTP_CODE_PREFIX.getCode() + responseStatusException.getRawStatusCode();
+        }
+        return errorCode;
+    }
+
 }

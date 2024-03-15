@@ -1,27 +1,21 @@
 package cn.bbwres.biscuit.gateway.authorization;
 
 
-import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.cache.ResourceCacheService;
 import cn.bbwres.biscuit.gateway.constants.GatewayConstant;
-import cn.bbwres.biscuit.gateway.entity.UserRole;
 import cn.bbwres.biscuit.gateway.utils.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.PathMatcher;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * 认证配置信息
@@ -33,15 +27,14 @@ import java.util.function.Function;
 public class AuthorizationManager implements ReactiveAuthorizationManager<AuthorizationContext> {
 
 
-    private final GatewayProperties gatewayProperties;
-
     private final ResourceCacheService resourceCacheService;
 
     private final PathMatcher pathMatcher;
 
     /**
      * 检查权限
-     * @param mono the Authentication to check
+     *
+     * @param mono                 the Authentication to check
      * @param authorizationContext the object to check
      * @return
      */
@@ -59,23 +52,12 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
             if (!CollectionUtils.isEmpty(noAuthResource)) {
                 resources.addAll(noAuthResource);
             }
-            String clientId = authentication.getDetails().toString();
-
             //设置用户的信息
             authorizationContext.getExchange().getAttributes().put(GatewayConstant.USER_INFO, authentication.getPrincipal());
 
             //获取用户角色信息
             authentication.getAuthorities().stream()
-                    .map((Function<GrantedAuthority, UserRole>) grantedAuthority -> {
-                        UserRole userRole = new UserRole();
-                        BeanUtils.copyProperties(grantedAuthority, userRole);
-                        if (ObjectUtils.isEmpty(userRole.getRoleCode())) {
-                            userRole.setRoleCode(grantedAuthority.getAuthority());
-                        }
-                        return userRole;
-                    }).filter(userRole -> clientId.equals(userRole.getClientId()))
-                    .map(authority -> resourceCacheService.getResourceByRole(authority.getRoleCode(),
-                            authority.getClientId(), authority.getTenantId()))
+                    .map(authority -> resourceCacheService.getResourceByRole(authority.getAuthority()))
                     .filter(Objects::nonNull).forEach(resources::addAll);
 
             return resources;

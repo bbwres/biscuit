@@ -1,14 +1,12 @@
 package cn.bbwres.biscuit.gateway.cache;
 
 import cn.bbwres.biscuit.gateway.GatewayProperties;
-import cn.bbwres.biscuit.gateway.entity.UserRole;
 import cn.bbwres.biscuit.gateway.service.ResourceService;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,7 +23,7 @@ public class ResourceCacheService {
 
     private LoadingCache<String, List<String>> resourceNoUserCache;
 
-    private LoadingCache<UserRole, List<String>> resourceRoleCache;
+    private LoadingCache<String, List<String>> resourceRoleCache;
 
     private final GatewayProperties gatewayProperties;
 
@@ -49,7 +47,7 @@ public class ResourceCacheService {
             resourceRoleCache = Caffeine.newBuilder()
                     .expireAfterWrite(gatewayProperties.getLocalCacheResourceTime(), TimeUnit.SECONDS)
                     .maximumSize(2000)
-                    .build(key -> resourceService.getResourceByRole(key.getRoleCode(), key.getClientId(), key.getTenantId()));
+                    .build(resourceService::getResourceByRole);
         }
     }
 
@@ -70,16 +68,14 @@ public class ResourceCacheService {
     /**
      * 根据角色信息获取出当前角色拥有的资源信息
      *
-     * @param roleCode 角色编码
-     * @param clientId 客户端id
-     * @param tenantId 租户id
+     * @param roleId 角色id
      * @return
      */
-    public List<String> getResourceByRole(String roleCode, String clientId, String tenantId) {
+    public List<String> getResourceByRole(String roleId) {
         if (gatewayProperties.getCacheResource()) {
-            return resourceRoleCache.get(new UserRole(roleCode, clientId, tenantId));
+            return resourceRoleCache.get(roleId);
         }
-        return resourceService.getResourceByRole(roleCode, clientId, tenantId);
+        return resourceService.getResourceByRole(roleId);
     }
 
 
@@ -91,21 +87,6 @@ public class ResourceCacheService {
      */
     public String getLoginUrlBuildState(String state) {
         return resourceService.getLoginUrlBuildState(state);
-    }
-
-
-    /**
-     * 获取用户角色信息
-     * 默认从当前用户的token 中获取
-     * TODO 是否加入缓存
-     *
-     * @param userId
-     * @param clientId
-     * @param authorities
-     * @return
-     */
-    public List<UserRole> getUserRoles(String userId, String clientId, List<Map<String, Object>> authorities) {
-        return resourceService.getUserRoles(userId, clientId, authorities);
     }
 
 

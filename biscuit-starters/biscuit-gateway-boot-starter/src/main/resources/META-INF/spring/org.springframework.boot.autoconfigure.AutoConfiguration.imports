@@ -1,0 +1,3 @@
+cn.bbwres.biscuit.gateway.GatewayAutoConfigure
+cn.bbwres.biscuit.gateway.authorization.ResourceServerConfig
+cn.bbwres.biscuit.gateway.authorization.TokenConfig
