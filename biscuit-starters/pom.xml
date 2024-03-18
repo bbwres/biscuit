@@ -18,6 +18,7 @@
         <module>biscuit-nacos-boot-starter</module>
         <module>biscuit-web-boot-starter</module>
         <module>biscuit-gateway-boot-starter</module>
+        <module>biscuit-i18n-boot-starter</module>
     </modules>
 
     <dependencies>

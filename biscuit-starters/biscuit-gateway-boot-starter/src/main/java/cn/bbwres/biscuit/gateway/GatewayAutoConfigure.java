@@ -7,6 +7,7 @@ import cn.bbwres.biscuit.gateway.cache.ResourceCacheService;
 import cn.bbwres.biscuit.gateway.router.RouterController;
 import cn.bbwres.biscuit.gateway.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.WebProperties;
@@ -15,6 +16,7 @@ import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -47,8 +49,9 @@ public class GatewayAutoConfigure {
      * @return
      */
     @Bean
-    public ExtensionErrorAttributes errorAttributes(GatewayProperties gatewayProperties) {
-        return new ExtensionErrorAttributes(gatewayProperties);
+    public ExtensionErrorAttributes errorAttributes(GatewayProperties gatewayProperties,
+                                                    ObjectProvider<MessageSourceAccessor> messagesProvider) {
+        return new ExtensionErrorAttributes(gatewayProperties, messagesProvider.getIfAvailable());
     }
 
     /**
@@ -60,7 +63,7 @@ public class GatewayAutoConfigure {
     public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
                                                              WebProperties webProperties,
                                                              ApplicationContext applicationContext) {
-        ErrorWebExceptionHandler errorWebExceptionHandler =  new ErrorWebExceptionHandler(errorAttributes, webProperties.getResources(), applicationContext);
+        ErrorWebExceptionHandler errorWebExceptionHandler = new ErrorWebExceptionHandler(errorAttributes, webProperties.getResources(), applicationContext);
         errorWebExceptionHandler.setMessageWriters(List.of(new EncoderHttpMessageWriter<>(new Jackson2JsonEncoder())));
         return errorWebExceptionHandler;
     }
