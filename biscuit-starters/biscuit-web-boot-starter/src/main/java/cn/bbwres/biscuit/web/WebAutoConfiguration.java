@@ -13,9 +13,11 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.text.SimpleDateFormat;
@@ -84,8 +86,9 @@ public class WebAutoConfiguration {
      * @return
      */
     @Bean
-    public BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver(ObjectMapper objectMapper) {
-        return new BiscuitHandlerExceptionResolver(objectMapper);
+    public BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver(ObjectMapper objectMapper,
+                                                                           ObjectProvider<MessageSourceAccessor> messagesProvider) {
+        return new BiscuitHandlerExceptionResolver(objectMapper,messagesProvider);
     }
 
     /**
