@@ -3,11 +3,12 @@ package cn.bbwres.biscuit.web.handler;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.vo.Result;
-import cn.bbwres.biscuit.web.i18n.BiscuitWebMessageSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -31,10 +32,12 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
 
     private static final Logger LOG = LoggerFactory.getLogger(BiscuitHandlerExceptionResolver.class);
 
-    protected MessageSourceAccessor messages = BiscuitWebMessageSource.getAccessor();
+    protected MessageSourceAccessor messages;
     private final ObjectMapper objectMapper;
 
-    public BiscuitHandlerExceptionResolver(ObjectMapper objectMapper) {
+    public BiscuitHandlerExceptionResolver(ObjectMapper objectMapper,
+                                           ObjectProvider<MessageSourceAccessor> messagesProvider) {
+        this.messages = messagesProvider.getIfAvailable();
         this.objectMapper = objectMapper;
     }
 
@@ -85,8 +88,6 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
             return resultModelAndView(errorCode, message);
         }
         return resultModelAndView(errorCode, message);
-
-
     }
 
 
@@ -98,8 +99,10 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
      * @return 返回结果
      */
     private ModelAndView resultModelAndView(String errorCode, String message) {
-        // 国际化处理
-        message = messages.getMessage(errorCode, null, message);
+        if (!ObjectUtils.isEmpty(messages)) {
+            // 国际化处理
+            message = messages.getMessage(errorCode, null, message);
+        }
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView(objectMapper));
         Result<Void> result = new Result<>(errorCode, message);
         modelAndView.addObject(result);

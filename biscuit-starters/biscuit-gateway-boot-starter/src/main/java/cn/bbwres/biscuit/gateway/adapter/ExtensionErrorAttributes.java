@@ -3,7 +3,6 @@ package cn.bbwres.biscuit.gateway.adapter;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
-import cn.bbwres.biscuit.gateway.i18n.GatewayMessageSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -11,6 +10,7 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,7 +29,11 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
 
     private final GatewayProperties gatewayProperties;
 
-    protected MessageSourceAccessor messages = GatewayMessageSource.getAccessor();
+    /**
+     * 国际化配置
+     */
+    private final MessageSourceAccessor messages;
+
 
     @Override
     public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
@@ -38,16 +42,19 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
         log.warn("当前请求发生异常!{}", error.getMessage());
         String message = error.getMessage();
         String errorCode = getErrorCode(error);
-        String language = request.headers().firstHeader("Accept-Language");
-        Locale locale = LocaleContextHolder.getLocale();
-        if (language != null) {
-            locale = Locale.forLanguageTag(language);
-        }
 
         //异常时清除mdc
         MDC.clear();
         errorAttributes.put("resultCode", errorCode);
-        errorAttributes.put("resultMsg", messages.getMessage(errorCode, message,locale));
+        if (!ObjectUtils.isEmpty(messages)) {
+            String language = request.headers().firstHeader("Accept-Language");
+            Locale locale = LocaleContextHolder.getLocale();
+            if (language != null) {
+                locale = Locale.forLanguageTag(language);
+            }
+            message = messages.getMessage(errorCode, message, locale);
+        }
+        errorAttributes.put("resultMsg", message);
         return errorAttributes;
     }
 
