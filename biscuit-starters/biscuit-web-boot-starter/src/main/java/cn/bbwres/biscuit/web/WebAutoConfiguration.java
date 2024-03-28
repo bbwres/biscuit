@@ -97,7 +97,7 @@ public class WebAutoConfiguration {
      * @return
      */
     @Bean
-    public WebFrameworkUtils httpRequestHandler() {
+    public WebFrameworkUtils webFrameworkUtils() {
         return new WebFrameworkUtils();
     }
 

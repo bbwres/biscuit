@@ -3,7 +3,7 @@ package cn.bbwres.biscuit.gateway.authorization;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.constants.GatewayConstant;
 import cn.bbwres.biscuit.utils.JsonUtil;
-import cn.bbwres.biscuit.vo.Result;
+import cn.bbwres.biscuit.dto.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;

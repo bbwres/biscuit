@@ -2,7 +2,7 @@ package cn.bbwres.biscuit.web.handler;
 
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
-import cn.bbwres.biscuit.vo.Result;
+import cn.bbwres.biscuit.dto.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,17 +74,14 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
                 || ex instanceof BindException
                 || ex instanceof ValidationException) {
             errorCode = GlobalErrorCodeConstants.BAD_REQUEST.getCode();
-            message = GlobalErrorCodeConstants.BAD_REQUEST.getMessage();
             return resultModelAndView(errorCode, message);
         }
         if (ex instanceof NoHandlerFoundException) {
             errorCode = GlobalErrorCodeConstants.NOT_FOUND.getCode();
-            message = GlobalErrorCodeConstants.NOT_FOUND.getMessage();
             return resultModelAndView(errorCode, message);
         }
         if (ex instanceof HttpRequestMethodNotSupportedException) {
             errorCode = GlobalErrorCodeConstants.METHOD_NOT_ALLOWED.getCode();
-            message = GlobalErrorCodeConstants.METHOD_NOT_ALLOWED.getMessage();
             return resultModelAndView(errorCode, message);
         }
         return resultModelAndView(errorCode, message);
@@ -101,7 +98,7 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
     private ModelAndView resultModelAndView(String errorCode, String message) {
         if (!ObjectUtils.isEmpty(messages)) {
             // 国际化处理
-            message = messages.getMessage(errorCode, null, message);
+            message = messages.getMessage(message, null, message);
         }
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView(objectMapper));
         Result<Void> result = new Result<>(errorCode, message);

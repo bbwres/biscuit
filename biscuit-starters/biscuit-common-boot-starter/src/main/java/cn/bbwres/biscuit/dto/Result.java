@@ -1,4 +1,4 @@
-package cn.bbwres.biscuit.vo;
+package cn.bbwres.biscuit.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
