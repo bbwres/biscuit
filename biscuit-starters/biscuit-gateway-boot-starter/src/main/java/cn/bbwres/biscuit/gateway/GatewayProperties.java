@@ -53,11 +53,11 @@ public class GatewayProperties {
     /**
      * 认证通过后 后续的用户token 放入请求头的名字
      */
-    private String userTokenHeader = "X_L_USER_TOKEN";
+    private String userTokenHeader = "X-User-Token";
     /**
      * 用户信息
      */
-    private String userInfoHeader = "X_L_USER_INFO";
+    private String userInfoHeader = "X-User-Info";
 
     /**
      * 是否使用xss过滤器

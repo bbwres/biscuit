@@ -68,13 +68,6 @@
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-jwt</artifactId>
-            <version>1.0.9.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
 </project>

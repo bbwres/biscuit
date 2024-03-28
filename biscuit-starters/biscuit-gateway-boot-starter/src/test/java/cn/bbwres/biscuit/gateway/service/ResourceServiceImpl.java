@@ -1,8 +1,5 @@
 package cn.bbwres.biscuit.gateway.service;
 
-import cn.bbwres.biscuit.utils.JsonUtil;
-import org.springframework.security.jwt.Jwt;
-import org.springframework.security.jwt.JwtHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +15,7 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public Map<String, Object> checkToken(String token) {
-        Jwt jwt = JwtHelper.decode(token);
-        String claimsStr = jwt.getClaims();
-        return JsonUtil.jsonString2MapObj(claimsStr);
+        return null;
     }
 
     /**

@@ -52,7 +52,9 @@ public class JsonUtil {
         javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(TIME_FORMAT)));
 
 
-        OBJECT_MAPPER = new ObjectMapper().setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT)).registerModule(new JavaTimeModule());
+        OBJECT_MAPPER = new ObjectMapper()
+                .setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT))
+                .registerModule(new JavaTimeModule());
         //设置不序列化为空的字段
         OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         //反序列化未知字段不报错

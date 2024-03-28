@@ -27,6 +27,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ExtensionErrorAttributes extends DefaultErrorAttributes {
 
+    private static final String RESULT_CODE = "resultCode";
+    private static final String RESULT_MSG = "resultMsg";
+
     private final GatewayProperties gatewayProperties;
 
     /**
@@ -45,7 +48,7 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
 
         //异常时清除mdc
         MDC.clear();
-        errorAttributes.put("resultCode", errorCode);
+        errorAttributes.put(RESULT_CODE, errorCode);
         if (!ObjectUtils.isEmpty(messages)) {
             String language = request.headers().firstHeader("Accept-Language");
             Locale locale = LocaleContextHolder.getLocale();
@@ -54,7 +57,7 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
             }
             message = messages.getMessage(errorCode, message, locale);
         }
-        errorAttributes.put("resultMsg", message);
+        errorAttributes.put(RESULT_MSG, message);
         return errorAttributes;
     }
 
