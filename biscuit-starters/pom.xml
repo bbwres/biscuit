@@ -19,6 +19,9 @@
         <module>biscuit-web-boot-starter</module>
         <module>biscuit-gateway-boot-starter</module>
         <module>biscuit-i18n-boot-starter</module>
+        <module>biscuit-id-generator-boot-start</module>
+        <module>biscuit-mongodb-boot-start</module>
+        <module>biscuit-scheduler-boot-start</module>
     </modules>
 
     <dependencies>
