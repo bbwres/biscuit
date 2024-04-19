@@ -3,10 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>cn.bbwres</groupId>
+    <parent>
+        <groupId>cn.bbwres</groupId>
+        <artifactId>biscuit</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
     <artifactId>biscuit-dependencies</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <description>依赖清单</description>
     <packaging>pom</packaging>
 
@@ -73,6 +75,53 @@
                 <version>${springdoc.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!--自身包-->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-common-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-mybatis-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-nacos-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-web-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-gateway-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-i18n-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-id-generator-boot-start</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-mongodb-boot-start</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-scheduler-boot-start</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
