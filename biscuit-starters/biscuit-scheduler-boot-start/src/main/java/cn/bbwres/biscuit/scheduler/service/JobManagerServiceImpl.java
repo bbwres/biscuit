@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * @author zhanglinfeng
  */
 @Slf4j
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 public class JobManagerServiceImpl implements JobManagerService {
 
     private final Scheduler scheduler;

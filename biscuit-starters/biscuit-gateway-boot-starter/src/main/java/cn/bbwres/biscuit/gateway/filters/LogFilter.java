@@ -17,7 +17,6 @@ import reactor.core.publisher.Mono;
  * @author zhanglinfeng
  */
 @Slf4j
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class LogFilter implements GlobalFilter, Ordered {
 
 
