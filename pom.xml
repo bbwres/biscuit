@@ -22,5 +22,42 @@
         <jacoco.version>0.8.8</jacoco.version>
     </properties>
 
+    <scm>
+        <connection>scm:git:https://github.com/bbwres/biscuit</connection>
+        <url>scm:git:https://github.com/bbwres/biscuit</url>
+        <developerConnection>scm:git:https://github.com/bbwres/biscuit</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <arguments>
+                        -DskipTests
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>
