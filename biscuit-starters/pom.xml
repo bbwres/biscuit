@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>cn.bbwres</groupId>
                 <artifactId>biscuit-dependencies</artifactId>
-                <version>${biscuit.version}</version>
+                <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
