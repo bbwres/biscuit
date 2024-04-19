@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  * 任务管理接口
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -28,9 +29,9 @@ public class JobManagerServiceImpl implements JobManagerService {
 
 
     /**
-     * 获取所有任务
+     * {@inheritDoc}
      *
-     * @return
+     * 获取所有任务
      */
     @Override
     public List<TriggerInfo> queryAllTrigger() {
@@ -67,11 +68,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 获取指定任务的明细
+     * {@inheritDoc}
      *
-     * @param jobName
-     * @param jobGroup
-     * @return
+     * 获取指定任务的明细
      */
     @Override
     public JobDetail queryJobDetail(String jobName, String jobGroup) {
@@ -84,11 +83,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 暂停任务执行
+     * {@inheritDoc}
      *
-     * @param triggerName
-     * @param triggerGroup
-     * @return
+     * 暂停任务执行
      */
     @Override
     public Boolean pausedTrigger(String triggerName, String triggerGroup) {
@@ -102,10 +99,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 批量暂停任务
+     * {@inheritDoc}
      *
-     * @param triggerKeys
-     * @return
+     * 批量暂停任务
      */
     @Override
     public Boolean pausedTriggers(List<TriggerInfo> triggerKeys) {
@@ -121,11 +117,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 恢复任务执行
+     * {@inheritDoc}
      *
-     * @param triggerName
-     * @param triggerGroup
-     * @return
+     * 恢复任务执行
      */
     @Override
     public Boolean resumeTrigger(String triggerName, String triggerGroup) {
@@ -139,10 +133,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 批量恢复任务
+     * {@inheritDoc}
      *
-     * @param triggerKeys
-     * @return
+     * 批量恢复任务
      */
     @Override
     public Boolean resumeTriggers(List<TriggerInfo> triggerKeys) {
@@ -158,12 +151,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 更新定时任务
+     * {@inheritDoc}
      *
-     * @param triggerName
-     * @param triggerGroup
-     * @param cron
-     * @return
+     * 更新定时任务
      */
     @Override
     public Boolean updateTriggerCron(String triggerName, String triggerGroup, String cron) {
@@ -183,11 +173,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 立即执行
+     * {@inheritDoc}
      *
-     * @param jobName
-     * @param jobGroup
-     * @return
+     * 立即执行
      */
     @Override
     public Boolean triggerJob(String jobName, String jobGroup) {
@@ -201,11 +189,9 @@ public class JobManagerServiceImpl implements JobManagerService {
     }
 
     /**
-     * 立即执行 一个任务
+     * {@inheritDoc}
      *
-     * @param triggerName
-     * @param triggerGroup
-     * @return
+     * 立即执行 一个任务
      */
     @Override
     public Boolean triggerJobByTrigger(String triggerName, String triggerGroup) {

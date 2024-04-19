@@ -15,6 +15,7 @@ import java.util.Set;
  * 路由配置信息
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @RequiredArgsConstructor
 @RestController
@@ -28,6 +29,11 @@ public class RouterController {
     private String appName;
 
 
+    /**
+     * <p>appNames.</p>
+     *
+     * @return a {@link java.util.Set} object
+     */
     @GetMapping(value = "/appNames")
     public Set<String> appNames() {
         Set<String> appNames = new HashSet<>(8);

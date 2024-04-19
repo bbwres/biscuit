@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
  * 批处理信息
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Data
 public class JobBatchInfo implements Serializable {

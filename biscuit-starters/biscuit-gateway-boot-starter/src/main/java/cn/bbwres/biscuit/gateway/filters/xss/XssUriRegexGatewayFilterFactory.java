@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
  * xss 过滤器
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class XssUriRegexGatewayFilterFactory extends AbstractGatewayFilterFactory<XssUriRegexGatewayFilterFactory.Config> {
@@ -45,16 +46,23 @@ public class XssUriRegexGatewayFilterFactory extends AbstractGatewayFilterFactor
 
     private final ServerCodecConfigurer serverCodecConfigurer;
 
+    /**
+     * <p>Constructor for XssUriRegexGatewayFilterFactory.</p>
+     *
+     * @param serverCodecConfigurer a {@link org.springframework.http.codec.ServerCodecConfigurer} object
+     */
     public XssUriRegexGatewayFilterFactory(ServerCodecConfigurer serverCodecConfigurer) {
         super(Config.class);
         this.serverCodecConfigurer = serverCodecConfigurer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<String> shortcutFieldOrder() {
         return Collections.singletonList(REGEX_KEY);
     }
 
+    /** {@inheritDoc} */
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {

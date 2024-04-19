@@ -4,6 +4,7 @@ package cn.bbwres.biscuit.scheduler.config;
  * 任务常量
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class SchedulerConstant {
 

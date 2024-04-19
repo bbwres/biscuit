@@ -14,6 +14,7 @@ import org.springframework.util.MethodInvoker;
  * job
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class BeanInvokingJob implements Job {
@@ -21,6 +22,7 @@ public class BeanInvokingJob implements Job {
     @Autowired
     private ApplicationContext applicationContext;
 
+    /** {@inheritDoc} */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String targetBean = null;

@@ -6,7 +6,9 @@ import java.util.regex.Pattern;
 
 /**
  * xss 过滤工具
+ *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public final class XSSUtils {
 
@@ -42,8 +44,9 @@ public final class XSSUtils {
 
     /**
      * 过滤xss
-     * @param value
-     * @return
+     *
+     * @param value a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     public static String stripXSS(String value) {
         if (StringUtils.isEmpty(value)) {

@@ -15,6 +15,7 @@ import java.util.List;
  * 扩展的mongodb处理类
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, ID>> implements ExtendMongoService<T,Q, ID, D> {
@@ -23,16 +24,16 @@ public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, 
     protected D mongodbDao;
 
 
+    /** {@inheritDoc} */
     @Override
     public D getMongodbDao() {
         return mongodbDao;
     }
 
     /**
-     * 批量插入
+     * {@inheritDoc}
      *
-     * @param objectsToSave
-     * @return
+     * 批量插入
      */
     @Override
     public Collection<T> insertAll(Collection<? extends T> objectsToSave) {
@@ -40,10 +41,9 @@ public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, 
     }
 
     /**
-     * 保存单条数据
+     * {@inheritDoc}
      *
-     * @param entity
-     * @return
+     * 保存单条数据
      */
     @Override
     public T insert(T entity) {
@@ -51,10 +51,9 @@ public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, 
     }
 
     /**
-     * 保存数据,如果不存在则插入，如果存在则更新
+     * {@inheritDoc}
      *
-     * @param entity
-     * @return
+     * 保存数据,如果不存在则插入，如果存在则更新
      */
     @Override
     public T insertOrUpdate(T entity) {
@@ -63,10 +62,9 @@ public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, 
 
 
     /**
-     * 根据id查询
+     * {@inheritDoc}
      *
-     * @param id
-     * @return
+     * 根据id查询
      */
     @Override
     public T findById(ID id) {
@@ -75,10 +73,9 @@ public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, 
 
 
     /**
-     * 根据id删除
+     * {@inheritDoc}
      *
-     * @param id
-     * @return
+     * 根据id删除
      */
     @Override
     public void deleteById(ID id) {
@@ -87,10 +84,9 @@ public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, 
 
 
     /**
-     * 分页查询
+     * {@inheritDoc}
      *
-     * @param page
-     * @return
+     * 分页查询
      */
     @Override
     public Page<T, Q> pageList(Page<T, Q> page) {
@@ -108,7 +104,8 @@ public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, 
     /**
      * 分页增加查询条件
      *
-     * @param criteria
+     * @param criteria a {@link java.util.List} object
+     * @param query a Q object
      */
     protected  void pageListAddCriteria(List<CriteriaDefinition> criteria, Q query) {
 

@@ -10,6 +10,7 @@ import java.time.Duration;
  * QuartzJdbc 配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Data
 @ConfigurationProperties("spring.quartz.jdbc")

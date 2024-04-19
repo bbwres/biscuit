@@ -22,11 +22,13 @@ import java.util.Map;
  * 初始化Mongodb的管理bean
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class MongodbBeanContextAware implements ApplicationContextAware {
 
 
+    /** {@inheritDoc} */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         MongodbProperties properties = applicationContext.getBean(MongodbProperties.class);

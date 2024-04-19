@@ -7,14 +7,15 @@ import java.util.Map;
  * 获取认证的url资源
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public interface ResourceService {
 
     /**
      * 检查并解析token
      *
-     * @param token
-     * @return
+     * @param token a {@link java.lang.String} object
+     * @return a {@link java.util.Map} object
      */
     Map<String, Object> checkToken(String token);
 
@@ -22,7 +23,7 @@ public interface ResourceService {
     /**
      * 获取仅需要登陆认证的资源地址
      *
-     * @return
+     * @return a {@link java.util.List} object
      */
     List<String> getLoginAuthResource();
 
@@ -31,7 +32,7 @@ public interface ResourceService {
      * 根据角色信息获取出当前角色拥有的资源信息
      *
      * @param roleId 角色id
-     * @return
+     * @return a {@link java.util.List} object
      */
     List<String> getResourceByRole(String roleId);
 
@@ -39,7 +40,7 @@ public interface ResourceService {
     /**
      * 获取登陆地址
      *
-     * @return
+     * @return a {@link java.lang.String} object
      */
     default String getLoginUrl() {
         return null;
@@ -48,8 +49,8 @@ public interface ResourceService {
     /**
      * 获取登陆地址
      *
-     * @param state
-     * @return
+     * @param state a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     default String getLoginUrlBuildState(String state) {
         return getLoginUrl();

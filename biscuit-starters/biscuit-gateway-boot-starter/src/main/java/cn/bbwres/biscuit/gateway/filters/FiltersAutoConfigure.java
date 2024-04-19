@@ -12,6 +12,7 @@ import org.springframework.http.codec.ServerCodecConfigurer;
  * Filters 配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Configuration
 @EnableConfigurationProperties(GatewayProperties.class)
@@ -21,8 +22,8 @@ public class FiltersAutoConfigure {
     /**
      * 透传认证信息的过滤器
      *
-     * @param gatewayProperties
-     * @return
+     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @return a {@link cn.bbwres.biscuit.gateway.filters.AuthFilter} object
      */
     @Bean
     public AuthFilter authFilter(GatewayProperties gatewayProperties) {
@@ -32,7 +33,7 @@ public class FiltersAutoConfigure {
     /**
      * 日志过滤器
      *
-     * @return
+     * @return a {@link cn.bbwres.biscuit.gateway.filters.LogFilter} object
      */
     @Bean
     public LogFilter logFilter() {
@@ -42,7 +43,8 @@ public class FiltersAutoConfigure {
     /**
      * xss 过滤器
      *
-     * @return
+     * @param serverCodecConfigurer a {@link org.springframework.http.codec.ServerCodecConfigurer} object
+     * @return a {@link cn.bbwres.biscuit.gateway.filters.xss.XssUriRegexGatewayFilterFactory} object
      */
     @Bean
     @ConditionalOnProperty(prefix = "biscuit.gateway", name = "use-xss-filter", havingValue = "true")

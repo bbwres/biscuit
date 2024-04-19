@@ -6,6 +6,7 @@ import java.io.Serializable;
  * 枚举基础类
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public interface BaseEnum<T extends Serializable> {
     /**

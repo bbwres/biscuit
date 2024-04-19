@@ -24,6 +24,7 @@ import java.util.List;
  * 扩展的MongoRepository
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T, ID> implements ExtendMongoRepository<T, ID> {
 
@@ -31,7 +32,7 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
     private final MongoEntityInformation<T, ID> entityInformation;
 
     /**
-     * Creates a new {@link SimpleMongoRepository} for the given {@link MongoEntityInformation} and {@link MongoTemplate}.
+     * Creates a new {@link org.springframework.data.mongodb.repository.support.SimpleMongoRepository} for the given {@link org.springframework.data.mongodb.repository.query.MongoEntityInformation} and {@link org.springframework.data.mongodb.core.MongoTemplate}.
      *
      * @param metadata        must not be {@literal null}.
      * @param mongoOperations must not be {@literal null}.
@@ -43,10 +44,9 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
     }
 
     /**
-     * 批量插入
+     * {@inheritDoc}
      *
-     * @param objectsToSave
-     * @return
+     * 批量插入
      */
     @Override
     public Collection<T> insertAll(Collection<? extends T> objectsToSave) {
@@ -55,10 +55,9 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
 
 
     /**
-     * 根据查询条件查询一条记录
+     * {@inheritDoc}
      *
-     * @param query
-     * @return
+     * 根据查询条件查询一条记录
      */
     @Override
     public T findOne(Criteria query) {
@@ -67,10 +66,9 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
 
 
     /**
-     * 查询多条数据
+     * {@inheritDoc}
      *
-     * @param query
-     * @return
+     * 查询多条数据
      */
     @Override
     public List<T> find(Query query) {
@@ -79,10 +77,9 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
 
 
     /**
-     * 根据条件删除
+     * {@inheritDoc}
      *
-     * @param query
-     * @return
+     * 根据条件删除
      */
     @Override
     public DeleteResult delete(Query query) {
@@ -90,11 +87,9 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
     }
 
     /**
-     * 更新数据
+     * {@inheritDoc}
      *
-     * @param update
-     * @param query
-     * @return
+     * 更新数据
      */
     @Override
     public UpdateResult update(Update update, Query query) {
@@ -103,13 +98,9 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
 
 
     /**
-     * 分页查询
+     * {@inheritDoc}
      *
-     * @param criteria
-     * @param pageSize
-     * @param current
-     * @param sortInfos 排序
-     * @return
+     * 分页查询
      */
     @Override
     public <Q> Page<T, Q> pageList(List<CriteriaDefinition> criteria, int pageSize, long current, List<SortInfo> sortInfos) {
@@ -145,10 +136,9 @@ public class ExtendSimpleMongoRepository<T, ID> extends SimpleMongoRepository<T,
     }
 
     /**
-     * 获取总条数
+     * {@inheritDoc}
      *
-     * @param query
-     * @return
+     * 获取总条数
      */
     @Override
     public Long count(Query query) {

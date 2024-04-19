@@ -18,6 +18,7 @@ import java.util.List;
  * 扩展的MongoRepository
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @NoRepositoryBean
 public interface ExtendMongoRepository<T, ID> extends MongoRepository<T, ID> {
@@ -26,8 +27,8 @@ public interface ExtendMongoRepository<T, ID> extends MongoRepository<T, ID> {
     /**
      * 批量插入
      *
-     * @param objectsToSave
-     * @return
+     * @param objectsToSave a {@link java.util.Collection} object
+     * @return a {@link java.util.Collection} object
      */
     Collection<T> insertAll(Collection<? extends T> objectsToSave);
 
@@ -35,8 +36,8 @@ public interface ExtendMongoRepository<T, ID> extends MongoRepository<T, ID> {
     /**
      * 根据查询条件查询一条记录
      *
-     * @param query
-     * @return
+     * @param query a {@link org.springframework.data.mongodb.core.query.Criteria} object
+     * @return a T object
      */
     T findOne(Criteria query);
 
@@ -44,8 +45,8 @@ public interface ExtendMongoRepository<T, ID> extends MongoRepository<T, ID> {
     /**
      * 查询多条数据
      *
-     * @param query
-     * @return
+     * @param query a {@link org.springframework.data.mongodb.core.query.Query} object
+     * @return a {@link java.util.List} object
      */
     List<T> find(Query query);
 
@@ -53,17 +54,17 @@ public interface ExtendMongoRepository<T, ID> extends MongoRepository<T, ID> {
     /**
      * 根据条件删除
      *
-     * @param query
-     * @return
+     * @param query a {@link org.springframework.data.mongodb.core.query.Query} object
+     * @return a {@link com.mongodb.client.result.DeleteResult} object
      */
     DeleteResult delete(Query query);
 
     /**
      * 更新数据
      *
-     * @param update
-     * @param query
-     * @return
+     * @param update a {@link org.springframework.data.mongodb.core.query.Update} object
+     * @param query a {@link org.springframework.data.mongodb.core.query.Query} object
+     * @return a {@link com.mongodb.client.result.UpdateResult} object
      */
     UpdateResult update(Update update, Query query);
 
@@ -71,19 +72,20 @@ public interface ExtendMongoRepository<T, ID> extends MongoRepository<T, ID> {
     /**
      * 分页查询
      *
-     * @param criteria
-     * @param pageSize
-     * @param current
+     * @param criteria a {@link java.util.List} object
+     * @param pageSize a int
+     * @param current a long
      * @param sortInfos 排序
-     * @return
+     * @param <Q> a Q class
+     * @return a {@link cn.bbwres.biscuit.dto.Page} object
      */
     <Q> Page<T, Q> pageList(List<CriteriaDefinition> criteria, int pageSize, long current, List<SortInfo> sortInfos);
 
     /**
      * 获取总条数
      *
-     * @param query
-     * @return
+     * @param query a {@link org.springframework.data.mongodb.core.query.Query} object
+     * @return a {@link java.lang.Long} object
      */
     Long count(Query query);
 

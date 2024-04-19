@@ -4,6 +4,7 @@ package cn.bbwres.biscuit.constants;
  * 系统认证相关常量
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public interface SystemAuthConstant {
 

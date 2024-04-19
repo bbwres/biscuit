@@ -11,6 +11,7 @@ import java.util.Map;
  * 网关 配置文件
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Data
 @ConfigurationProperties("biscuit.gateway")

@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
  * 调度信息
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Accessors(chain = true)
 @Data
