@@ -10,6 +10,7 @@ import java.util.List;
  * 简化的page分页数据
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Schema(description = "分页对象")
 public class Page<R, Q> {
@@ -88,58 +89,128 @@ public class Page<R, Q> {
     }
 
 
+    /**
+     * <p>Getter for the field <code>records</code>.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<R> getRecords() {
         return records;
     }
 
+    /**
+     * <p>Setter for the field <code>records</code>.</p>
+     *
+     * @param records a {@link java.util.List} object
+     */
     public void setRecords(List<R> records) {
         this.records = records;
     }
 
+    /**
+     * <p>Getter for the field <code>query</code>.</p>
+     *
+     * @return a Q object
+     */
     public Q getQuery() {
         return query;
     }
 
+    /**
+     * <p>Setter for the field <code>query</code>.</p>
+     *
+     * @param query a Q object
+     */
     public void setQuery(Q query) {
         this.query = query;
     }
 
+    /**
+     * <p>Getter for the field <code>total</code>.</p>
+     *
+     * @return a long
+     */
     public long getTotal() {
         return total;
     }
 
+    /**
+     * <p>Setter for the field <code>total</code>.</p>
+     *
+     * @param total a long
+     */
     public void setTotal(long total) {
         this.total = total;
     }
 
+    /**
+     * <p>Getter for the field <code>size</code>.</p>
+     *
+     * @return a long
+     */
     public long getSize() {
         return size;
     }
 
+    /**
+     * <p>Setter for the field <code>size</code>.</p>
+     *
+     * @param size a long
+     */
     public void setSize(long size) {
         this.size = size;
     }
 
+    /**
+     * <p>Getter for the field <code>current</code>.</p>
+     *
+     * @return a long
+     */
     public long getCurrent() {
         return current;
     }
 
+    /**
+     * <p>Setter for the field <code>current</code>.</p>
+     *
+     * @param current a long
+     */
     public void setCurrent(long current) {
         this.current = current;
     }
 
+    /**
+     * <p>Getter for the field <code>pages</code>.</p>
+     *
+     * @return a long
+     */
     public long getPages() {
         return pages;
     }
 
+    /**
+     * <p>Setter for the field <code>pages</code>.</p>
+     *
+     * @param pages a long
+     */
     public void setPages(long pages) {
         this.pages = pages;
     }
 
+    /**
+     * <p>Getter for the field <code>sortInfos</code>.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<SortInfo> getSortInfos() {
         return sortInfos;
     }
 
+    /**
+     * <p>Setter for the field <code>sortInfos</code>.</p>
+     *
+     * @param sortInfos a {@link java.util.List} object
+     */
     public void setSortInfos(List<SortInfo> sortInfos) {
         this.sortInfos = sortInfos;
     }

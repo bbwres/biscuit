@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  * 获取认证的url资源 的缓存服务
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class ResourceCacheService {
 
@@ -29,6 +30,12 @@ public class ResourceCacheService {
 
     private final ResourceService resourceService;
 
+    /**
+     * <p>Constructor for ResourceCacheService.</p>
+     *
+     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @param resourceService a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
+     */
     public ResourceCacheService(GatewayProperties gatewayProperties, ResourceService resourceService) {
         this.gatewayProperties = gatewayProperties;
         this.resourceService = resourceService;
@@ -55,7 +62,7 @@ public class ResourceCacheService {
     /**
      * 获取仅需要登陆认证的资源地址
      *
-     * @return
+     * @return a {@link java.util.List} object
      */
     public List<String> getLoginAuthResource() {
         if (gatewayProperties.getCacheResource()) {
@@ -69,7 +76,7 @@ public class ResourceCacheService {
      * 根据角色信息获取出当前角色拥有的资源信息
      *
      * @param roleId 角色id
-     * @return
+     * @return a {@link java.util.List} object
      */
     public List<String> getResourceByRole(String roleId) {
         if (gatewayProperties.getCacheResource()) {
@@ -82,8 +89,8 @@ public class ResourceCacheService {
     /**
      * 获取登陆地址
      *
-     * @param state
-     * @return
+     * @param state a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     public String getLoginUrlBuildState(String state) {
         return resourceService.getLoginUrlBuildState(state);

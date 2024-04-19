@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  * map 转换出来的token信息
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class MapAuthentication implements Authentication {
 
@@ -40,6 +41,11 @@ public class MapAuthentication implements Authentication {
      */
     private boolean authenticated;
 
+    /**
+     * <p>Constructor for MapAuthentication.</p>
+     *
+     * @param params a {@link java.util.Map} object
+     */
     public MapAuthentication(Map<String, Object> params) {
         if (CollectionUtils.isEmpty(params)) {
             this.authenticated = false;
@@ -58,6 +64,8 @@ public class MapAuthentication implements Authentication {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Set by an <code>AuthenticationManager</code> to indicate the authorities that the
      * principal has been granted. Note that classes should not rely on this value as
      * being valid unless it has been set by a trusted <code>AuthenticationManager</code>.
@@ -66,9 +74,6 @@ public class MapAuthentication implements Authentication {
      * do not affect the state of the Authentication object, or use an unmodifiable
      * instance.
      * </p>
-     *
-     * @return the authorities granted to the principal, or an empty collection if the
-     * token has not been authenticated. Never null.
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -76,11 +81,11 @@ public class MapAuthentication implements Authentication {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * The credentials that prove the principal is correct. This is usually a password,
      * but could be anything relevant to the <code>AuthenticationManager</code>. Callers
      * are expected to populate the credentials.
-     *
-     * @return the credentials that prove the identity of the <code>Principal</code>
      */
     @Override
     public Object getCredentials() {
@@ -88,11 +93,10 @@ public class MapAuthentication implements Authentication {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Stores additional details about the authentication request. These might be an IP
      * address, certificate serial number etc.
-     *
-     * @return additional details about the authentication request, or <code>null</code>
-     * if not used
      */
     @Override
     public Object getDetails() {
@@ -100,17 +104,16 @@ public class MapAuthentication implements Authentication {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * The identity of the principal being authenticated. In the case of an authentication
      * request with username and password, this would be the username. Callers are
      * expected to populate the principal for an authentication request.
      * <p>
-     * The <tt>AuthenticationManager</tt> implementation will often return an
-     * <tt>Authentication</tt> containing richer information as the principal for use by
+     * The AuthenticationManager implementation will often return an
+     * Authentication containing richer information as the principal for use by
      * the application. Many of the authentication providers will create a
      * {@code UserDetails} object as the principal.
-     *
-     * @return the <code>Principal</code> being authenticated or the authenticated
-     * principal after authentication.
      */
     @Override
     public Object getPrincipal() {
@@ -118,6 +121,8 @@ public class MapAuthentication implements Authentication {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Used to indicate to {@code AbstractSecurityInterceptor} whether it should present
      * the authentication token to the <code>AuthenticationManager</code>. Typically an
      * <code>AuthenticationManager</code> (or, more often, one of its
@@ -131,10 +136,6 @@ public class MapAuthentication implements Authentication {
      * about returning <code>true</code> from this method unless they are either
      * immutable, or have some way of ensuring the properties have not been changed since
      * original creation.
-     *
-     * @return true if the token has been authenticated and the
-     * <code>AbstractSecurityInterceptor</code> does not need to present the token to the
-     * <code>AuthenticationManager</code> again for re-authentication.
      */
     @Override
     public boolean isAuthenticated() {
@@ -142,6 +143,8 @@ public class MapAuthentication implements Authentication {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * See {@link #isAuthenticated()} for a full description.
      * <p>
      * Implementations should <b>always</b> allow this method to be called with a
@@ -150,13 +153,6 @@ public class MapAuthentication implements Authentication {
      * an invocation with a <code>true</code> parameter (which would indicate the
      * authentication token is trusted - a potential security risk) the implementation
      * should throw an {@link IllegalArgumentException}.
-     *
-     * @param isAuthenticated <code>true</code> if the token should be trusted (which may
-     *                        result in an exception) or <code>false</code> if the token should not be trusted
-     * @throws IllegalArgumentException if an attempt to make the authentication token
-     *                                  trusted (by passing <code>true</code> as the argument) is rejected due to the
-     *                                  implementation being immutable or implementing its own alternative approach to
-     *                                  {@link #isAuthenticated()}
      */
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
@@ -164,9 +160,9 @@ public class MapAuthentication implements Authentication {
     }
 
     /**
-     * Returns the name of this principal.
+     * {@inheritDoc}
      *
-     * @return the name of this principal.
+     * Returns the name of this principal.
      */
     @Override
     public String getName() {

@@ -9,6 +9,7 @@ import java.util.Collection;
  * 扩展的mongodb操作服务
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public interface ExtendMongoService<T, Q, ID, D extends ExtendMongoRepository<T, ID>> {
 
@@ -16,7 +17,7 @@ public interface ExtendMongoService<T, Q, ID, D extends ExtendMongoRepository<T,
     /**
      * 获取操作类
      *
-     * @return
+     * @return a D object
      */
     D getMongodbDao();
 
@@ -24,24 +25,24 @@ public interface ExtendMongoService<T, Q, ID, D extends ExtendMongoRepository<T,
     /**
      * 批量插入
      *
-     * @param objectsToSave
-     * @return
+     * @param objectsToSave a {@link java.util.Collection} object
+     * @return a {@link java.util.Collection} object
      */
     Collection<T> insertAll(Collection<? extends T> objectsToSave);
 
     /**
      * 保存单条数据
      *
-     * @param entity
-     * @return
+     * @param entity a T object
+     * @return a T object
      */
     T insert(T entity);
 
     /**
      * 保存数据,如果不存在则插入，如果存在则更新
      *
-     * @param entity
-     * @return
+     * @param entity a T object
+     * @return a T object
      */
     T insertOrUpdate(T entity);
 
@@ -49,8 +50,8 @@ public interface ExtendMongoService<T, Q, ID, D extends ExtendMongoRepository<T,
     /**
      * 根据id查询
      *
-     * @param id
-     * @return
+     * @param id a ID object
+     * @return a T object
      */
     T findById(ID id);
 
@@ -58,8 +59,7 @@ public interface ExtendMongoService<T, Q, ID, D extends ExtendMongoRepository<T,
     /**
      * 根据id删除
      *
-     * @param id
-     * @return
+     * @param id a ID object
      */
     void deleteById(ID id);
 
@@ -67,8 +67,8 @@ public interface ExtendMongoService<T, Q, ID, D extends ExtendMongoRepository<T,
     /**
      * 分页查询
      *
-     * @param page
-     * @return
+     * @param page a {@link cn.bbwres.biscuit.dto.Page} object
+     * @return a {@link cn.bbwres.biscuit.dto.Page} object
      */
     Page<T, Q> pageList(Page<T, Q> page);
 

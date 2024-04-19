@@ -4,6 +4,7 @@ package cn.bbwres.biscuit.gateway.constants;
  * 网关常量
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class GatewayConstant {
     /**

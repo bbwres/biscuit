@@ -20,6 +20,7 @@ import java.util.Map;
  * 全局异常处理
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @Order(-2)
@@ -38,16 +39,14 @@ public class ErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Create a {@link RouterFunction} that can route and handle errors as JSON responses
      * or HTML views.
      * <p>
      * If the returned {@link RouterFunction} doesn't route to a {@code HandlerFunction},
      * the original exception is propagated in the pipeline and can be processed by other
      * {@link WebExceptionHandler}s.
-     *
-     * @param errorAttributes the {@code ErrorAttributes} instance to use to extract error
-     *                        information
-     * @return a {@link RouterFunction} that routes and handles errors
      */
     @Override
     protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {

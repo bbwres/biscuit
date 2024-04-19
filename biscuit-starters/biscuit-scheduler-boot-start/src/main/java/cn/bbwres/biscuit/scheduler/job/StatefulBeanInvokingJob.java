@@ -7,6 +7,7 @@ import org.quartz.PersistJobDataAfterExecution;
  * 串行的任务
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution

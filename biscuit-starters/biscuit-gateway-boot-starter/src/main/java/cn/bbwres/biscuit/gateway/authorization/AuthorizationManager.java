@@ -21,6 +21,7 @@ import java.util.*;
  * 认证配置信息
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -32,11 +33,9 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
     private final PathMatcher pathMatcher;
 
     /**
-     * 检查权限
+     * {@inheritDoc}
      *
-     * @param mono                 the Authentication to check
-     * @param authorizationContext the object to check
-     * @return
+     * 检查权限
      */
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> mono, AuthorizationContext authorizationContext) {

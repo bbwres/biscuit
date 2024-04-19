@@ -10,6 +10,7 @@ import java.util.Map;
  * 多数据源的mongo配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Data
 @ConfigurationProperties("multiple.mongodb")

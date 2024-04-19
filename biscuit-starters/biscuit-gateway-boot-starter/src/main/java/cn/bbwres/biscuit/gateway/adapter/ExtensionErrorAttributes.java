@@ -22,6 +22,7 @@ import java.util.Map;
  * 异常信息处理
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
     private final MessageSourceAccessor messages;
 
 
+    /** {@inheritDoc} */
     @Override
     public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = new LinkedHashMap<>();

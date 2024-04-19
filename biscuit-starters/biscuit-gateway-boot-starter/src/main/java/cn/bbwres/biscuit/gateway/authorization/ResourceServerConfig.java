@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
  * 资源配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -49,6 +50,12 @@ import java.util.stream.Collectors;
 public class ResourceServerConfig {
 
 
+    /**
+     * <p>messageConverters.</p>
+     *
+     * @param converters a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @return a {@link org.springframework.boot.autoconfigure.http.HttpMessageConverters} object
+     */
     @Bean
     @ConditionalOnMissingBean
     public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
@@ -58,8 +65,14 @@ public class ResourceServerConfig {
     /**
      * 安全处理类
      *
-     * @param http
-     * @return
+     * @param http a {@link org.springframework.security.config.web.server.ServerHttpSecurity} object
+     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @param authorizationManager a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
+     * @param customServerAccessDeniedHandler a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
+     * @param customServerAuthenticationEntryPoint a {@link org.springframework.security.web.server.ServerAuthenticationEntryPoint} object
+     * @param jwtReactiveAuthenticationManager a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
+     * @param reactiveOpaqueTokenIntrospector a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @return a {@link org.springframework.security.web.server.SecurityWebFilterChain} object
      */
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
@@ -104,6 +117,9 @@ public class ResourceServerConfig {
 
     /**
      * 无权访问自定义响应
+     *
+     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @return a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
      */
     @Bean
     public ServerAccessDeniedHandler customServerAccessDeniedHandler(GatewayProperties gatewayProperties) {
@@ -116,6 +132,9 @@ public class ResourceServerConfig {
 
     /**
      * 无效token/token过期 自定义响应
+     *
+     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @return a {@link org.springframework.security.web.server.ServerAuthenticationEntryPoint} object
      */
     @Bean
     public ServerAuthenticationEntryPoint customServerAuthenticationEntryPoint(GatewayProperties gatewayProperties) {

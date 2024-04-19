@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Mongodb 多数据源 自动配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @Configuration
@@ -31,6 +32,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class MongodbAutoConfigure {
 
 
+    /**
+     * <p>mongodbBeanContextAware.</p>
+     *
+     * @return a {@link cn.bbwres.biscuit.mongodb.processor.MongodbBeanContextAware} object
+     */
     @Bean
     public MongodbBeanContextAware mongodbBeanContextAware() {
         return new MongodbBeanContextAware();

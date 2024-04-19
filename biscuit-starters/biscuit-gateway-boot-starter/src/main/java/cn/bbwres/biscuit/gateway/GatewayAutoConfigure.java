@@ -35,6 +35,7 @@ import java.util.List;
  * 网关鉴权 自动注入配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @AutoConfiguration
@@ -46,7 +47,9 @@ public class GatewayAutoConfigure {
     /**
      * gateway 统一错误处理
      *
-     * @return
+     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @param messagesProvider a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @return a {@link cn.bbwres.biscuit.gateway.adapter.ExtensionErrorAttributes} object
      */
     @Bean
     public ExtensionErrorAttributes errorAttributes(GatewayProperties gatewayProperties,
@@ -57,7 +60,10 @@ public class GatewayAutoConfigure {
     /**
      * 统一错误处理器
      *
-     * @return
+     * @param errorAttributes a {@link org.springframework.boot.web.reactive.error.ErrorAttributes} object
+     * @param webProperties a {@link org.springframework.boot.autoconfigure.web.WebProperties} object
+     * @param applicationContext a {@link org.springframework.context.ApplicationContext} object
+     * @return a {@link cn.bbwres.biscuit.gateway.adapter.ErrorWebExceptionHandler} object
      */
     @Bean
     public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
@@ -71,8 +77,9 @@ public class GatewayAutoConfigure {
     /**
      * 认证管理器
      *
-     * @param resourceCacheService
-     * @return
+     * @param resourceCacheService a {@link cn.bbwres.biscuit.gateway.cache.ResourceCacheService} object
+     * @param pathMatcher a {@link org.springframework.util.PathMatcher} object
+     * @return a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
      */
     @Bean
     public AuthorizationManager authorizationManager(ResourceCacheService resourceCacheService,
@@ -83,7 +90,9 @@ public class GatewayAutoConfigure {
     /**
      * 资源缓存服务
      *
-     * @return
+     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @param resourceService a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
+     * @return a {@link cn.bbwres.biscuit.gateway.cache.ResourceCacheService} object
      */
     @Bean
     public ResourceCacheService resourceCacheService(GatewayProperties gatewayProperties,
@@ -95,7 +104,7 @@ public class GatewayAutoConfigure {
     /**
      * 设置获取token的转换器
      *
-     * @return
+     * @return a {@link org.springframework.security.web.server.authentication.ServerAuthenticationConverter} object
      */
     @Bean
     public ServerAuthenticationConverter serverAuthenticationConverter() {
@@ -108,7 +117,7 @@ public class GatewayAutoConfigure {
     /**
      * 路径匹配器
      *
-     * @return
+     * @return a {@link org.springframework.util.PathMatcher} object
      */
     @Bean
     public PathMatcher antPathMatcher() {
@@ -118,7 +127,7 @@ public class GatewayAutoConfigure {
     /**
      * 空的SessionManager
      *
-     * @return
+     * @return a {@link org.springframework.web.server.session.WebSessionManager} object
      */
     @Bean
     @ConditionalOnProperty(prefix = "biscuit.gateway", name = "session", havingValue = "false", matchIfMissing = true)
@@ -137,8 +146,8 @@ public class GatewayAutoConfigure {
     /**
      * 路由控制器
      *
-     * @param routeLocator
-     * @return
+     * @param routeLocator a {@link org.springframework.cloud.gateway.route.RouteLocator} object
+     * @return a {@link cn.bbwres.biscuit.gateway.router.RouterController} object
      */
     @Bean
     public RouterController routerController(RouteLocator routeLocator) {

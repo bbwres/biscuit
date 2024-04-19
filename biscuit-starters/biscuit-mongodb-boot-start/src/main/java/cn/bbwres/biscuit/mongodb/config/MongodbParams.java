@@ -6,6 +6,7 @@ import lombok.Data;
  * Mongo 连接参数
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Data
 public class MongodbParams {

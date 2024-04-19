@@ -28,6 +28,7 @@ import java.util.*;
  * token配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @AutoConfiguration
@@ -37,8 +38,8 @@ public class TokenConfig {
     /**
      * 处理jwt token
      *
-     * @param resourceService
-     * @return
+     * @param resourceService a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
+     * @return a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
      */
     @Bean
     public ReactiveAuthenticationManager jwtReactiveAuthenticationManager(ResourceService resourceService) {
@@ -90,7 +91,8 @@ public class TokenConfig {
     /**
      * 处理不透明token
      *
-     * @return
+     * @param resourceService a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
+     * @return a {@link org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector} object
      */
     @Bean
     public ReactiveOpaqueTokenIntrospector reactiveOpaqueTokenIntrospector(ResourceService resourceService) {

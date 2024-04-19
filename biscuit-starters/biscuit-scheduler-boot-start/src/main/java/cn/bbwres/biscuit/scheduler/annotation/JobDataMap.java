@@ -6,6 +6,7 @@ import java.lang.annotation.*;
  * job 参数
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

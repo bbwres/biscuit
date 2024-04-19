@@ -34,6 +34,7 @@ import java.util.Properties;
  * job配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @Configuration
@@ -41,6 +42,12 @@ import java.util.Properties;
 public class JobAutoConfigure {
 
 
+    /**
+     * <p>quartzProperties.</p>
+     *
+     * @param quartzJdbcProperties a {@link cn.bbwres.biscuit.scheduler.config.QuartzJdbcProperties} object
+     * @return a {@link org.springframework.boot.autoconfigure.quartz.QuartzProperties} object
+     */
     @Bean
     @Primary
     @ConditionalOnProperty(prefix = "spring.quartz.jdbc", name = "jobStoreType", havingValue = "JDBC")
@@ -76,11 +83,12 @@ public class JobAutoConfigure {
     /**
      * 初始 quartzScheduler
      *
-     * @param properties
-     * @param customizers
-     * @param calendars
-     * @param applicationContext
-     * @return
+     * @param properties a {@link org.springframework.boot.autoconfigure.quartz.QuartzProperties} object
+     * @param customizers a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @param calendars a {@link java.util.Map} object
+     * @param applicationContext a {@link org.springframework.context.ApplicationContext} object
+     * @param dataSource a DataSource object
+     * @return a {@link org.springframework.scheduling.quartz.SchedulerFactoryBean} object
      */
     @Bean
     public SchedulerFactoryBean quartzScheduler(QuartzProperties properties,
@@ -114,8 +122,8 @@ public class JobAutoConfigure {
     /**
      * 初始化bean 管理器
      *
-     * @param scheduler
-     * @return
+     * @param scheduler a {@link org.quartz.Scheduler} object
+     * @return a {@link cn.bbwres.biscuit.scheduler.service.JobManagerService} object
      */
     @Bean
     public JobManagerService jobManagerService(Scheduler scheduler) {

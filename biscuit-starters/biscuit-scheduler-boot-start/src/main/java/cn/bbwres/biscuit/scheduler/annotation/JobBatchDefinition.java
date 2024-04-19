@@ -7,6 +7,7 @@ import java.lang.annotation.*;
  * 定时批处理任务定义
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
