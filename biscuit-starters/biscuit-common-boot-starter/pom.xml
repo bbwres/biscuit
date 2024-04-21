@@ -11,6 +11,7 @@
 
     <artifactId>biscuit-common-boot-starter</artifactId>
     <description>公共服务包</description>
+    <version>0.0.1</version>
 
 
     <dependencies>

@@ -8,6 +8,7 @@
     </parent>
     <artifactId>biscuit-mongodb-boot-start</artifactId>
     <description>spring boot mongodb start</description>
+    <version>0.0.1</version>
 
     <dependencies>
         <dependency>

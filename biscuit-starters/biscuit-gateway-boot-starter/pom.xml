@@ -11,6 +11,7 @@
 
     <artifactId>biscuit-gateway-boot-starter</artifactId>
     <description>网关服务</description>
+    <version>0.0.1</version>
 
     <dependencies>
         <dependency>
