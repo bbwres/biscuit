@@ -11,7 +11,6 @@
 
     <artifactId>biscuit-i18n-boot-starter</artifactId>
     <description>国际化处理</description>
-    <version>0.0.1</version>
 
     <dependencies>
         <dependency>

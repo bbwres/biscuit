@@ -8,7 +8,6 @@
     </parent>
     <artifactId>biscuit-id-generator-boot-start</artifactId>
     <description>ID 生成器</description>
-    <version>0.0.1</version>
 
     <dependencies>
         <dependency>
