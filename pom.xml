@@ -8,6 +8,7 @@
     <artifactId>biscuit</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <url>https://github.com/bbwres/biscuit</url>
     <modules>
         <module>biscuit-dependencies</module>
         <module>biscuit-starters</module>
@@ -20,6 +21,20 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.8</jacoco.version>
     </properties>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>zlf</id>
+            <name>zlf</name>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:git:https://github.com/bbwres/biscuit</connection>
@@ -78,6 +93,20 @@
                     <publishingServerId>sonatype-central</publishingServerId>
                     <tokenAuth>true</tokenAuth>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
