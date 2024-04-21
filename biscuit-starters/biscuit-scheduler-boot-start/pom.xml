@@ -8,6 +8,7 @@
     </parent>
     <artifactId>biscuit-scheduler-boot-start</artifactId>
     <description>定时任务start</description>
+    <version>0.0.1</version>
 
     <dependencies>
 
