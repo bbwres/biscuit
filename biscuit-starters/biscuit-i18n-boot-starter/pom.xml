@@ -6,7 +6,7 @@
     <parent>
         <groupId>cn.bbwres</groupId>
         <artifactId>biscuit-starters</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <artifactId>biscuit-i18n-boot-starter</artifactId>
