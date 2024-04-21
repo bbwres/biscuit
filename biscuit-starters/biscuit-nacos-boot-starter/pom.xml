@@ -11,7 +11,7 @@
 
     <artifactId>biscuit-nacos-boot-starter</artifactId>
     <description>nacos 相关包</description>
-    <version>0.0.1</version>
+
 
     <dependencies>
         <dependency>
