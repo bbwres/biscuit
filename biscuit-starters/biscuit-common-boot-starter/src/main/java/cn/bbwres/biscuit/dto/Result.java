@@ -1,6 +1,9 @@
 package cn.bbwres.biscuit.dto;
 
+import cn.bbwres.biscuit.exception.constants.ErrorCode;
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
 
@@ -43,8 +46,8 @@ public class Result<T> implements Serializable {
      * <p>Constructor for Result.</p>
      *
      * @param resultCode a {@link java.lang.String} object
-     * @param resultMsg a {@link java.lang.String} object
-     * @param data a T object
+     * @param resultMsg  a {@link java.lang.String} object
+     * @param data       a T object
      */
     public Result(String resultCode, String resultMsg, T data) {
         this.resultCode = resultCode;
@@ -56,7 +59,7 @@ public class Result<T> implements Serializable {
      * <p>Constructor for Result.</p>
      *
      * @param resultCode a {@link java.lang.String} object
-     * @param resultMsg a {@link java.lang.String} object
+     * @param resultMsg  a {@link java.lang.String} object
      */
     public Result(String resultCode, String resultMsg) {
         this.resultCode = resultCode;
@@ -70,6 +73,43 @@ public class Result<T> implements Serializable {
      */
     public Result(String resultCode) {
         this.resultCode = resultCode;
+    }
+
+
+    /**
+     * 处理成功
+     *
+     * @param data 数据
+     * @param <T>  返回当前数据
+     * @return 返回处理成功的对象
+     */
+    public static <T> Result<T> success(T data) {
+        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),
+                GlobalErrorCodeConstants.SUCCESS.getMessage(), data);
+    }
+
+    /**
+     * 处理失败
+     *
+     * @param errorCode 错误码
+     * @param errorMsg  错误描述
+     * @param <T>       数据对象
+     * @return 处理失败的数据
+     */
+    public static <T> Result<T> error(ErrorCode errorCode, String errorMsg) {
+        return new Result<>(errorCode.getCode(), ObjectUtils.isEmpty(errorMsg) ? errorCode.getMessage() : errorMsg);
+    }
+
+
+    /**
+     * 处理失败
+     *
+     * @param errorCode 错误码
+     * @param <T>       数据对象
+     * @return 处理失败的数据
+     */
+    public static <T> Result<T> error(ErrorCode errorCode) {
+        return new Result<>(errorCode.getCode(), null);
     }
 
     /**
