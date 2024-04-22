@@ -4,13 +4,13 @@
 
     <groupId>cn.bbwres</groupId>
     <artifactId>biscuit</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <url>https://github.com/bbwres/biscuit</url>
     <description>spring cloud 开发脚手架</description>
     <modules>
         <module>biscuit-dependencies</module>
-<!--        <module>biscuit-starters</module>-->
+        <module>biscuit-starters</module>
     </modules>
 
     <properties>
