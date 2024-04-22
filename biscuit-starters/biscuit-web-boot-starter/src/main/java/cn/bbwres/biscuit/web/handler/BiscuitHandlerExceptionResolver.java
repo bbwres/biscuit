@@ -1,8 +1,8 @@
 package cn.bbwres.biscuit.web.handler;
 
+import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
-import cn.bbwres.biscuit.dto.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +59,8 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
     @Override
     protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
 
-        LOG.warn("request:[{}],exception:[{}]", request.getRequestURI(), ex.getMessage());
-        String message = ex.getMessage();
+        LOG.warn("request:[{}],exception:[{}]", request.getRequestURI(), ex.getMessage(), ex);
+        String message = ObjectUtils.isEmpty(ex.getMessage()) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage() : ex.getMessage();
         String errorCode = GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode();
 
         if (ex instanceof SystemRuntimeException) {

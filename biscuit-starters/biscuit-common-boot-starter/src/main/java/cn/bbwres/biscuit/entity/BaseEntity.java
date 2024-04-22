@@ -30,11 +30,6 @@ public class BaseEntity implements Serializable {
      */
     private String updater;
 
-    /**
-     * 租户id
-     */
-    private String tenantId;
-
 
     /**
      * <p>Getter for the field <code>createTime</code>.</p>
@@ -108,21 +103,4 @@ public class BaseEntity implements Serializable {
         this.updater = updater;
     }
 
-    /**
-     * <p>Getter for the field <code>tenantId</code>.</p>
-     *
-     * @return a {@link java.lang.String} object
-     */
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    /**
-     * <p>Setter for the field <code>tenantId</code>.</p>
-     *
-     * @param tenantId a {@link java.lang.String} object
-     */
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
 }

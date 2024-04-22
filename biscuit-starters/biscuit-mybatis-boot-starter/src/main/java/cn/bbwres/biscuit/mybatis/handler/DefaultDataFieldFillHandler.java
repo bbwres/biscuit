@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.mybatis.handler;
 
 import cn.bbwres.biscuit.entity.BaseEntity;
+import cn.bbwres.biscuit.entity.BaseTenantEntity;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.mybatis.config.MybatisProperties;
 import cn.bbwres.biscuit.mybatis.config.MybatisTenantProperties;
@@ -51,12 +52,12 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
                 baseDO.setCreator(userId);
             }
             //是否启用租户插件
-            if (mybatisTenantProperties.isEnabled()) {
+            if (mybatisTenantProperties.isEnabled() && baseDO instanceof BaseTenantEntity) {
                 //获取租户id
                 String tenantId = mybatisProperties.obtainUserInfo(userBaseInfo -> ObjectUtils.isEmpty(userBaseInfo.getTenantId()) ?
                         mybatisTenantProperties.getDefaultTenant() : userBaseInfo.getTenantId());
-                if (Objects.isNull(baseDO.getTenantId())) {
-                    baseDO.setTenantId(tenantId);
+                if (Objects.isNull(((BaseTenantEntity) baseDO).getTenantId())) {
+                    ((BaseTenantEntity) baseDO).setTenantId(tenantId);
                 }
 
             }
