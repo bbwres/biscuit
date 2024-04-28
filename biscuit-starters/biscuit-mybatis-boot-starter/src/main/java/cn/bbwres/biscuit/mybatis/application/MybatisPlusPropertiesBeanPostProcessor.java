@@ -1,6 +1,5 @@
 package cn.bbwres.biscuit.mybatis.application;
 
-import cn.bbwres.biscuit.application.AbstractBiscuitApplicationContextInitializer;
 import cn.bbwres.biscuit.mybatis.handler.BiscuitMybatisEnumTypeHandler;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler;
@@ -9,28 +8,26 @@ import org.apache.ibatis.type.TypeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
- * 修改Mybatis的初始化配置
+ * mybatis plus 参数配置
  *
  * @author zhanglinfeng
  */
-public class MybatisConfigurationInitializer extends AbstractBiscuitApplicationContextInitializer {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MybatisConfigurationInitializer.class);
+public class MybatisPlusPropertiesBeanPostProcessor implements BeanPostProcessor {
+    private static final Logger LOG = LoggerFactory.getLogger(MybatisPlusPropertiesBeanPostProcessor.class);
 
     /**
-     * 后续处理
+     * 初始化
      *
-     * @param applicationContext
      * @param bean
      * @param beanName
      * @return
      * @throws BeansException
      */
     @Override
-    protected Object afterInitialization(ConfigurableApplicationContext applicationContext, Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof MybatisPlusProperties) {
             MybatisPlusProperties mybatisPlusProperties = (MybatisPlusProperties) bean;
             TypeHandler<?> typeHandler = mybatisPlusProperties.getConfiguration().getTypeHandlerRegistry().getTypeHandler(Enum.class);
@@ -44,6 +41,5 @@ public class MybatisConfigurationInitializer extends AbstractBiscuitApplicationC
             return bean;
         }
         return bean;
-
     }
 }
