@@ -1,5 +1,6 @@
 package cn.bbwres.biscuit.mybatis.config;
 
+import cn.bbwres.biscuit.mybatis.application.MybatisPlusPropertiesBeanPostProcessor;
 import cn.bbwres.biscuit.mybatis.handler.DefaultDataFieldFillHandler;
 import cn.bbwres.biscuit.mybatis.handler.DefaultTenantLineHandler;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
@@ -27,9 +28,20 @@ public class MybatisPlusAutoConfigure {
 
 
     /**
+     * mybatis plus 参数配置
+     *
+     * @return MybatisPlusPropertiesBeanPostProcessor
+     */
+    @Bean
+    public MybatisPlusPropertiesBeanPostProcessor mybatisPlusPropertiesBeanPostProcessor() {
+        return new MybatisPlusPropertiesBeanPostProcessor();
+    }
+
+
+    /**
      * 配置分页插件
      *
-     * @return
+     * @return MybatisPlusInterceptor
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
