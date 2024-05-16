@@ -20,6 +20,7 @@
         <module>biscuit-id-generator-boot-start</module>
         <module>biscuit-mongodb-boot-start</module>
         <module>biscuit-scheduler-boot-start</module>
+        <module>biscuit-rpc-boot-starter</module>
     </modules>
 
     <dependencies>

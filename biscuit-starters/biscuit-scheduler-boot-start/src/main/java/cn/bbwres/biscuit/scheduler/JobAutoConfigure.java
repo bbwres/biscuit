@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
@@ -65,7 +66,7 @@ public class JobAutoConfigure {
         properties.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME,quartzJdbcProperties.getInstanceName());
         properties.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_ID,quartzJdbcProperties.getInstanceId());
         properties.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS,quartzJdbcProperties.getJobStoreClass());
-        if(!StringUtils.isEmpty(quartzJdbcProperties.getDataSource())){
+        if(!ObjectUtils.isEmpty(quartzJdbcProperties.getDataSource())){
             properties.put("org.quartz.jobStore.dataSource",quartzJdbcProperties.getDataSource());
         }
         properties.put("org.quartz.jobStore.driverDelegateClass",quartzJdbcProperties.getDriverDelegateClass());
