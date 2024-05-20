@@ -1,8 +1,13 @@
 package cn.bbwres.biscuit.rpc.utils;
 
+import cn.bbwres.biscuit.rpc.constants.RpcConstants;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 安全工具类
@@ -38,7 +43,25 @@ public class SecurityUtils {
     public static boolean checkDataInfo(String clientName, String clientPassword, String currentTimeMillis, String hashInfo) {
         String dataHash = hashDataInfo(clientName, clientPassword, currentTimeMillis);
         return dataHash.equals(hashInfo);
+    }
 
+
+    /**
+     * 请求头中放入认证参数
+     *
+     * @param instance 服务实例
+     */
+    public static Map<String, List<String>> putHeaderAuthorizationInfo(ServiceInstance instance) {
+        Map<String, List<String>> headers = new HashMap<>(16);
+        Map<String, String> metadata = instance.getMetadata();
+        String clientName = instance.getServiceId();
+        String clientPassword = metadata.get(RpcConstants.CLIENT_PASSWORD);
+        //加密算法的实现
+        String currentTimeMillis = System.currentTimeMillis() + "";
+        String authorization = SecurityUtils.hashDataInfo(clientName, clientPassword, currentTimeMillis);
+        headers.put(RpcConstants.AUTHORIZATION_HEADER_NAME, List.of(authorization));
+        headers.put(RpcConstants.CLIENT_TIME_HEADER_NAME, List.of(currentTimeMillis));
+        return headers;
     }
 
 }

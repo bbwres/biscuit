@@ -16,10 +16,10 @@
 
 package org.springframework.cloud.openfeign.loadbalancer;
 
-import cn.bbwres.biscuit.rpc.constants.RpcConstants;
 import cn.bbwres.biscuit.rpc.utils.SecurityUtils;
 import feign.Client;
 import feign.Request;
+import feign.RequestTemplate;
 import feign.Response;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.CompletionContext;
@@ -54,15 +54,16 @@ final class LoadBalancerUtils {
         supportedLifecycleProcessors.forEach(lifecycle -> lifecycle.onStartRequest(lbRequest, lbResponse));
         try {
             if (loadBalanced && lbResponse.hasServer()) {
+                RequestTemplate requestTemplate = feignRequest.requestTemplate();
                 ServiceInstance serviceInstance = lbResponse.getServer();
-                Map<String, String> metadata = serviceInstance.getMetadata();
-                String clientName = serviceInstance.getServiceId();
-                String clientPassword = metadata.get(RpcConstants.CLIENT_PASSWORD);
-                //加密算法的实现
-                String currentTimeMillis = System.currentTimeMillis() + "";
-                String authorization = SecurityUtils.hashDataInfo(clientName, clientPassword, currentTimeMillis);
-                feignRequest.headers().put(RpcConstants.AUTHORIZATION_HEADER_NAME, List.of(authorization));
-                feignRequest.headers().put(RpcConstants.CLIENT_TIME_HEADER_NAME, List.of(currentTimeMillis));
+                Map<String, List<String>> stringListMap = SecurityUtils.putHeaderAuthorizationInfo(serviceInstance);
+
+                for (String headerName : stringListMap.keySet()) {
+                    requestTemplate.header(headerName, stringListMap.get(headerName));
+                }
+
+                feignRequest = Request.create(feignRequest.httpMethod(), feignRequest.url(), requestTemplate.headers(), feignRequest.body(),
+                        feignRequest.charset(), requestTemplate);
             }
 
             Response response = feignClient.execute(feignRequest, options);

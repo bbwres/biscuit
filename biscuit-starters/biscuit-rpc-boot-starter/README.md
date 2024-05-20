@@ -20,4 +20,10 @@ feign.httpclient.time-to-live=900
 2. 客户端调用服务时，从注册中心获取到要调用的服务。
 3. 根据调用的服务获取到该服务的随机密码信息
 4. 组装签名参数 放入请求头中。
-5. 
+
+
+## 当前等待测试
+1. feign 调用
+2. gateway 调用
+3. RestTemplate调用
+4. WebClient 调用
