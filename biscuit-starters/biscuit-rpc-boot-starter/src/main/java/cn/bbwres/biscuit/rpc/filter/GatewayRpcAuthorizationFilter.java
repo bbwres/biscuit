@@ -1,6 +1,5 @@
 package cn.bbwres.biscuit.rpc.filter;
 
-import cn.bbwres.biscuit.rpc.constants.RpcConstants;
 import cn.bbwres.biscuit.rpc.properties.RpcProperties;
 import cn.bbwres.biscuit.rpc.properties.SecurityProperties;
 import cn.bbwres.biscuit.rpc.utils.SecurityUtils;
@@ -11,9 +10,12 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
@@ -59,7 +61,6 @@ public class GatewayRpcAuthorizationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
         ServerHttpRequest request = exchange.getRequest();
-        ServerHttpRequest.Builder builder = request.mutate();
         //获取服务端
         Response<ServiceInstance> response = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
         if (Objects.isNull(response) || !response.hasServer()) {
@@ -67,13 +68,14 @@ public class GatewayRpcAuthorizationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
         ServiceInstance serviceInstance = response.getServer();
-        String clientPassword = serviceInstance.getMetadata().get(RpcConstants.CLIENT_PASSWORD);
-        String clientName = serviceInstance.getServiceId();
-        //加密算法的实现
-        String currentTimeMillis = System.currentTimeMillis() + "";
-        String authorization = SecurityUtils.hashDataInfo(clientName, clientPassword, currentTimeMillis);
-        builder.header(RpcConstants.AUTHORIZATION_HEADER_NAME, authorization);
-        builder.header(RpcConstants.CLIENT_TIME_HEADER_NAME, currentTimeMillis);
+        Map<String, List<String>> stringListMap = SecurityUtils.putHeaderAuthorizationInfo(serviceInstance);
+        if (!CollectionUtils.isEmpty(stringListMap)) {
+            ServerHttpRequest.Builder serverHttpRequestBuilder = request.mutate();
+            for (String headerName : stringListMap.keySet()) {
+                serverHttpRequestBuilder.header(headerName, stringListMap.get(headerName).toArray(new String[]{}));
+            }
+            request = serverHttpRequestBuilder.build();
+        }
         return chain.filter(exchange.mutate().request(request).build());
     }
 }

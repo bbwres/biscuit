@@ -21,7 +21,7 @@ public class RegistrationBeanPostProcessor implements BeanPostProcessor {
      * @param bean     初始化的bean
      * @param beanName 初始化的beanName
      * @return 初始化的bean
-     * @throws BeansException 异常信息o
+     * @throws BeansException 异常信息
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {

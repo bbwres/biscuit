@@ -1,16 +1,19 @@
 package cn.bbwres.biscuit.rpc;
 
 import cn.bbwres.biscuit.rpc.filter.GatewayRpcAuthorizationFilter;
+import cn.bbwres.biscuit.rpc.filter.RpcLoadBalancerRequestTransformer;
 import cn.bbwres.biscuit.rpc.metadata.RegistrationBeanPostProcessor;
 import cn.bbwres.biscuit.rpc.properties.RpcProperties;
 import cn.bbwres.biscuit.rpc.web.RpcServerHandlerInterceptorAdapter;
 import cn.bbwres.biscuit.rpc.web.RpcWebAppConfigurer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.gateway.config.GatewayProperties;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
@@ -82,6 +85,17 @@ public class RpcAutoConfigure {
     @Bean
     public RegistrationBeanPostProcessor registrationBeanPostProcessor() {
         return new RegistrationBeanPostProcessor();
+    }
+
+    /**
+     * RpcLoadBalancerRequestTransformer 负载均衡参数增强
+     *
+     * @return RpcLoadBalancerRequestTransformer
+     */
+    @Bean
+    @ConditionalOnBean(LoadBalancerClientFactory.class)
+    public RpcLoadBalancerRequestTransformer rpcLoadBalancerRequestTransformer() {
+        return new RpcLoadBalancerRequestTransformer();
     }
 
 }
