@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
 @RequiredArgsConstructor
 public class RedisGenerator {
 
-    private static final String REDIS_ID_KEY = "REDIS_ID_KEY_";
+    private static final String REDIS_ID_KEY = "REDIS_ID_KEY:";
 
     private final RedisTemplate<String, String> redisTemplate;
 
