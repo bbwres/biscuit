@@ -6,8 +6,9 @@
         <artifactId>biscuit-starters</artifactId>
         <version>0.0.4-SNAPSHOT</version>
     </parent>
-    <artifactId>biscuit-id-generator-boot-start</artifactId>
-    <description>ID 生成器</description>
+    <artifactId>biscuit-redis-lock-boot-starter</artifactId>
+    <name>biscuit-redis-lock-start</name>
+    <description>redisson实现的分布式锁</description>
 
     <dependencies>
         <dependency>
@@ -20,20 +21,21 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
         <dependency>
-            <groupId>cn.bbwres</groupId>
-            <artifactId>biscuit-common-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
         </dependency>
     </dependencies>
-
-
 </project>

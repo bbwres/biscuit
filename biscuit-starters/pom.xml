@@ -12,15 +12,16 @@
     <description>starters</description>
     <modules>
         <module>biscuit-common-boot-starter</module>
-        <module>biscuit-mybatis-boot-starter</module>
-        <module>biscuit-nacos-boot-starter</module>
-        <module>biscuit-web-boot-starter</module>
         <module>biscuit-gateway-boot-starter</module>
         <module>biscuit-i18n-boot-starter</module>
-        <module>biscuit-id-generator-boot-start</module>
-        <module>biscuit-mongodb-boot-start</module>
-        <module>biscuit-scheduler-boot-start</module>
+        <module>biscuit-id-generator-boot-starter</module>
+        <module>biscuit-mongodb-boot-starter</module>
+        <module>biscuit-mybatis-boot-starter</module>
+        <module>biscuit-nacos-boot-starter</module>
+        <module>biscuit-redis-lock-boot-starter</module>
         <module>biscuit-rpc-boot-starter</module>
+        <module>biscuit-scheduler-boot-starter</module>
+        <module>biscuit-web-boot-starter</module>
     </modules>
 
 
