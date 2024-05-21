@@ -24,27 +24,34 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
  * 网关服务认证过滤器
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class GatewayRpcAuthorizationFilter implements GlobalFilter, Ordered {
 
     private final RpcProperties rpcProperties;
 
+    /**
+     * <p>Constructor for GatewayRpcAuthorizationFilter.</p>
+     *
+     * @param rpcProperties a {@link cn.bbwres.biscuit.rpc.properties.RpcProperties} object
+     */
     public GatewayRpcAuthorizationFilter(RpcProperties rpcProperties) {
         this.rpcProperties = rpcProperties;
     }
 
+    /** Constant <code>RPC_AUTHORIZATION_FILTER_ORDER=10151</code> */
     public static final int RPC_AUTHORIZATION_FILTER_ORDER = 10151;
 
     /**
+     * {@inheritDoc}
+     *
      * Get the order value of this object.
      * <p>Higher values are interpreted as lower priority. As a consequence,
      * the object with the lowest value has the highest priority (somewhat
      * analogous to Servlet {@code load-on-startup} values).
      * <p>Same order values will result in arbitrary sort positions for the
      * affected objects.
-     *
-     * @return the order value
      * @see #HIGHEST_PRECEDENCE
      * @see #LOWEST_PRECEDENCE
      */
@@ -53,6 +60,7 @@ public class GatewayRpcAuthorizationFilter implements GlobalFilter, Ordered {
         return RPC_AUTHORIZATION_FILTER_ORDER;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         SecurityProperties securityProperties = rpcProperties.getSecurity();

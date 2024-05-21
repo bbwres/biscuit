@@ -4,6 +4,7 @@ package cn.bbwres.biscuit.rpc.constants;
  * rpc 调用的常量
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class RpcConstants {
 

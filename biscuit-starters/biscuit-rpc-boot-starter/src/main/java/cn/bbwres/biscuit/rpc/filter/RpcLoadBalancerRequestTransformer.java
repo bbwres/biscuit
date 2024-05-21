@@ -14,10 +14,12 @@ import java.util.Objects;
  * 负载均衡请求参数增强
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class RpcLoadBalancerRequestTransformer implements LoadBalancerRequestTransformer {
 
 
+    /** {@inheritDoc} */
     @Override
     public HttpRequest transformRequest(HttpRequest request, ServiceInstance instance) {
         if (Objects.isNull(instance)) {

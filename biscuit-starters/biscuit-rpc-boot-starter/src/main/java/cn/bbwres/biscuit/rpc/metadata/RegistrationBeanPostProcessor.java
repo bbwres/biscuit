@@ -12,16 +12,14 @@ import java.util.UUID;
  * 服务注册处理
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class RegistrationBeanPostProcessor implements BeanPostProcessor {
 
     /**
-     * 初始化
+     * {@inheritDoc}
      *
-     * @param bean     初始化的bean
-     * @param beanName 初始化的beanName
-     * @return 初始化的bean
-     * @throws BeansException 异常信息
+     * 初始化
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {

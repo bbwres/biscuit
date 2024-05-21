@@ -13,6 +13,7 @@ import java.util.Map;
  * 安全工具类
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class SecurityUtils {
 
@@ -50,6 +51,7 @@ public class SecurityUtils {
      * 请求头中放入认证参数
      *
      * @param instance 服务实例
+     * @return a {@link java.util.Map} object
      */
     public static Map<String, List<String>> putHeaderAuthorizationInfo(ServiceInstance instance) {
         Map<String, List<String>> headers = new HashMap<>(16);

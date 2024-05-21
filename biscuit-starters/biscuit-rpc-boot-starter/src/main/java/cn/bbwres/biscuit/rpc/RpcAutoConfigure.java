@@ -21,6 +21,7 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
  * rpc 的自动配置类
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @AutoConfiguration

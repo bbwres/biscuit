@@ -6,6 +6,7 @@ import lombok.Data;
  * 安全配置项
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Data
 public class SecurityProperties {

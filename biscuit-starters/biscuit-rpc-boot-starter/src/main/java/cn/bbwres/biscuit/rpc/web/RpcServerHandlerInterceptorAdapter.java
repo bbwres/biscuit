@@ -17,6 +17,7 @@ import java.util.Objects;
  * rpc 服务端拦截器
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -29,13 +30,9 @@ public class RpcServerHandlerInterceptorAdapter implements HandlerInterceptor {
 
 
     /**
-     * 拦截器处理
+     * {@inheritDoc}
      *
-     * @param request  current HTTP request
-     * @param response current HTTP response
-     * @param handler  chosen handler to execute, for type and/or instance evaluation
-     * @return true
-     * @throws Exception 异常信息
+     * 拦截器处理
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
