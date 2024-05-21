@@ -43,3 +43,6 @@ String id  = snowflakeGenerator.nextId("前缀");
 2.可以通过配置id.gen.machineId 来设置机器的编码和id.gen.datacenterId数据中心的编码
 
 ```
+
+# 实现基于redis的自增id
+
