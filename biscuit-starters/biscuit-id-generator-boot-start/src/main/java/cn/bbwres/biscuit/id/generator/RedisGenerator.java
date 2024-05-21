@@ -4,6 +4,7 @@ import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.ObjectUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -36,21 +37,33 @@ public class RedisGenerator {
 
 
     /**
-     * 获取指定数量的id, id步进为1
-     *
-     * @param prefix
+     * @param key          key
+     * @param prefix       前缀
+     * @param noPrefixSize 不包含前缀的长度
+     * @param num          数量
      * @return
      */
-    public List<String> nextIds(String prefix, Long num) {
-        Long maxId = redisTemplate.opsForValue().increment(REDIS_ID_KEY + prefix, num);
+    public List<String> nextIds(String key, String prefix, Integer noPrefixSize, Long num) {
+        Long maxId = redisTemplate.opsForValue().increment(REDIS_ID_KEY + key, num);
         if (Objects.isNull(maxId)) {
             log.warn("从redis中获取id失败！");
             throw new SystemRuntimeException("id_fail");
         }
         long minId = maxId - num;
         List<String> ids = new ArrayList<>(16);
-        for (long i = minId; i <= maxId; i++) {
-            ids.add(prefix + i);
+        for (long i = minId + 1; i <= maxId; i++) {
+            String idNum = Long.toString(i);
+            int size = noPrefixSize == null ? 10 : noPrefixSize;
+            if (idNum.length() < size) {
+                idNum = new DecimalFormat("0".repeat(size)).format(num);
+            }
+
+            if (!ObjectUtils.isEmpty(prefix)) {
+                ids.add(prefix + idNum);
+            } else {
+                ids.add(idNum);
+            }
+
         }
         return ids;
     }
