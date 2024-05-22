@@ -16,22 +16,26 @@
  *
  */
 
-package cn.bbwres.biscuit.service;
+package cn.bbwres.biscuit.redis.lock.annotations;
+
+import java.lang.annotation.*;
 
 /**
- * id 服务
+ * 分布式锁的方法参数名称
  *
  * @author zhanglinfeng
  */
-public interface IdService {
+@Documented
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DistributedLockParam {
 
     /**
-     * 获取id数据
+     * 参数名称
      *
-     * @return 测试加锁获取id
+     * @return 参数名称
      */
-    String getId(String key);
+    String value();
 
 
-    String getId2(String key);
 }

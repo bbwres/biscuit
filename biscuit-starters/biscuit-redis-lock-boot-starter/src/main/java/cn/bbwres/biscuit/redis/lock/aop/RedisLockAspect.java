@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.redis.lock.aop;
 
 import cn.bbwres.biscuit.redis.lock.annotations.DistributedLock;
+import cn.bbwres.biscuit.redis.lock.annotations.DistributedLockParam;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -33,6 +34,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Objects;
 
 /**
  * redis 分布式锁切面
@@ -99,7 +101,13 @@ public class RedisLockAspect {
         Expression expression = parser.parseExpression(DISTRIBUTED_LOCK_KEY + "+" + spel);
         StandardEvaluationContext context = new StandardEvaluationContext();
         for (int i = 0; i < parameters.length; i++) {
-            context.setVariable(parameters[i].getName(), args[i]);
+            Parameter parameter = parameters[i];
+            String parameterName = parameter.getName();
+            DistributedLockParam distributedLockParam = parameter.getAnnotation(DistributedLockParam.class);
+            if (Objects.nonNull(distributedLockParam)) {
+                parameterName = distributedLockParam.value();
+            }
+            context.setVariable(parameterName, args[i]);
         }
         context.setVariable("targetClass", targetObject.getClass());
         context.setVariable("methodName", targetObject.getClass().getName() + "." + method.getName());

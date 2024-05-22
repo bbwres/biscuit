@@ -45,12 +45,25 @@ public class RedisGenerator {
     /**
      * 根据前缀获取id
      *
-     * @param prefix
+     * @param key    业务key
+     * @param prefix 前缀
      * @return
      */
-    public String nextId(String prefix) {
-        Long num = redisTemplate.opsForValue().increment(REDIS_ID_KEY + prefix);
+    public String nextId(String key, String prefix) {
+        String num = nextId(key);
         return prefix + num;
+    }
+
+    /**
+     * 根据前缀获取id
+     *
+     * @param key 业务key
+     * @return
+     */
+    public String nextId(String key) {
+        Long num = redisTemplate.opsForValue().increment(REDIS_ID_KEY + key);
+        assert num != null;
+        return num.toString();
     }
 
 

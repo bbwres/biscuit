@@ -23,7 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @SpringBootTest
 class IdServiceTest {
@@ -31,11 +33,39 @@ class IdServiceTest {
     @Autowired
     private RedisGenerator redisGenerator;
 
+    @Autowired
+    private IdService idService;
+
 
     @Test
     public void testIds() {
-        List<String> strings =  redisGenerator.nextIds("test-18-",null,18,10000L);
+        List<String> strings = redisGenerator.nextIds("test-18-", null, 18, 10000L);
         System.out.println(strings);
+    }
+
+    @Test
+    public void testGetId() {
+        String key = "test_app_id";
+        String id = idService.getId(key);
+        System.out.println(id);
+
+    }
+
+    @Test
+    public void testGetId2() {
+        String key = "test_app_id1";
+        List<CompletableFuture> futures = new ArrayList<>(16);
+        futures.add(CompletableFuture.runAsync(() -> {
+            String id = idService.getId2(key);
+            System.out.println(id);
+        }));
+
+
+        futures.add(CompletableFuture.runAsync(() -> {
+            String id = idService.getId2(key);
+            System.out.println(id);
+        }));
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[]{})).join();
     }
 
 }
