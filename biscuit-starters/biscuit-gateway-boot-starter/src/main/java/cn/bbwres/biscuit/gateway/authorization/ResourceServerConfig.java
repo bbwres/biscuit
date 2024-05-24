@@ -18,10 +18,10 @@
 
 package cn.bbwres.biscuit.gateway.authorization;
 
+import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.constants.GatewayConstant;
 import cn.bbwres.biscuit.utils.JsonUtil;
-import cn.bbwres.biscuit.dto.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -83,13 +83,13 @@ public class ResourceServerConfig {
     /**
      * 安全处理类
      *
-     * @param http a {@link org.springframework.security.config.web.server.ServerHttpSecurity} object
-     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param authorizationManager a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
-     * @param customServerAccessDeniedHandler a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
+     * @param http                                 a {@link org.springframework.security.config.web.server.ServerHttpSecurity} object
+     * @param gatewayProperties                    a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @param authorizationManager                 a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
+     * @param customServerAccessDeniedHandler      a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
      * @param customServerAuthenticationEntryPoint a {@link org.springframework.security.web.server.ServerAuthenticationEntryPoint} object
-     * @param jwtReactiveAuthenticationManager a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
-     * @param reactiveOpaqueTokenIntrospector a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @param jwtReactiveAuthenticationManager     a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
+     * @param reactiveOpaqueTokenIntrospector      a {@link org.springframework.beans.factory.ObjectProvider} object
      * @return a {@link org.springframework.security.web.server.SecurityWebFilterChain} object
      */
     @Bean
@@ -122,13 +122,22 @@ public class ResourceServerConfig {
         }
 
 
-        authorizeExchangeSpec.pathMatchers(HttpMethod.OPTIONS).permitAll()
+        ServerHttpSecurity security = authorizeExchangeSpec.pathMatchers(HttpMethod.OPTIONS).permitAll()
                 //鉴权管理器配置
                 .anyExchange().access(authorizationManager).and().exceptionHandling()
                 //处理未授权
                 .accessDeniedHandler(customServerAccessDeniedHandler)
                 //处理未认证
-                .authenticationEntryPoint(customServerAuthenticationEntryPoint).and().csrf().disable().cors().disable();
+                .authenticationEntryPoint(customServerAuthenticationEntryPoint)
+                .and();
+        //关闭csrf
+        if (gatewayProperties.getDisableCsrf()) {
+            security.csrf().disable();
+        }
+        //关闭cors
+        if (gatewayProperties.getDisableCors()) {
+            security.cors().disable();
+        }
         return http.build();
     }
 

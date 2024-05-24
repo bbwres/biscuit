@@ -107,4 +107,14 @@ public class GatewayProperties {
      */
     private Map<String, String> loginStateUris = new HashMap<>(8);
 
+    /**
+     * 关闭Csrf
+     */
+    private Boolean disableCsrf = false;
+
+    /**
+     * 关闭cors
+     */
+    private Boolean disableCors = false;
+
 }
