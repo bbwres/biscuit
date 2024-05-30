@@ -77,7 +77,7 @@ public class RpcAutoConfigure {
          * @param rpcServerHandlerInterceptorAdapter 拦截器
          * @return RpcWebAppConfigurer
          */
-        @Bean
+        @Bean("rpcWebAppConfigurer")
         public RpcWebAppConfigurer rpcWebAppConfigurer(RpcServerHandlerInterceptorAdapter rpcServerHandlerInterceptorAdapter) {
             return new RpcWebAppConfigurer(rpcServerHandlerInterceptorAdapter);
         }

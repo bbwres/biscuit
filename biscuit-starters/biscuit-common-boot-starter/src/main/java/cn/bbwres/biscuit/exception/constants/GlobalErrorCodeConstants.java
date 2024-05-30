@@ -46,6 +46,10 @@ public interface GlobalErrorCodeConstants {
     ErrorCode INTERNAL_SERVER_ERROR = new ErrorCode("100000500", "系统异常");
 
 
+    //############################## 登录相关错误 ##########################################
+
+    ErrorCode INVALID_CAPTCHA = new ErrorCode("101000100", "验证码错误");
+
     // ############################### 业务错误码 ##############################
 
     /**

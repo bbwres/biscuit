@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.id;
 
 import cn.bbwres.biscuit.id.generator.RedisGenerator;
 import cn.bbwres.biscuit.id.generator.SnowflakeGenerator;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  *
  * @author zhanglinfeng
  */
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(IdGeneratorProperties.class)
 public class IdGeneratorAutoConfigure {
 

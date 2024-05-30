@@ -18,7 +18,10 @@
 
 package cn.bbwres.biscuit.web;
 
+import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
+import cn.bbwres.biscuit.web.config.WebAppMvcConfigurer;
 import cn.bbwres.biscuit.web.handler.BiscuitHandlerExceptionResolver;
+import cn.bbwres.biscuit.web.handler.WebExceptionConvertErrorCode;
 import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -43,6 +46,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * web自动配置
@@ -105,8 +109,25 @@ public class WebAutoConfiguration {
      */
     @Bean
     public BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver(ObjectMapper objectMapper,
-                                                                           ObjectProvider<MessageSourceAccessor> messagesProvider) {
-        return new BiscuitHandlerExceptionResolver(objectMapper,messagesProvider);
+                                                                           ObjectProvider<MessageSourceAccessor> messagesProvider,
+                                                                           List<ExceptionConvertErrorCode> exceptionConvertErrorCodes) {
+        return new BiscuitHandlerExceptionResolver(objectMapper, messagesProvider, exceptionConvertErrorCodes);
+    }
+
+
+    @Bean("webAppMvcConfigurer")
+    public WebAppMvcConfigurer webAppMvcConfigurer(BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver){
+        return new WebAppMvcConfigurer(biscuitHandlerExceptionResolver);
+    }
+
+    /**
+     * web 常用的异常处理
+     *
+     * @return WebExceptionConvertErrorCode
+     */
+    @Bean("webExceptionConvertErrorCode")
+    public WebExceptionConvertErrorCode webExceptionConvertErrorCode() {
+        return new WebExceptionConvertErrorCode();
     }
 
     /**
