@@ -18,7 +18,6 @@
 
 package cn.bbwres.biscuit.web.handler;
 
-import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
@@ -76,11 +75,12 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
     protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
 
         LOG.warn("request:[{}],exception:[{}]", request.getRequestURI(), ex.getMessage());
-        String message = ObjectUtils.isEmpty(ex.getMessage()) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage() : ex.getMessage();
-        String errorCode = GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode();
+        String message = null;
+        String errorCode = null;
 
         if (ex instanceof SystemRuntimeException) {
             SystemRuntimeException systemRuntimeException = (SystemRuntimeException) ex;
+            message = ObjectUtils.isEmpty(ex.getMessage()) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage() : ex.getMessage();
             errorCode = systemRuntimeException.getErrorCode();
             return resultModelAndView(errorCode, message);
         }
@@ -91,6 +91,14 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
                 break;
             }
         }
+        for (ExceptionConvertErrorCode exceptionConvertErrorCode : exceptionConvertErrorCodes) {
+            message = exceptionConvertErrorCode.exceptionConvertErrorMessage(ex);
+            if (!ObjectUtils.isEmpty(message)) {
+                break;
+            }
+        }
+        message = ObjectUtils.isEmpty(message) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage() : message;
+        errorCode = ObjectUtils.isEmpty(errorCode) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode() : errorCode;
         return resultModelAndView(errorCode, message);
     }
 
@@ -108,8 +116,8 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
             message = messages.getMessage(message, null, message);
         }
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView(objectMapper));
-        modelAndView.addObject("resultCode",errorCode);
-        modelAndView.addObject("resultMsg",message);
+        modelAndView.addObject("resultCode", errorCode);
+        modelAndView.addObject("resultMsg", message);
         return modelAndView;
     }
 

@@ -21,7 +21,10 @@ package cn.bbwres.biscuit.web.handler;
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -54,6 +57,25 @@ public class WebExceptionConvertErrorCode implements ExceptionConvertErrorCode {
         }
         if (ex instanceof HttpRequestMethodNotSupportedException) {
             return GlobalErrorCodeConstants.METHOD_NOT_ALLOWED.getCode();
+        }
+        return null;
+    }
+
+    /**
+     * 异常描述信息转换
+     *
+     * @param ex
+     * @return
+     */
+    @Override
+    public String exceptionConvertErrorMessage(Exception ex) {
+        if (ex instanceof MethodArgumentNotValidException) {
+            StringBuilder sb = new StringBuilder();
+            BindingResult bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                sb.append('[').append(error).append("] ");
+            }
+            return sb.toString();
         }
         return null;
     }

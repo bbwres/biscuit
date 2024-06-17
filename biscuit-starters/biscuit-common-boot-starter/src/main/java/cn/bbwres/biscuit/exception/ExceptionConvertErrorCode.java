@@ -34,4 +34,12 @@ public interface ExceptionConvertErrorCode {
      */
     String exceptionConvertErrorCode(Exception ex);
 
+
+    /**
+     * 异常描述信息转换
+     * @param ex
+     * @return
+     */
+    String exceptionConvertErrorMessage(Exception ex);
+
 }
