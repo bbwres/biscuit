@@ -41,4 +41,15 @@ public class Oauth2ExceptionConvertErrorCode implements ExceptionConvertErrorCod
         }
         return null;
     }
+
+    /**
+     * 异常描述信息转换
+     *
+     * @param ex
+     * @return
+     */
+    @Override
+    public String exceptionConvertErrorMessage(Exception ex) {
+        return null;
+    }
 }
