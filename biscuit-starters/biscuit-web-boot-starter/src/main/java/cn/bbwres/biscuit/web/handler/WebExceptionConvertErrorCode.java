@@ -73,7 +73,7 @@ public class WebExceptionConvertErrorCode implements ExceptionConvertErrorCode {
             StringBuilder sb = new StringBuilder();
             BindingResult bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
             for (ObjectError error : bindingResult.getAllErrors()) {
-                sb.append('[').append(error).append("] ");
+                sb.append('[').append(error.getDefaultMessage()).append("] ");
             }
             return sb.toString();
         }
