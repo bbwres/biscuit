@@ -39,7 +39,9 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -115,9 +117,37 @@ public class WebAutoConfiguration {
     }
 
 
+    /**
+     * mvc 异常处理类
+     *
+     * @param biscuitHandlerExceptionResolver 异常处理类
+     * @return WebAppMvcConfigurer
+     */
     @Bean("webAppMvcConfigurer")
-    public WebAppMvcConfigurer webAppMvcConfigurer(BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver){
+    public WebAppMvcConfigurer webAppMvcConfigurer(BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver) {
         return new WebAppMvcConfigurer(biscuitHandlerExceptionResolver);
+    }
+
+
+    /**
+     * mvc 参数校验配置
+     *
+     * @return LocalValidatorFactoryBean
+     */
+    @Bean
+    public LocalValidatorFactoryBean mvcValidator(BiscuitWebProperties biscuitWebProperties) {
+        LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+        //参数校验快速失败
+        localValidatorFactoryBean.getValidationPropertyMap().put("hibernate.validator.fail_fast", biscuitWebProperties.getValidatorFailFast().toString());
+        if (biscuitWebProperties.getValidatorI18nEnable()) {
+            ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+            messageSource.setBasename(biscuitWebProperties.getValidatorI18nBaseName());
+            // 缓存时长
+            messageSource.setCacheSeconds(biscuitWebProperties.getValidatorI18nCacheSeconds());
+            //为Validator配置国际化
+            localValidatorFactoryBean.setValidationMessageSource(messageSource);
+        }
+        return localValidatorFactoryBean;
     }
 
     /**

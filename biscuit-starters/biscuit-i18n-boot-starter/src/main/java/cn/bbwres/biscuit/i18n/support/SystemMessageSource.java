@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.i18n.support;
 
+import cn.bbwres.biscuit.i18n.I18nProperties;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.nio.charset.StandardCharsets;
@@ -29,8 +30,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class SystemMessageSource extends ResourceBundleMessageSource {
 
-    public SystemMessageSource() {
+    public SystemMessageSource(I18nProperties i18nProperties) {
         setBasename("cn.bbwres.biscuit.i18n.system_messages");
+        // 缓存时长
+        setCacheSeconds(i18nProperties.getMessageSourceCacheSeconds());
         setDefaultEncoding(StandardCharsets.UTF_8.name());
     }
 }

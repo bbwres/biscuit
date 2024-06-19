@@ -40,6 +40,6 @@ public interface ExceptionConvertErrorCode {
      * @param ex
      * @return
      */
-    String exceptionConvertErrorMessage(Exception ex);
+    ErrorMessageInfo exceptionConvertErrorMessage(Exception ex);
 
 }

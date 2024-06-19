@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.security.oauth2.handler;
 
+import cn.bbwres.biscuit.exception.ErrorMessageInfo;
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -49,7 +50,7 @@ public class Oauth2ExceptionConvertErrorCode implements ExceptionConvertErrorCod
      * @return
      */
     @Override
-    public String exceptionConvertErrorMessage(Exception ex) {
+    public ErrorMessageInfo exceptionConvertErrorMessage(Exception ex) {
         return null;
     }
 }

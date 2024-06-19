@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.web.handler;
 
+import cn.bbwres.biscuit.exception.ErrorMessageInfo;
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import org.springframework.validation.BindException;
@@ -68,14 +69,17 @@ public class WebExceptionConvertErrorCode implements ExceptionConvertErrorCode {
      * @return
      */
     @Override
-    public String exceptionConvertErrorMessage(Exception ex) {
+    public ErrorMessageInfo exceptionConvertErrorMessage(Exception ex) {
         if (ex instanceof MethodArgumentNotValidException) {
             StringBuilder sb = new StringBuilder();
             BindingResult bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
             for (ObjectError error : bindingResult.getAllErrors()) {
                 sb.append('[').append(error.getDefaultMessage()).append("] ");
             }
-            return sb.toString();
+            ErrorMessageInfo errorMessageInfo = new ErrorMessageInfo();
+            errorMessageInfo.setMessage(sb.toString());
+            errorMessageInfo.setI18nHandler(false);
+            return errorMessageInfo;
         }
         return null;
     }

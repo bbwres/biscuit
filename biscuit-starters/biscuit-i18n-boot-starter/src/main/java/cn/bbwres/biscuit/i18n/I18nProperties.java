@@ -29,6 +29,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties("i18n")
 public class I18nProperties {
-    
+
+    /**
+     * 国际化配置缓存时间
+     */
+    private Integer messageSourceCacheSeconds = 360;
+
 
 }
