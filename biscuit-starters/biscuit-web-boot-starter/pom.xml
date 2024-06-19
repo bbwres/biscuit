@@ -44,6 +44,10 @@
             <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-common-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-i18n-boot-starter</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

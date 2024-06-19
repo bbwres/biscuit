@@ -42,6 +42,9 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -49,6 +52,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * web自动配置
@@ -168,6 +172,16 @@ public class WebAutoConfiguration {
     @Bean
     public WebFrameworkUtils webFrameworkUtils() {
         return new WebFrameworkUtils();
+    }
+
+    /**
+     * 默认解析器 其中locale表示默认语言
+     */
+    @Bean
+    public LocaleResolver localeResolver() {
+        AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.CHINA);
+        return localeResolver;
     }
 
 

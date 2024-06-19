@@ -46,4 +46,6 @@ public class WebAppMvcConfigurer implements WebMvcConfigurer {
     public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
         resolvers.add(0, biscuitHandlerExceptionResolver);
     }
+
+
 }

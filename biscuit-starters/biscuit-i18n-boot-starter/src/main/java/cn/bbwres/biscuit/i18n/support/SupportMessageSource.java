@@ -75,7 +75,7 @@ public class SupportMessageSource implements MessageSource {
     protected String getMessageBySource(String code, Object[] args, String defaultMessage, Locale locale) {
         String message = null;
         for (MessageSource messageSource : messageSources) {
-            message = messageSource.getMessage(code, args, locale);
+            message = messageSource.getMessage(code, args, null, locale);
             if (!ObjectUtils.isEmpty(message)) {
                 return message;
             }
