@@ -51,6 +51,9 @@ public class Oauth2ExceptionConvertErrorCode implements ExceptionConvertErrorCod
      */
     @Override
     public ErrorMessageInfo exceptionConvertErrorMessage(Exception ex) {
+        if (ex instanceof OAuth2Exception) {
+            return new ErrorMessageInfo(ex.getMessage(), false);
+        }
         return null;
     }
 }

@@ -18,6 +18,9 @@
 
 package cn.bbwres.biscuit.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -33,19 +36,23 @@ public class BaseEntity implements Serializable {
     /**
      * 创建时间
      */
+    @TableField(value = "create_time",fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     /**
      * 最后更新时间
      */
+    @TableField(value = "update_time",fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
     /**
      * 创建人
      */
+    @TableField(value = "creator",fill = FieldFill.INSERT)
     private String creator;
 
     /**
      * 更新人
      */
+    @TableField(value = "updater",fill = FieldFill.UPDATE)
     private String updater;
 
 

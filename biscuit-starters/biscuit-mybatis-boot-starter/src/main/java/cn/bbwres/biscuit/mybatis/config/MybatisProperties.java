@@ -47,6 +47,11 @@ public class MybatisProperties implements Serializable {
      */
     private MapperBasePackage mapper;
 
+    /**
+     * 是否启用字段填充 true 启用，false-不启用
+     */
+    private Boolean enableFieldFill = true;
+
 
     private Supplier<UserBaseInfo<?>> userInfoSupplier;
 
@@ -97,4 +102,11 @@ public class MybatisProperties implements Serializable {
 
     }
 
+    public Boolean getEnableFieldFill() {
+        return enableFieldFill;
+    }
+
+    public void setEnableFieldFill(Boolean enableFieldFill) {
+        this.enableFieldFill = enableFieldFill;
+    }
 }

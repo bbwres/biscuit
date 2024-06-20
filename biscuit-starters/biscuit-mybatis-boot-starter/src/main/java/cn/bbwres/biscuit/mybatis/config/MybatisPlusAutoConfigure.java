@@ -25,9 +25,13 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +47,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableConfigurationProperties({MybatisProperties.class, MybatisTenantProperties.class})
 @MapperScan(value = "${mybatis-plus.mapper.base-packages}", annotationClass = Mapper.class)
 public class MybatisPlusAutoConfigure {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(MybatisPlusAutoConfigure.class);
 
 
     /**
@@ -51,6 +56,7 @@ public class MybatisPlusAutoConfigure {
      * @return MybatisPlusPropertiesBeanPostProcessor
      */
     @Bean
+    @ConditionalOnMissingBean
     public MybatisPlusPropertiesBeanPostProcessor mybatisPlusPropertiesBeanPostProcessor() {
         return new MybatisPlusPropertiesBeanPostProcessor();
     }
@@ -62,9 +68,14 @@ public class MybatisPlusAutoConfigure {
      * @return MybatisPlusInterceptor
      */
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    @ConditionalOnMissingBean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(MybatisTenantProperties mybatisTenantProperties, ObjectProvider<TenantLineHandler> tenantLineHandler) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        if (mybatisTenantProperties.isEnabled()) {
+            log.info("mybatis-plus 启用租户插件");
+            interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(tenantLineHandler.getIfAvailable()));
+        }
         return interceptor;
     }
 
@@ -76,6 +87,8 @@ public class MybatisPlusAutoConfigure {
      * @return
      */
     @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "mybatis-plus", name = "enable-field-fill", havingValue = "true")
     public MetaObjectHandler metaObjectHandler(MybatisTenantProperties mybatisTenantProperties,
                                                MybatisProperties mybatisProperties) {
         return new DefaultDataFieldFillHandler(mybatisProperties, mybatisTenantProperties);

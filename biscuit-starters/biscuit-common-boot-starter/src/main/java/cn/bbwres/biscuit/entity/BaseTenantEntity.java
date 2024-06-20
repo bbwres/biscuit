@@ -18,6 +18,9 @@
 
 package cn.bbwres.biscuit.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+
 /**
  * 租户基础类
  *
@@ -30,6 +33,7 @@ public class BaseTenantEntity extends BaseEntity {
     /**
      * 租户id
      */
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private String tenantId;
 
 
