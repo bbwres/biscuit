@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
- * 待验证 todo
  * 获取请求的用户信息
  *
  * @author zhanglinfeng
@@ -71,6 +70,9 @@ public class WebFrameworkUtils {
     public static UserBaseInfo<?> getRequestUser() {
         String userInfoHeaderName = webFrameworkUtils.biscuitWebProperties.getUserInfoHeaderName();
         String userInfoStr = getHeader(userInfoHeaderName);
+        if (Objects.isNull(userInfoStr)) {
+            return null;
+        }
         return JsonUtil.toObjectByBase64Json(userInfoStr, UserBaseInfo.class);
     }
 

@@ -18,7 +18,6 @@
 
 package cn.bbwres.biscuit.mybatis.handler;
 
-import cn.bbwres.biscuit.entity.BaseEntity;
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.mybatis.config.MybatisProperties;
@@ -28,7 +27,6 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 默认数据填充处理器
@@ -47,7 +45,10 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
     }
 
     private static final String UPDATE_TIME = "updateTime";
+    private static final String CREATE_TIME = "createTime";
     private static final String UPDATER = "updater";
+    private static final String CREATOR = "creator";
+    private static final String TENANT_ID = "tenantId";
 
     /**
      * 插入元对象字段填充（用于插入时对公共字段的填充）
@@ -56,30 +57,15 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        if (Objects.nonNull(metaObject) && metaObject.getOriginalObject() instanceof BaseEntity) {
-            BaseEntity baseDO = (BaseEntity) metaObject.getOriginalObject();
 
-            LocalDateTime current = LocalDateTime.now();
-            // 创建时间为空，则以当前时间为插入时间
-            if (Objects.isNull(baseDO.getCreateTime())) {
-                baseDO.setCreateTime(current);
-            }
-            String userId = mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId);
-            // 当前登录用户不为空，创建人为空，则当前登录用户为创建人
-            if (Objects.nonNull(userId) && Objects.isNull(baseDO.getCreator())) {
-                baseDO.setCreator(userId);
-            }
-            //是否启用租户插件
-            if (mybatisTenantProperties.isEnabled() && baseDO instanceof BaseTenantEntity) {
-                //获取租户id
-                String tenantId = mybatisProperties.obtainUserInfo(userBaseInfo -> ObjectUtils.isEmpty(userBaseInfo.getTenantId()) ?
-                        mybatisTenantProperties.getDefaultTenant() : userBaseInfo.getTenantId());
-                if (Objects.isNull(((BaseTenantEntity) baseDO).getTenantId())) {
-                    ((BaseTenantEntity) baseDO).setTenantId(tenantId);
-                }
-
-            }
+        strictInsertFill(metaObject, CREATE_TIME, LocalDateTime.class, LocalDateTime.now());
+        strictInsertFill(metaObject, CREATOR, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
+        if (mybatisTenantProperties.isEnabled() && metaObject.getOriginalObject() instanceof BaseTenantEntity) {
+            //获取租户id
+            strictInsertFill(metaObject, TENANT_ID, () -> mybatisProperties.obtainUserInfo(userBaseInfo -> ObjectUtils.isEmpty(userBaseInfo.getTenantId()) ?
+                    mybatisTenantProperties.getDefaultTenant() : userBaseInfo.getTenantId()), String.class);
         }
+
     }
 
     /**
@@ -89,18 +75,8 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        Object modifyTime = getFieldValByName(UPDATE_TIME, metaObject);
-        if (Objects.isNull(modifyTime)) {
-            setFieldValByName(UPDATE_TIME, LocalDateTime.now(), metaObject);
-        }
-
-        // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
-        Object modifier = getFieldValByName(UPDATER, metaObject);
-
-        String userId = mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId);
-        if (Objects.nonNull(userId) && Objects.isNull(modifier)) {
-            setFieldValByName(UPDATER, userId, metaObject);
-        }
+        strictUpdateFill(metaObject, UPDATE_TIME, LocalDateTime.class, LocalDateTime.now());
+        strictUpdateFill(metaObject, UPDATER, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
     }
 
 

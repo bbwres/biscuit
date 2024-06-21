@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -103,6 +104,7 @@ public class BiscuitSecurityConfig {
          * @return
          */
         @Bean
+        @Order(900)
         public JwtAccessTokenConverter jwtAccessTokenConverter(BiscuitSecurityProperties biscuitSecurityProperties) {
             JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
             converter.setSigningKey(biscuitSecurityProperties.getJwtPrivateKey());
@@ -131,6 +133,7 @@ public class BiscuitSecurityConfig {
      * @return
      */
     @Bean
+    @Order(10)
     public TokenEnhancer tokenEnhancer() {
         return (accessToken, authentication) -> {
             Map<String, Object> additionalInfo = new HashMap<>(8);
