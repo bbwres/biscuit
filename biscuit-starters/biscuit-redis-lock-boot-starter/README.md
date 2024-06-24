@@ -8,8 +8,8 @@
 
 ```
 <dependency>
-     <groupId>com.lightning</groupId>
-     <artifactId>boot-redis-lock-start</artifactId>
+     <groupId>cn.bbwres</groupId>
+     <artifactId>biscuit-redis-lock-boot-starter</artifactId>
      <version>${project.version}</version>
  </dependency>
 ```

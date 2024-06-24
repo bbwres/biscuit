@@ -164,6 +164,11 @@
                 <artifactId>biscuit-security-captcha-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-redis-cache-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
 
             <dependency>

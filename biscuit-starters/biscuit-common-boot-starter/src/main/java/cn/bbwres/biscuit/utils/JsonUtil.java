@@ -81,6 +81,15 @@ public class JsonUtil {
         OBJECT_MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
+    /**
+     * 获取objectMapper
+     *
+     * @return ObjectMapper
+     */
+    public static ObjectMapper getObjectMapper() {
+        return OBJECT_MAPPER;
+    }
+
 
     /**
      * 对象转json

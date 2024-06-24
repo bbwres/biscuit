@@ -179,8 +179,9 @@ public class BiscuitSecurityConfig {
     /**
      * redis 授权码服务
      */
-    @ConditionalOnClass(RedisConnectionFactory.class)
     @Configuration
+    @ConditionalOnClass(RedisConnectionFactory.class)
+    @ConditionalOnProperty(prefix = "biscuit.security", name = "authorization-code-store-type", havingValue = "redis",matchIfMissing = true)
     public static class RedisAuthorizationCodeConfig {
         /**
          * 默认的AuthorizationCodeServices 为redis
@@ -198,8 +199,9 @@ public class BiscuitSecurityConfig {
     /**
      * redis 授权码服务
      */
-    @ConditionalOnClass(DataSource.class)
     @Configuration
+    @ConditionalOnClass(DataSource.class)
+    @ConditionalOnProperty(prefix = "biscuit.security", name = "authorization-code-store-type", havingValue = "jdbc")
     public static class JdbcAuthorizationCodeConfig {
         /**
          * 默认使用jdbc 存储授权码

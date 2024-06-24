@@ -43,6 +43,10 @@ public class BiscuitSecurityProperties {
      * 默认为jwt
      */
     private TokenStoreType tokenStoreType = TokenStoreType.JWT;
+    /**
+     * 授权码存储的类型
+     */
+    private TokenStoreType authorizationCodeStoreType = TokenStoreType.REDIS;
 
     /**
      * the log rounds to use, between 4 and 31
@@ -192,5 +196,13 @@ public class BiscuitSecurityProperties {
 
     public void setCaptchaCodeKeyName(String captchaCodeKeyName) {
         this.captchaCodeKeyName = captchaCodeKeyName;
+    }
+
+    public TokenStoreType getAuthorizationCodeStoreType() {
+        return authorizationCodeStoreType;
+    }
+
+    public void setAuthorizationCodeStoreType(TokenStoreType authorizationCodeStoreType) {
+        this.authorizationCodeStoreType = authorizationCodeStoreType;
     }
 }
