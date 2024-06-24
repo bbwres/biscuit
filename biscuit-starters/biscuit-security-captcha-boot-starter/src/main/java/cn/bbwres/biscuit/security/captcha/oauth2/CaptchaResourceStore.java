@@ -25,27 +25,39 @@ import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.DefaultResourceStore;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
+import cn.bbwres.biscuit.security.captcha.CaptchaProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH;
 
 /**
  * 验证码资源信息
+ *
  * @author zhanglinfeng
  */
 public class CaptchaResourceStore extends DefaultResourceStore {
+    private final static Logger log = LoggerFactory.getLogger(CaptchaResourceStore.class);
 
 
-    public CaptchaResourceStore() {
+    public CaptchaResourceStore(CaptchaProperties captchaProperties) {
 
         // 滑块验证码 模板 (系统内置)
-        ResourceMap template1 = new ResourceMap("default",4);
+        ResourceMap template1 = new ResourceMap("default", 4);
         template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
         template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
-        ResourceMap template2 = new ResourceMap("default",4);
+        ResourceMap template2 = new ResourceMap("default", 4);
         template2.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
         template2.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
         // 旋转验证码 模板 (系统内置)
-        ResourceMap template3 = new ResourceMap("default",4);
+        ResourceMap template3 = new ResourceMap("default", 4);
         template3.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/active.png")));
         template3.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/fixed.png")));
 
@@ -54,18 +66,40 @@ public class CaptchaResourceStore extends DefaultResourceStore {
         addTemplate(CaptchaTypeConstant.SLIDER, template2);
         addTemplate(CaptchaTypeConstant.ROTATE, template3);
 
-        // 2. 添加自定义背景图片
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/a.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/b.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/c.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/d.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/e.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/g.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/h.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/i.jpg","default"));
-        addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "bgimages/j.jpg","default"));
-        addResource(CaptchaTypeConstant.ROTATE, new Resource("classpath", "bgimages/48.jpg","default"));
-        addResource(CaptchaTypeConstant.CONCAT, new Resource("classpath", "bgimages/48.jpg","default"));
-        addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource("classpath", "bgimages/c.jpg","default"));
+        //获取指定目录下的所有文件
+        captchaProperties.getCaptchaResource().forEach((k, v) -> {
+            for (String resource : v) {
+                //获取目录下所有文件
+                List<String> fileNames = getResourceFileNames(resource);
+                if (!CollectionUtils.isEmpty(fileNames)) {
+                    for (String fileName : fileNames) {
+                        addResource(k, new Resource("classpath", resource + "/" + fileName, "default"));
+                    }
+                }
+            }
+        });
+
+    }
+
+    /**
+     * 获取文件名称
+     *
+     * @param path 路径
+     * @return  List
+     */
+    public List<String> getResourceFileNames(String path) {
+        List<String> fileNames = new ArrayList<>();
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        try {
+            org.springframework.core.io.Resource[] resources = resolver.getResources("classpath:" + path + "/*");
+            for (org.springframework.core.io.Resource resource : resources) {
+                fileNames.add(Objects.requireNonNull(resource.getFilename()));
+            }
+            return fileNames;
+        } catch (IOException e) {
+            log.warn("获取资源文件失败", e);
+            return fileNames;
+        }
+
     }
 }

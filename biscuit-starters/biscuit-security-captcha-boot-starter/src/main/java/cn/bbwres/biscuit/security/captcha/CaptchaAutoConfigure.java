@@ -47,7 +47,7 @@ public class CaptchaAutoConfigure {
     /**
      * 验证码端点
      *
-     * @param imageCaptchaApplication
+     * @param imageCaptchaApplication 验证码上下文
      * @return
      */
     @Bean
@@ -58,7 +58,7 @@ public class CaptchaAutoConfigure {
     /**
      * 检查验证码服务
      *
-     * @param secondaryVerificationApplication
+     * @param secondaryVerificationApplication 验证码上下文
      * @return
      */
     @Bean
@@ -78,7 +78,7 @@ public class CaptchaAutoConfigure {
      * @return
      */
     @Bean
-    public ResourceStore captchaResourceStore() {
-        return new CaptchaResourceStore();
+    public ResourceStore captchaResourceStore(CaptchaProperties captchaProperties) {
+        return new CaptchaResourceStore(captchaProperties);
     }
 }

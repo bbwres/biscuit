@@ -18,10 +18,31 @@
 
 package cn.bbwres.biscuit.security.captcha;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Map;
+
 /**
  * 验证码参数
  *
  * @author zhanglinfeng
  */
+@ConfigurationProperties("biscuit.captcha")
 public class CaptchaProperties {
+
+
+    /**
+     * 验证码资源目录
+     * key 为验证码的类型
+     */
+    private Map<String, String[]> captchaResource;
+
+
+    public Map<String, String[]> getCaptchaResource() {
+        return captchaResource;
+    }
+
+    public void setCaptchaResource(Map<String, String[]> captchaResource) {
+        this.captchaResource = captchaResource;
+    }
 }
