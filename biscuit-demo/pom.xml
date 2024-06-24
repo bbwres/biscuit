@@ -30,13 +30,13 @@
 
     <groupId>cn.bbwres</groupId>
     <artifactId>biscuit-demo</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <biscuit.version>0.0.4-SNAPSHOT</biscuit.version>
+        <biscuit.version>0.0.4</biscuit.version>
     </properties>
 
     <dependencies>
