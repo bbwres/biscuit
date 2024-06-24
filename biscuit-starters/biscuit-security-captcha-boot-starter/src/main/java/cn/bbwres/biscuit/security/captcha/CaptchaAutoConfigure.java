@@ -58,12 +58,12 @@ public class CaptchaAutoConfigure {
     /**
      * 检查验证码服务
      *
-     * @param secondaryVerificationApplication 验证码上下文
+     * @param imageCaptchaApplication 验证码上下文
      * @return
      */
     @Bean
-    public CheckCaptchaService checkCaptchaService(SecondaryVerificationApplication secondaryVerificationApplication) {
-        return new CheckCaptchaServiceImpl(secondaryVerificationApplication);
+    public CheckCaptchaService checkCaptchaService(ImageCaptchaApplication imageCaptchaApplication) {
+        return new CheckCaptchaServiceImpl(imageCaptchaApplication);
     }
 
     @Bean("captchaTokenGranter")

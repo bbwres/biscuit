@@ -18,15 +18,16 @@
 
 package cn.bbwres.biscuit.security.captcha.oauth2;
 
+import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
 import org.springframework.util.ObjectUtils;
 
 public class CheckCaptchaServiceImpl implements CheckCaptchaService {
 
-    private final SecondaryVerificationApplication secondaryVerificationApplication;
+    private final ImageCaptchaApplication imageCaptchaApplication;
 
-    public CheckCaptchaServiceImpl(SecondaryVerificationApplication secondaryVerificationApplication) {
-        this.secondaryVerificationApplication = secondaryVerificationApplication;
+    public CheckCaptchaServiceImpl(ImageCaptchaApplication imageCaptchaApplication) {
+        this.imageCaptchaApplication = imageCaptchaApplication;
     }
 
     /**
@@ -39,9 +40,9 @@ public class CheckCaptchaServiceImpl implements CheckCaptchaService {
      */
     @Override
     public boolean check(String grantType, String code, String codeKey) {
-        if (ObjectUtils.isEmpty(code)) {
+        if (ObjectUtils.isEmpty(code) || !(imageCaptchaApplication instanceof SecondaryVerificationApplication)) {
             return false;
         }
-        return secondaryVerificationApplication.secondaryVerification(code);
+        return ((SecondaryVerificationApplication) imageCaptchaApplication).secondaryVerification(code);
     }
 }
