@@ -30,6 +30,7 @@ import cn.bbwres.biscuit.security.captcha.oauth2.CheckCaptchaServiceImpl;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @AutoConfigureBefore(ImageCaptchaAutoConfiguration.class)
+@EnableConfigurationProperties(CaptchaProperties.class)
 public class CaptchaAutoConfigure {
 
 

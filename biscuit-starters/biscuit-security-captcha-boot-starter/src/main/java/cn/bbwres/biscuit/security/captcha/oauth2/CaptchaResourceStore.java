@@ -25,7 +25,6 @@ import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.DefaultResourceStore;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
-import org.springframework.util.ResourceUtils;
 
 import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH;
 
