@@ -29,3 +29,7 @@ feign.httpclient.time-to-live=900
 2. gateway 调用 ok
 3. RestTemplate调用
 4. WebClient 调用
+
+
+## 当前待实现
+1. feign 增加分组功能，参考dubbo 来实现根据传入的分组信息，动态的调用服务。
