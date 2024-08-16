@@ -18,27 +18,31 @@
 
 package cn.bbwres.biscuit.operation.log.service.impl;
 
+import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
 import cn.bbwres.biscuit.operation.log.constants.OperationLogConstant;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
+import cn.bbwres.biscuit.operation.log.properties.OperationLogProperties;
 import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
-import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
- * 补充操作日志的基本信息
+ * 补充操作日志的用户信息
  *
  * @author zhanglinfeng
  */
-@Order(1)
+@Order(200)
+@Slf4j
 @RequiredArgsConstructor
-public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogService {
+public class EnhanceOperationLogUserServiceImpl implements EnhanceOperationLogService {
 
-    private final Environment environment;
+    private final OperationLogProperties operationLogProperties;
 
     /**
      * 扩展补充操作日志参数
@@ -51,23 +55,36 @@ public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogSe
      */
     @Override
     public void enhance(OperationLogEntity loggerMsg,
-                        OperationLog operateLog, ProceedingJoinPoint joinPoint,Object response,
+                        OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
                         Throwable exception) {
-
-        //补充系统名称
-        if (!ObjectUtils.isEmpty(operateLog.system())) {
-            loggerMsg.setSystem(operateLog.system());
-        } else {
-            loggerMsg.setSystem(environment.getProperty(OperationLogConstant.APP_NAME_KEY));
+        String el = operationLogProperties.getGetUserEl();
+        if (operateLog.isAccessRequest()) {
+            el = operationLogProperties.getGetAccessEl();
+        }
+        UserBaseInfo<?> userBaseInfo = getUser(el);
+        if (Objects.nonNull(userBaseInfo)) {
+            loggerMsg.setOperationUser(userBaseInfo.getUserId());
+            loggerMsg.setOperationUserName(userBaseInfo.getUsername());
         }
 
-        loggerMsg.setAccessRequest(operateLog.isAccessRequest())
-                .setLoggerLevel(LogLevel.INFO.name());
-        //补充系统模块
-        //补充操作类型
-        loggerMsg.setBusiness(operateLog.business())
-                .setModule(operateLog.module())
-                .setOperation(operateLog.operation());
+    }
 
+
+    /**
+     * 获取用户信息
+     *
+     * @param el
+     * @return
+     */
+    protected UserBaseInfo<?> getUser(String el) {
+        try {
+            String[] classInfos = el.split(OperationLogConstant.EL_3);
+            Class<?> clazz = Class.forName(classInfos[0]);
+            Method method = clazz.getMethod(classInfos[1]);
+            return (UserBaseInfo<?>) method.invoke(null);
+        } catch (Exception e) {
+            log.warn("记录业务日志时，获取用户信息失败!:[{}]", e.getMessage());
+        }
+        return null;
     }
 }

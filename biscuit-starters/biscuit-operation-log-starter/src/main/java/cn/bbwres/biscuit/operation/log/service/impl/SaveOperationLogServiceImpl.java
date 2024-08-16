@@ -19,26 +19,25 @@
 package cn.bbwres.biscuit.operation.log.service.impl;
 
 import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
-import cn.bbwres.biscuit.operation.log.constants.OperationLogConstant;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
 import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
+import cn.bbwres.biscuit.operation.log.service.OperationLogSaveService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
-import org.springframework.util.ObjectUtils;
 
 /**
- * 补充操作日志的基本信息
+ * 保存操作日志
  *
  * @author zhanglinfeng
  */
-@Order(1)
+@Order(999999)
+@Slf4j
 @RequiredArgsConstructor
-public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogService {
+public class SaveOperationLogServiceImpl implements EnhanceOperationLogService {
 
-    private final Environment environment;
+    private final OperationLogSaveService operationLogSaveService;
 
     /**
      * 扩展补充操作日志参数
@@ -50,24 +49,8 @@ public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogSe
      * @param exception  异常信息
      */
     @Override
-    public void enhance(OperationLogEntity loggerMsg,
-                        OperationLog operateLog, ProceedingJoinPoint joinPoint,Object response,
+    public void enhance(OperationLogEntity loggerMsg, OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
                         Throwable exception) {
-
-        //补充系统名称
-        if (!ObjectUtils.isEmpty(operateLog.system())) {
-            loggerMsg.setSystem(operateLog.system());
-        } else {
-            loggerMsg.setSystem(environment.getProperty(OperationLogConstant.APP_NAME_KEY));
-        }
-
-        loggerMsg.setAccessRequest(operateLog.isAccessRequest())
-                .setLoggerLevel(LogLevel.INFO.name());
-        //补充系统模块
-        //补充操作类型
-        loggerMsg.setBusiness(operateLog.business())
-                .setModule(operateLog.module())
-                .setOperation(operateLog.operation());
-
+        operationLogSaveService.saveLoggerMsg(loggerMsg, operateLog);
     }
 }

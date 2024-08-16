@@ -1,6 +1,6 @@
 package cn.bbwres.biscuit.operation.log.aspect;
 
-import cn.bbwres.biscuit.operation.log.constants.LoggerConstant;
+import cn.bbwres.biscuit.operation.log.constants.OperationLogConstant;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * @author zhanglinfeng
  */
 public class OperationLogUtils {
-    private static final Logger OPERATION_LOG = LoggerFactory.getLogger(LoggerConstant.OPERATION_LOG_NAME);
+    private static final Logger OPERATION_LOG = LoggerFactory.getLogger(OperationLogConstant.OPERATION_LOG_NAME);
 
 
     /**

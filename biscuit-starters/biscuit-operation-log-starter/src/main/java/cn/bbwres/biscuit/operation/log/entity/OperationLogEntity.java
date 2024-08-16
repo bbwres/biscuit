@@ -20,7 +20,7 @@ public class OperationLogEntity implements Serializable {
     private static final long serialVersionUID = -8484099318738763805L;
 
     /**
-     * 链路id
+     * 链路id 待生成
      */
     private String traceId;
 
@@ -59,7 +59,6 @@ public class OperationLogEntity implements Serializable {
     private String businessId;
 
 
-
     /**
      * 操作人/接入方
      */
@@ -79,7 +78,6 @@ public class OperationLogEntity implements Serializable {
      * 响应参数
      */
     private String responseMsg;
-
 
 
     /**
@@ -114,13 +112,14 @@ public class OperationLogEntity implements Serializable {
      */
     private Map<String, Object> exts;
 
+
     /**
-     * 请求方法名
+     * 请求方法 get post
      */
     private String requestMethod;
 
     /**
-     * 请求地址
+     * 请求路径地址
      */
     private String requestUrl;
 
@@ -134,10 +133,6 @@ public class OperationLogEntity implements Serializable {
      */
     private String userAgent;
 
-    /**
-     * Java 方法名
-     */
-    private String javaMethod;
 
     @Override
     public String toString() {

@@ -19,7 +19,7 @@
 package cn.bbwres.biscuit.operation.log.service.impl;
 
 import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
-import cn.bbwres.biscuit.operation.log.constants.LoggerConstant;
+import cn.bbwres.biscuit.operation.log.constants.OperationLogConstant;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
 import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -40,9 +41,10 @@ import java.util.Objects;
  *
  * @author zhanglinfeng
  */
+@Order(300)
 @RequiredArgsConstructor
 public class EnhanceOperationLogSpringElServiceImpl implements EnhanceOperationLogService {
-    
+
     private final ExpressionParser parser;
 
     /**
@@ -51,9 +53,12 @@ public class EnhanceOperationLogSpringElServiceImpl implements EnhanceOperationL
      * @param loggerMsg  操作日志对象
      * @param operateLog 注解
      * @param joinPoint  切入点
+     * @param response   执行响应
+     * @param exception  异常信息
      */
     @Override
-    public void enhance(OperationLogEntity loggerMsg, OperationLog operateLog, ProceedingJoinPoint joinPoint) {
+    public void enhance(OperationLogEntity loggerMsg, OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
+                        Throwable exception) {
         // 获取方法
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -63,7 +68,7 @@ public class EnhanceOperationLogSpringElServiceImpl implements EnhanceOperationL
             //获取业务id
             loggerMsg.setBusinessId(springElParser(parameters, joinPoint.getArgs(), operateLog.businessId()));
         }
-        if (StringUtils.isNotBlank(operateLog.content())) {
+        if (StringUtils.isNotBlank(operateLog.content()) && StringUtils.isBlank(loggerMsg.getContent())) {
             //获取业务内容
             loggerMsg.setContent(springElParser(parameters, joinPoint.getArgs(), operateLog.content()));
         }
@@ -77,8 +82,8 @@ public class EnhanceOperationLogSpringElServiceImpl implements EnhanceOperationL
      * @param springEl
      * @return
      */
-    public String springElParser(Parameter[] parameters, Object[] args, String springEl) {
-        if (!(springEl.contains(LoggerConstant.EL_1) || springEl.contains(LoggerConstant.EL_2))) {
+    protected String springElParser(Parameter[] parameters, Object[] args, String springEl) {
+        if (!(springEl.contains(OperationLogConstant.EL_1) || springEl.contains(OperationLogConstant.EL_2))) {
             return springEl;
         }
         //SpringEL解析器

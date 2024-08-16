@@ -19,26 +19,38 @@
 package cn.bbwres.biscuit.operation.log.service.impl;
 
 import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
-import cn.bbwres.biscuit.operation.log.constants.OperationLogConstant;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
 import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
-import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
- * 补充操作日志的基本信息
+ * 补充操作日志的web相关参数
  *
  * @author zhanglinfeng
  */
-@Order(1)
+@Order(500)
 @RequiredArgsConstructor
-public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogService {
+public class EnhanceOperationLogWebServiceImpl implements EnhanceOperationLogService {
 
-    private final Environment environment;
+
+    protected HttpServletRequest getRequest() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        return !(requestAttributes instanceof ServletRequestAttributes) ? null : ((ServletRequestAttributes) requestAttributes).getRequest();
+    }
+
+    protected String getUserAgent(HttpServletRequest request) {
+        String ua = request.getHeader("User-Agent");
+        return ua != null ? ua : "";
+    }
+
 
     /**
      * 扩展补充操作日志参数
@@ -51,23 +63,17 @@ public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogSe
      */
     @Override
     public void enhance(OperationLogEntity loggerMsg,
-                        OperationLog operateLog, ProceedingJoinPoint joinPoint,Object response,
+                        OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
                         Throwable exception) {
-
-        //补充系统名称
-        if (!ObjectUtils.isEmpty(operateLog.system())) {
-            loggerMsg.setSystem(operateLog.system());
-        } else {
-            loggerMsg.setSystem(environment.getProperty(OperationLogConstant.APP_NAME_KEY));
+        HttpServletRequest request = getRequest();
+        if (Objects.isNull(request)) {
+            return;
         }
 
-        loggerMsg.setAccessRequest(operateLog.isAccessRequest())
-                .setLoggerLevel(LogLevel.INFO.name());
-        //补充系统模块
-        //补充操作类型
-        loggerMsg.setBusiness(operateLog.business())
-                .setModule(operateLog.module())
-                .setOperation(operateLog.operation());
+        loggerMsg.setRequestMethod(request.getMethod());
+        loggerMsg.setRequestUrl(request.getRequestURI());
+        loggerMsg.setUserIp("");
+        loggerMsg.setUserAgent(getUserAgent(request));
 
     }
 }

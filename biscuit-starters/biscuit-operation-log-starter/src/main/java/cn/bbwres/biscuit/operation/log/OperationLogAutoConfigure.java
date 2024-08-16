@@ -16,31 +16,22 @@
  *
  */
 
-package cn.bbwres.biscuit.operation.log.constants;
+package cn.bbwres.biscuit.operation.log;
+
+import cn.bbwres.biscuit.operation.log.properties.OperationLogProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
- * 日志相关常量
+ * 操作日志自动注入类
  *
  * @author zhanglinfeng
  */
-public class LoggerConstant {
-    /**
-     * 操作日志在log名称
-     */
-    public static final String OPERATION_LOG_NAME = "OPERATION_LOG";
+@Slf4j
+@AutoConfiguration
+@EnableConfigurationProperties({OperationLogProperties.class})
+public class OperationLogAutoConfigure {
 
-
-    /**
-     * el 表达式关键字
-     */
-    public static final String EL_1 = "$";
-
-    /**
-     * el 表达式关键字
-     */
-    public static final String EL_2 = "#";
-
-
-    public static final String APP_NAME_KEY = "spring.application.name";
 
 }

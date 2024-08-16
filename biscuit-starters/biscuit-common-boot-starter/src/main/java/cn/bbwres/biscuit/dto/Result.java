@@ -118,6 +118,15 @@ public class Result<T> implements Serializable {
         return new Result<>(errorCode.getCode(), ObjectUtils.isEmpty(errorMsg) ? errorCode.getMessage() : errorMsg);
     }
 
+    /**
+     * 检查是否为成功
+     *
+     * @return true 成功
+     */
+    public boolean checkSuccess() {
+        return GlobalErrorCodeConstants.SUCCESS.getCode().equals(this.resultCode);
+    }
+
 
     /**
      * 处理失败

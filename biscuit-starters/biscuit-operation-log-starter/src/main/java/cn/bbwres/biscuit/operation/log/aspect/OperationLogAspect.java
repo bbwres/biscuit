@@ -1,29 +1,25 @@
 package cn.bbwres.biscuit.operation.log.aspect;
 
 import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
-import cn.bbwres.biscuit.operation.log.constants.LoggerConstant;
+import cn.bbwres.biscuit.operation.log.constants.OperationLogConstant;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
 import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
-import cn.bbwres.biscuit.operation.log.service.OperationLogService;
-import cn.bbwres.biscuit.utils.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
-import java.io.OutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 业务日志切面
@@ -36,7 +32,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class OperationLogAspect {
 
-    private static final Logger BUSINESS_LOG = LoggerFactory.getLogger(LoggerConstant.OPERATION_LOG_NAME);
+    private static final Logger OPERATION_LOG = LoggerFactory.getLogger(OperationLogConstant.OPERATION_LOG_NAME);
 
     /**
      * 用于记录操作内容的上下文
@@ -48,8 +44,6 @@ public class OperationLogAspect {
      */
     private static final ThreadLocal<Map<String, Object>> EXT = new ThreadLocal<>();
 
-
-    private final OperationLogService loggerMsgService;
 
     private final List<EnhanceOperationLogService> enhanceOperationLogServices;
 
@@ -85,6 +79,8 @@ public class OperationLogAspect {
         // 记录开始时间
         LocalDateTime startTime = LocalDateTime.now();
         try {
+            //清空线程中存放的数据,保证不受切面外保存数据的影响
+            clearThreadLocal();
             // 执行原有方法
             Object result = joinPoint.proceed();
             // 记录正常执行时的操作日志
@@ -112,45 +108,22 @@ public class OperationLogAspect {
         try {
             // 填充日志参数
             OperationLogEntity loggerMsg = new OperationLogEntity()
-                    .setCreateTime(startTime.format(DATE_TIME_FORMATTER))
-                    .setAccessRequest(operateLog.isAccessRequest())
-                    .setLoggerLevel(LogLevel.INFO.name());
+                    .setCreateTime(startTime.format(DATE_TIME_FORMATTER));
             //设置执行耗时
             loggerMsg.setDuration((Duration.between(startTime, LocalDateTime.now()).toMillis()));
 
-            //获取请求参数
-            if (operateLog.logArgs() && ArrayUtils.isNotEmpty(joinPoint.getArgs())) {
-                List<Object> objectList = new ArrayList<>(16);
-                for (int i = 0; i < joinPoint.getArgs().length; i++) {
-                    if (!ArrayUtils.contains(operateLog.ignoreRequestParamsIdx(), i)) {
-                        objectList.add(joinPoint.getArgs()[i]);
-                    }
-                }
-                //获取忽略的数据
-                //请求参数
-                loggerMsg.setRequestMsg(JsonUtil.toJson(objectList));
-            }
-
-            //异常信息
-            if (Objects.nonNull(exception)) {
-                loggerMsg.setExceptionMsg(StringUtils.left(exception.getMessage(), 255));
-                loggerMsg.setLoggerLevel(LogLevel.ERROR.name());
-            }
-            if (Objects.nonNull(response) && !(response instanceof OutputStream) && !operateLog.ignoreResponseParams()) {
-                loggerMsg.setResponseMsg(JsonUtil.toJson(response));
-            }
+            //设置content 和扩展参数
+            loggerMsg.setContent(CONTENT.get());
+            loggerMsg.setExts(EXT.get());
 
             if (!CollectionUtils.isEmpty(enhanceOperationLogServices)) {
                 for (EnhanceOperationLogService enhanceOperationLogService : enhanceOperationLogServices) {
-                    enhanceOperationLogService.enhance(loggerMsg, operateLog, joinPoint);
+                    enhanceOperationLogService.enhance(loggerMsg, operateLog, joinPoint, response, exception);
                 }
             }
-            //设置其他参数
-            BUSINESS_LOG.info("{}", loggerMsg);
-            //处理日志
-            loggerMsgService.saveLoggerMsg(loggerMsg, operateLog);
+            OPERATION_LOG.info("{}", loggerMsg);
         } catch (Exception e) {
-            log.warn("日志处理异常![{}]", e.getMessage());
+            log.warn("日志处理异常![{}]", e.getMessage(), e);
         }
     }
 

@@ -8,10 +8,10 @@ import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
  *
  * @author zhanglinfeng
  */
-public interface OperationLogService {
+public interface OperationLogSaveService {
 
     /**
-     * 保存日志信息
+     * 保存操作日志信息
      *
      * @param loggerMsg
      * @param businessLog

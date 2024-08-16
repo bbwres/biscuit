@@ -16,29 +16,35 @@
  *
  */
 
-package cn.bbwres.biscuit.operation.log.service;
-
-import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
-import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
-import org.aspectj.lang.ProceedingJoinPoint;
+package cn.bbwres.biscuit.operation.log.constants;
 
 /**
- * 增强操作日志属性
+ * 日志相关常量
  *
  * @author zhanglinfeng
  */
-public interface EnhanceOperationLogService {
+public class OperationLogConstant {
+    /**
+     * 操作日志在log名称
+     */
+    public static final String OPERATION_LOG_NAME = "OPERATION_LOG";
 
 
     /**
-     * 扩展补充操作日志参数
-     *
-     * @param loggerMsg  操作日志对象
-     * @param operateLog 注解
-     * @param joinPoint  切入点
-     * @param response   执行响应
-     * @param exception  异常信息
+     * el 表达式关键字
      */
-    void enhance(OperationLogEntity loggerMsg, OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
-                 Throwable exception);
+    public static final String EL_1 = "$";
+
+    /**
+     * el 表达式关键字
+     */
+    public static final String EL_2 = "#";
+    /**
+     * el 表达式关键字
+     */
+    public static final String EL_3 = "@";
+
+
+    public static final String APP_NAME_KEY = "spring.application.name";
+
 }

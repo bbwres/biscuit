@@ -19,26 +19,30 @@
 package cn.bbwres.biscuit.operation.log.service.impl;
 
 import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
-import cn.bbwres.biscuit.operation.log.constants.OperationLogConstant;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
 import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
+import cn.bbwres.biscuit.utils.JsonUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
-import org.springframework.util.ObjectUtils;
+
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * 补充操作日志的基本信息
+ * 补充操作日志的请求和响应参数信息
  *
  * @author zhanglinfeng
  */
-@Order(1)
+@Order(100)
 @RequiredArgsConstructor
-public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogService {
+public class EnhanceOperationLogParamsServiceImpl implements EnhanceOperationLogService {
 
-    private final Environment environment;
 
     /**
      * 扩展补充操作日志参数
@@ -51,23 +55,31 @@ public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogSe
      */
     @Override
     public void enhance(OperationLogEntity loggerMsg,
-                        OperationLog operateLog, ProceedingJoinPoint joinPoint,Object response,
+                        OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
                         Throwable exception) {
 
-        //补充系统名称
-        if (!ObjectUtils.isEmpty(operateLog.system())) {
-            loggerMsg.setSystem(operateLog.system());
-        } else {
-            loggerMsg.setSystem(environment.getProperty(OperationLogConstant.APP_NAME_KEY));
+        //获取请求参数
+        if (operateLog.logArgs() && ArrayUtils.isNotEmpty(joinPoint.getArgs())) {
+            List<Object> objectList = new ArrayList<>(16);
+            for (int i = 0; i < joinPoint.getArgs().length; i++) {
+                if (!ArrayUtils.contains(operateLog.ignoreRequestParamsIdx(), i)) {
+                    objectList.add(joinPoint.getArgs()[i]);
+                }
+            }
+            //获取忽略的数据
+            //请求参数
+            loggerMsg.setRequestMsg(JsonUtil.toJson(objectList));
         }
 
-        loggerMsg.setAccessRequest(operateLog.isAccessRequest())
-                .setLoggerLevel(LogLevel.INFO.name());
-        //补充系统模块
-        //补充操作类型
-        loggerMsg.setBusiness(operateLog.business())
-                .setModule(operateLog.module())
-                .setOperation(operateLog.operation());
+        //异常信息
+        if (Objects.nonNull(exception)) {
+            loggerMsg.setExceptionMsg(StringUtils.left(exception.getMessage(), 255));
+            loggerMsg.setLoggerLevel(LogLevel.ERROR.name());
+        }
+
+        if (Objects.nonNull(response) && !(response instanceof OutputStream) && !operateLog.ignoreResponseParams()) {
+            loggerMsg.setResponseMsg(JsonUtil.toJson(response));
+        }
 
     }
 }
