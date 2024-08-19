@@ -13,8 +13,8 @@ public interface OperationLogSaveService {
     /**
      * 保存操作日志信息
      *
-     * @param loggerMsg
-     * @param businessLog
+     * @param loggerMsg   操作日志内容
+     * @param businessLog 注解信息
      */
     void saveLoggerMsg(OperationLogEntity loggerMsg, OperationLog businessLog);
 

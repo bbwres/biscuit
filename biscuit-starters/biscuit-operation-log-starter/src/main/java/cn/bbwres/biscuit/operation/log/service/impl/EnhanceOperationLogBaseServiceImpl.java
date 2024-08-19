@@ -25,7 +25,6 @@ import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 
@@ -34,7 +33,6 @@ import org.springframework.util.ObjectUtils;
  *
  * @author zhanglinfeng
  */
-@Order(1)
 @RequiredArgsConstructor
 public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogService {
 
@@ -51,7 +49,7 @@ public class EnhanceOperationLogBaseServiceImpl implements EnhanceOperationLogSe
      */
     @Override
     public void enhance(OperationLogEntity loggerMsg,
-                        OperationLog operateLog, ProceedingJoinPoint joinPoint,Object response,
+                        OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
                         Throwable exception) {
 
         //补充系统名称

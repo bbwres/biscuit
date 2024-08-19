@@ -27,7 +27,6 @@ import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.core.annotation.Order;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -37,7 +36,6 @@ import java.util.Objects;
  *
  * @author zhanglinfeng
  */
-@Order(200)
 @Slf4j
 @RequiredArgsConstructor
 public class EnhanceOperationLogUserServiceImpl implements EnhanceOperationLogService {

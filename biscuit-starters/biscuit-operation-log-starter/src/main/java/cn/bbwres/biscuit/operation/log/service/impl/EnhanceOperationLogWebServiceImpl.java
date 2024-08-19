@@ -21,9 +21,9 @@ package cn.bbwres.biscuit.operation.log.service.impl;
 import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
 import cn.bbwres.biscuit.operation.log.entity.OperationLogEntity;
 import cn.bbwres.biscuit.operation.log.service.EnhanceOperationLogService;
+import cn.bbwres.biscuit.utils.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -36,9 +36,10 @@ import java.util.Objects;
  *
  * @author zhanglinfeng
  */
-@Order(500)
 @RequiredArgsConstructor
 public class EnhanceOperationLogWebServiceImpl implements EnhanceOperationLogService {
+
+    private static final String[] CLIENT_IP_HTTP_HEADER_NAME = new String[]{"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"};
 
     /**
      * 用户agent
@@ -61,6 +62,33 @@ public class EnhanceOperationLogWebServiceImpl implements EnhanceOperationLogSer
         return ua != null ? ua : "";
     }
 
+    /**
+     * 获取客户端ip
+     *
+     * @return ip
+     */
+    public static String getClientIp(HttpServletRequest request) {
+        return getClientIpByHeader(request, CLIENT_IP_HTTP_HEADER_NAME);
+    }
+
+    /**
+     * 获取客户端ip
+     *
+     * @param headerNames 请求头参数名称
+     * @return ip
+     */
+    public static String getClientIpByHeader(HttpServletRequest request, String... headerNames) {
+        String ip;
+        for (String headerName : headerNames) {
+            ip = request.getHeader(headerName);
+            if (!NetworkUtil.isUnknown(ip)) {
+                return NetworkUtil.getMultistageReverseProxyIp(ip);
+            }
+        }
+        ip = request.getRemoteAddr();
+        return NetworkUtil.getMultistageReverseProxyIp(ip);
+    }
+
 
     /**
      * 扩展补充操作日志参数
@@ -72,9 +100,8 @@ public class EnhanceOperationLogWebServiceImpl implements EnhanceOperationLogSer
      * @param exception  异常信息
      */
     @Override
-    public void enhance(OperationLogEntity loggerMsg,
-                        OperationLog operateLog, ProceedingJoinPoint joinPoint, Object response,
-                        Throwable exception) {
+    public void enhance(OperationLogEntity loggerMsg, OperationLog operateLog, ProceedingJoinPoint joinPoint,
+                        Object response, Throwable exception) {
         HttpServletRequest request = getRequest();
         if (Objects.isNull(request)) {
             return;
@@ -82,7 +109,7 @@ public class EnhanceOperationLogWebServiceImpl implements EnhanceOperationLogSer
 
         loggerMsg.setRequestMethod(request.getMethod());
         loggerMsg.setRequestUrl(request.getRequestURI());
-        loggerMsg.setUserIp("");
+        loggerMsg.setUserIp(getClientIp(request));
         loggerMsg.setUserAgent(getUserAgent(request));
 
     }

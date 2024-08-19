@@ -27,7 +27,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.core.annotation.Order;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import java.util.Objects;
  *
  * @author zhanglinfeng
  */
-@Order(100)
 @RequiredArgsConstructor
 public class EnhanceOperationLogParamsServiceImpl implements EnhanceOperationLogService {
 

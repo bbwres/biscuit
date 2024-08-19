@@ -48,7 +48,7 @@ public class OperationLogAspect {
     private final List<EnhanceOperationLogService> enhanceOperationLogServices;
 
 
-    protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
 
     public static void addExt(String key, Object value) {

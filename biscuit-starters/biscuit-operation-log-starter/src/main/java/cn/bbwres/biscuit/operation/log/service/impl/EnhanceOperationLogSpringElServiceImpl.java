@@ -27,7 +27,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.core.annotation.Order;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -41,7 +40,6 @@ import java.util.Objects;
  *
  * @author zhanglinfeng
  */
-@Order(300)
 @RequiredArgsConstructor
 public class EnhanceOperationLogSpringElServiceImpl implements EnhanceOperationLogService {
 

@@ -25,14 +25,12 @@ import cn.bbwres.biscuit.operation.log.service.OperationLogSaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.core.annotation.Order;
 
 /**
  * 保存操作日志
  *
  * @author zhanglinfeng
  */
-@Order(999999)
 @Slf4j
 @RequiredArgsConstructor
 public class SaveOperationLogServiceImpl implements EnhanceOperationLogService {

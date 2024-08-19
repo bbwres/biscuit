@@ -21,12 +21,12 @@ public @interface OperationLog {
     /**
      * 业务模块
      */
-    String module() default "";
+    String module();
 
     /**
      * 业务类型
      */
-    String business() default "";
+    String business();
 
 
     /**
@@ -39,7 +39,7 @@ public @interface OperationLog {
      * 操作类型
      * 增删改查
      */
-    String operation() default "";
+    String operation();
 
 
     /**
