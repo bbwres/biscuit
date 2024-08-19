@@ -41,13 +41,14 @@
         <okhttp.version>4.12.0</okhttp.version>
         <nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
         <bcprov-jdk18on.version>1.78.1</bcprov-jdk18on.version>
+        <logback.version>1.2.13</logback.version>
 
         <!--数据库-->
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <mybatis-plus-generator.version>3.5.3.1</mybatis-plus-generator.version>
         <mysql.connector.version>8.0.22</mysql.connector.version>
         <dubbo.version>3.2.2</dubbo.version>
-        <logback.version>1.4.14</logback.version>
+
         <dynamic.datasource.version>4.3.0</dynamic.datasource.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <fastjson.version>1.2.83</fastjson.version>
@@ -62,6 +63,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
