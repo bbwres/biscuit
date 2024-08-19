@@ -64,7 +64,7 @@ public class OperationLogAutoConfigure {
      * @param environment 当前环境变量
      * @return enhanceOperationLogBaseService
      */
-    @Bean("enhanceOperationLogBaseService")
+    @Bean
     @Order(1)
     public EnhanceOperationLogService enhanceOperationLogBaseService(Environment environment) {
         return new EnhanceOperationLogBaseServiceImpl(environment);
@@ -75,23 +75,11 @@ public class OperationLogAutoConfigure {
      *
      * @return enhanceOperationLogParamsService
      */
-    @Bean("enhanceOperationLogParamsService")
+    @Bean
     @Order(100)
     public EnhanceOperationLogService enhanceOperationLogParamsService() {
         return new EnhanceOperationLogParamsServiceImpl();
     }
-
-    /**
-     * 操作日志用户信息补充参数
-     *
-     * @return enhanceOperationLogParamsService
-     */
-    @Bean("enhanceOperationLogUserService")
-    @Order(200)
-    public EnhanceOperationLogService enhanceOperationLogUserService(OperationLogProperties operationLogProperties) {
-        return new EnhanceOperationLogUserServiceImpl(operationLogProperties);
-    }
-
     /**
      * 操作日志spel 表达式信息
      *
@@ -102,6 +90,19 @@ public class OperationLogAutoConfigure {
     public EnhanceOperationLogService enhanceOperationLogSpringElService() {
         return new EnhanceOperationLogSpringElServiceImpl(new SpelExpressionParser());
     }
+
+    /**
+     * 操作日志用户信息补充参数
+     *
+     * @return enhanceOperationLogParamsService
+     */
+    @Bean
+    @Order(200)
+    public EnhanceOperationLogService enhanceOperationLogUserService(OperationLogProperties operationLogProperties) {
+        return new EnhanceOperationLogUserServiceImpl(operationLogProperties);
+    }
+
+
 
 
     /**
@@ -114,7 +115,7 @@ public class OperationLogAutoConfigure {
          *
          * @return enhanceOperationLogWebService
          */
-        @Bean("enhanceOperationLogWebService")
+        @Bean
         @Order(500)
         public EnhanceOperationLogService enhanceOperationLogWebService() {
             return new EnhanceOperationLogWebServiceImpl();
@@ -131,7 +132,7 @@ public class OperationLogAutoConfigure {
          *
          * @return saveOperationLogService
          */
-        @Bean("saveOperationLogService")
+        @Bean
         @Order(999999)
         public EnhanceOperationLogService saveOperationLogService(OperationLogSaveService operationLogSaveService) {
             return new SaveOperationLogServiceImpl(operationLogSaveService);
