@@ -40,14 +40,24 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class EnhanceOperationLogWebServiceImpl implements EnhanceOperationLogService {
 
+    /**
+     * 用户agent
+     */
+    private static final String USER_AGENT = "User-Agent";
 
     protected HttpServletRequest getRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         return !(requestAttributes instanceof ServletRequestAttributes) ? null : ((ServletRequestAttributes) requestAttributes).getRequest();
     }
 
+    /**
+     * 获取ua
+     *
+     * @param request http
+     * @return ua
+     */
     protected String getUserAgent(HttpServletRequest request) {
-        String ua = request.getHeader("User-Agent");
+        String ua = request.getHeader(USER_AGENT);
         return ua != null ? ua : "";
     }
 

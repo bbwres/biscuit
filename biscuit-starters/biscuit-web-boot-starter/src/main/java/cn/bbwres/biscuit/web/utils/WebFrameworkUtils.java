@@ -20,7 +20,9 @@ package cn.bbwres.biscuit.web.utils;
 
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.utils.JsonUtil;
+import cn.bbwres.biscuit.utils.NetworkUtil;
 import cn.bbwres.biscuit.web.BiscuitWebProperties;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -54,10 +56,12 @@ public class WebFrameworkUtils {
         webFrameworkUtils.biscuitWebProperties = biscuitWebProperties;
     }
 
+
+    private static final String[] CLIENT_IP_HTTP_HEADER_NAME = new String[]{"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"};
     /**
-     * 用户客户端ip
+     * 用户agent
      */
-    private static final String CLIENT_IP_HTTP_KEY = "X-Real-IP";
+    private static final String USER_AGENT = "User-Agent";
 
 
     /**
@@ -94,12 +98,39 @@ public class WebFrameworkUtils {
     /**
      * 获取客户端ip
      *
-     * @return
+     * @param otherHeaderNames 其他请求头参数名称
+     * @return ip
      */
-    public static String getClientIp() {
-        return getHeader(CLIENT_IP_HTTP_KEY);
+    public static String getClientIp(String... otherHeaderNames) {
+        String[] headers = CLIENT_IP_HTTP_HEADER_NAME;
+        if (ArrayUtils.isNotEmpty(otherHeaderNames)) {
+            headers = ArrayUtils.addAll(headers, otherHeaderNames);
+        }
+
+        return getClientIpByHeader(headers);
     }
 
+    /**
+     * 获取客户端ip
+     *
+     * @param headerNames 请求头参数名称
+     * @return ip
+     */
+    public static String getClientIpByHeader(String... headerNames) {
+        String ip;
+        for (String headerName : headerNames) {
+            ip = getHeader(headerName);
+            if (!NetworkUtil.isUnknown(ip)) {
+                return NetworkUtil.getMultistageReverseProxyIp(ip);
+            }
+        }
+        HttpServletRequest request = getRequest();
+        if (Objects.isNull(request)) {
+            return null;
+        }
+        ip = request.getRemoteAddr();
+        return NetworkUtil.getMultistageReverseProxyIp(ip);
+    }
 
     /**
      * 获取请求头信息
@@ -108,13 +139,35 @@ public class WebFrameworkUtils {
      * @return
      */
     public static String getHeader(String name) {
+        HttpServletRequest request = getRequest();
+        if (Objects.isNull(request)) {
+            return null;
+        }
+        return request.getHeader(name);
+    }
+
+    /**
+     * 获取http request
+     *
+     * @return HttpServletRequest
+     */
+    public static HttpServletRequest getRequest() {
         ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         if (Objects.isNull(servletRequestAttributes)) {
             return null;
         }
-        HttpServletRequest request = servletRequestAttributes.getRequest();
-        return request.getHeader(name);
+        return servletRequestAttributes.getRequest();
     }
 
+
+    /**
+     * 获取agent
+     *
+     * @return ua
+     */
+    protected String getUserAgent() {
+        String ua = getHeader(USER_AGENT);
+        return ua != null ? ua : "";
+    }
 
 }
