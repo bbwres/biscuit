@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.controller;
 
+import cn.bbwres.biscuit.operation.log.annotation.OperationLog;
 import cn.bbwres.biscuit.service.IdService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class IdController {
     }
 
     @GetMapping
+    @OperationLog(module = "基础模块",business = "id",operation = "获取id",content = "获取id")
     public String getId(String key) {
         return idService.getId(key);
     }
