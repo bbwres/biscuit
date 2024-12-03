@@ -72,7 +72,7 @@ public class JsonUtil {
 
         OBJECT_MAPPER = new ObjectMapper()
                 .setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT))
-                .registerModule(new JavaTimeModule());
+                .registerModule(javaTimeModule);
         //设置不序列化为空的字段
         OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         //反序列化未知字段不报错

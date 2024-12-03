@@ -44,6 +44,7 @@
         <module>biscuit-security-captcha-boot-starter</module>
         <module>biscuit-redis-cache-boot-starter</module>
         <module>biscuit-operation-log-starter</module>
+        <module>biscuit-channel-starters</module>
     </modules>
 
 
