@@ -71,11 +71,11 @@ public class MybatisPlusAutoConfigure {
     @ConditionalOnMissingBean
     public MybatisPlusInterceptor mybatisPlusInterceptor(MybatisTenantProperties mybatisTenantProperties, ObjectProvider<TenantLineHandler> tenantLineHandler) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         if (mybatisTenantProperties.isEnabled()) {
             log.info("mybatis-plus 启用租户插件");
             interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(tenantLineHandler.getIfAvailable()));
         }
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         return interceptor;
     }
 
