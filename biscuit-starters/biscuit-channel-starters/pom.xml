@@ -7,7 +7,7 @@
         <version>0.0.6-SNAPSHOT</version>
     </parent>
     <artifactId>biscuit-channel-starters</artifactId>
-    <name>渠道对接starter集合包</name>
+    <name>biscuit-channel-starters</name>
     <packaging>pom</packaging>
 
     <dependencies>
