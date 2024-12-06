@@ -22,7 +22,6 @@ import cn.bbwres.biscuit.mybatis.handler.BiscuitMybatisEnumTypeHandler;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler;
 import org.apache.ibatis.type.EnumTypeHandler;
-import org.apache.ibatis.type.TypeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -48,12 +47,12 @@ public class MybatisPlusPropertiesBeanPostProcessor implements BeanPostProcessor
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof MybatisPlusProperties) {
             MybatisPlusProperties mybatisPlusProperties = (MybatisPlusProperties) bean;
-            TypeHandler<?> typeHandler = mybatisPlusProperties.getConfiguration().getTypeHandlerRegistry().getTypeHandler(Enum.class);
+            Class<?> typeHandler = mybatisPlusProperties.getConfiguration().getDefaultEnumTypeHandler();
             LOG.info("MybatisConfigurationInitializer:old: typeHandler = {}", typeHandler);
-            if (typeHandler == null || EnumTypeHandler.class.equals(typeHandler.getClass())
-                    || CompositeEnumTypeHandler.class.equals(typeHandler.getClass())) {
+            if (typeHandler == null || EnumTypeHandler.class.equals(typeHandler)
+                    || CompositeEnumTypeHandler.class.equals(typeHandler)) {
                 //默认的枚举处理类为空，或者为默认的枚举处理类，则替换为自定义的枚举处理类
-                mybatisPlusProperties.getConfiguration().getTypeHandlerRegistry().setDefaultEnumTypeHandler(BiscuitMybatisEnumTypeHandler.class);
+                mybatisPlusProperties.getConfiguration().setDefaultEnumTypeHandler(BiscuitMybatisEnumTypeHandler.class);
                 LOG.info("MybatisConfigurationInitializer:new: typeHandler = {}", BiscuitMybatisEnumTypeHandler.class);
             }
             return bean;
