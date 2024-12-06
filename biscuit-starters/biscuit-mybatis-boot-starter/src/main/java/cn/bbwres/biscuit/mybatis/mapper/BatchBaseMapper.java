@@ -19,8 +19,10 @@
 package cn.bbwres.biscuit.mybatis.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 增加了批量插入的baseMapper
@@ -30,11 +32,31 @@ import java.util.Collection;
 public interface BatchBaseMapper<T> extends BaseMapper<T> {
 
     /**
-     * 批量插入数据
+     * 批量插入数据. 部分数据库不支持
      *
      * @param entityList
      * @return
      */
     Integer insertBatchSomeColumn(Collection<T> entityList);
+
+    /**
+     * 分批插入数据,避免sql过长。
+     * 部分数据库不支持
+     *
+     * @param entityList
+     * @param batchSize
+     * @return
+     */
+    default Integer insertBatchSomeColumnSplit(Collection<T> entityList, int batchSize) {
+        if (CollectionUtils.isEmpty(entityList)) {
+            return 0;
+        }
+        List<List<T>> splits = CollectionUtils.split(entityList, batchSize);
+        int resultNum = 0;
+        for (List<T> split : splits) {
+            resultNum += insertBatchSomeColumn(split);
+        }
+        return resultNum;
+    }
 
 }
