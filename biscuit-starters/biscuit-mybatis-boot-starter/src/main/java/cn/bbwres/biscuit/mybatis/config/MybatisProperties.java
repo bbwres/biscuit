@@ -52,6 +52,13 @@ public class MybatisProperties implements Serializable {
      */
     private Boolean enableFieldFill = true;
 
+    /**
+     * 启动自定义配置
+     * 包含 自定义的批量插入数据。
+     * 自定义枚举
+     */
+    private Boolean enableCustomize = true;
+
 
     private Supplier<UserBaseInfo<?>> userInfoSupplier;
 
@@ -108,5 +115,13 @@ public class MybatisProperties implements Serializable {
 
     public void setEnableFieldFill(Boolean enableFieldFill) {
         this.enableFieldFill = enableFieldFill;
+    }
+
+    public Boolean getEnableCustomize() {
+        return enableCustomize;
+    }
+
+    public void setEnableCustomize(Boolean enableCustomize) {
+        this.enableCustomize = enableCustomize;
     }
 }

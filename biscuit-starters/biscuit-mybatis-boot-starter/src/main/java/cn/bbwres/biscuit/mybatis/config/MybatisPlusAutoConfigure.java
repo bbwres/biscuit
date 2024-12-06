@@ -57,6 +57,7 @@ public class MybatisPlusAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "mybatis-plus", name = "enable-customize", havingValue = "true", matchIfMissing = true)
     public MybatisPlusPropertiesBeanPostProcessor mybatisPlusPropertiesBeanPostProcessor() {
         return new MybatisPlusPropertiesBeanPostProcessor();
     }
@@ -88,7 +89,7 @@ public class MybatisPlusAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "mybatis-plus", name = "enable-field-fill", havingValue = "true",matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "mybatis-plus", name = "enable-field-fill", havingValue = "true", matchIfMissing = true)
     public MetaObjectHandler metaObjectHandler(MybatisTenantProperties mybatisTenantProperties,
                                                MybatisProperties mybatisProperties) {
         return new DefaultDataFieldFillHandler(mybatisProperties, mybatisTenantProperties);

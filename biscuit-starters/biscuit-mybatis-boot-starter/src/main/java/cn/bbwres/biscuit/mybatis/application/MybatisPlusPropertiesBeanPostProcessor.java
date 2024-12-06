@@ -19,7 +19,9 @@
 package cn.bbwres.biscuit.mybatis.application;
 
 import cn.bbwres.biscuit.mybatis.handler.BiscuitMybatisEnumTypeHandler;
+import cn.bbwres.biscuit.mybatis.injector.BatchDefaultSqlInjector;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
+import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler;
 import org.apache.ibatis.type.EnumTypeHandler;
 import org.slf4j.Logger;
@@ -55,6 +57,9 @@ public class MybatisPlusPropertiesBeanPostProcessor implements BeanPostProcessor
                 mybatisPlusProperties.getConfiguration().setDefaultEnumTypeHandler(BiscuitMybatisEnumTypeHandler.class);
                 LOG.info("MybatisConfigurationInitializer:new: typeHandler = {}", BiscuitMybatisEnumTypeHandler.class);
             }
+            //设置sql插入
+            GlobalConfig globalConfig = mybatisPlusProperties.getGlobalConfig();
+            globalConfig.setSqlInjector(new BatchDefaultSqlInjector());
             return bean;
         }
         return bean;
