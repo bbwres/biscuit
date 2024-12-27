@@ -1,0 +1,50 @@
+package ${package.Service};
+
+import java.util.*;
+import ${package.Controller}.vo.*;
+import ${package.Entity}.${entity};
+import cn.bbwres.biscuit.dto.Page;
+
+
+
+
+## 去掉do
+#set ($tableClassName = ${entity.replace('Entity','')})
+#set ($idType = ${idKey.propertyType})
+
+/**
+ * <p>
+ * $!{table.comment} 服务类
+ * </p>
+ *
+ * @author ${author}
+ * @Date ${date}
+ */
+public interface ${table.serviceName} {
+
+    /**
+     * 获得${table.comment}
+     *
+     * @param id 编号
+     * @return ${table.comment}
+     */
+    ${entity} get${tableClassName}(${idType} id);
+
+    /**
+     * 获得${table.comment}列表
+     *
+     * @param ids 编号
+     * @return ${table.comment}列表
+     */
+    List<${entity}> get${tableClassName}List(Collection<${idType}> ids);
+
+    /**
+     * 获得${table.comment}分页
+     *
+     * @param pageReqVO 分页查询
+     * @return ${table.comment}分页
+     */
+    Page<${entity},${tableClassName}PageReqVO> get${tableClassName}Page(Page<${entity},${tableClassName}PageReqVO> pageReqVO);
+
+
+}

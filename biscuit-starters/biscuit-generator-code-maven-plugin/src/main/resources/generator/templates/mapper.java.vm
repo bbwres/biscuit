@@ -1,0 +1,53 @@
+package ${package.Mapper};
+import ${package.Entity}.${entity};
+import ${superMapperClassPackage};
+import cn.bbwres.biscuit.dto.Page;
+import org.apache.ibatis.annotations.Mapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.util.ObjectUtils;
+import ${package.Controller}.vo .*;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+
+
+/**
+ * <p>
+ * $!{table.comment} Mapper 接口
+ * </p>
+ *
+ * @author ${author}
+ * @Date ${date}
+ */
+@Mapper
+#if(${kotlin})
+interface ${table.mapperName} : ${superMapperClass}<${entity}>
+#else
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
+
+    ## 去掉do
+    #set ($tableClassName = ${entity.replace('Entity','')})
+    /**
+    * 分页查询数据
+    * @param reqVO 分页查询条件
+    * @return
+    */
+    default Page<${entity},${tableClassName}PageReqVO> selectPage(Page<${entity},${tableClassName}PageReqVO> reqVO){
+        LambdaQueryWrapper<${entity}> queryWrapper = Wrappers.lambdaQuery(${entity}.class);
+        if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
+            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
+                ${entity}::getId, reqVO.getQuery().getId());
+        }
+
+        // 大多数情况下，id 倒序
+        queryWrapper.orderByDesc(${entity}::getId);
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<${entity}> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()),queryWrapper);
+
+        reqVO.setRecords(page.getRecords());
+        reqVO.setTotal(page.getTotal());
+        reqVO.calculationPages();
+        return reqVO;
+    }
+
+}
+
+#end

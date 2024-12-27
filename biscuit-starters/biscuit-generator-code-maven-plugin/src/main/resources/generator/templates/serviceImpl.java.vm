@@ -1,0 +1,82 @@
+package ${package.Service};
+
+## 去掉do
+#set ($tableClassName = ${entity.replace('Entity','')})
+#set ($idType = ${idKey.propertyType})
+#set ($tableClassNameLow =  ${tableClassName.substring(0, 1).toLowerCase()}+${tableClassName.substring(1)})
+
+import java.util.*;
+import cn.bbwres.biscuit.dto.Page;
+import ${package.Controller}.vo.*;
+import ${package.Entity}.${entity};
+import ${package.Mapper}.${table.mapperName};
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+#if(${entityLombokModel})
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+#end
+
+
+/**
+ * <p>
+ * $!{table.comment} 服务实现类
+ * </p>
+ *
+ * @author ${author}
+ * @Date ${date}
+ */
+#if(${entityLombokModel})
+@RequiredArgsConstructor(onConstructor_={@Autowired})
+@Slf4j
+#end
+@Service
+public class ${table.serviceImplName} implements ${table.serviceName} {
+    #if(!${entityLombokModel})
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(${table.serviceImplName}.class);
+    #end
+
+    private final ${table.mapperName} ${tableClassNameLow}Mapper;
+
+    #if(!${entityLombokModel})
+    @Autowired
+    public ${table.serviceImplName}(${table.mapperName} ${tableClassNameLow}Mapper){
+        this.${tableClassNameLow}Mapper=${tableClassNameLow}Mapper;
+    }
+    #end
+
+    /**
+     * 获得${table.comment}
+     *
+     * @param id 编号
+     * @return ${table.comment}
+     */
+    @Override
+    public ${entity} get${tableClassName}(${idType} id) {
+        return ${tableClassNameLow}Mapper.selectById(id);
+    }
+
+    /**
+     * 获得${table.comment}列表
+     *
+     * @param ids 编号
+     * @return ${table.comment}列表
+     */
+    @Override
+    public List<${entity}> get${tableClassName}List(Collection<${idType}> ids) {
+        return ${tableClassNameLow}Mapper.selectByIds(ids);
+    }
+
+    /**
+     * 获得${table.comment}分页
+     *
+     * @param pageReqVO 分页查询
+     * @return ${table.comment}分页
+     */
+    @Override
+    public  Page<${entity},${tableClassName}PageReqVO> get${tableClassName}Page(Page<${entity},${tableClassName}PageReqVO> pageReqVO) {
+        return ${tableClassNameLow}Mapper.selectPage(pageReqVO);
+    }
+
+
+}

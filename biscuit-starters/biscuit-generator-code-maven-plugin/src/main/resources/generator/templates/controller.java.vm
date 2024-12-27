@@ -1,0 +1,69 @@
+## 去掉do
+#set ($tableClassName = ${entity.replace('Entity','')})
+#set ($idType = ${idKey.propertyType})
+#set ($tableClassNameLow =  ${tableClassName.substring(0, 1).toLowerCase()}+${tableClassName.substring(1)})
+package ${package.Controller};
+
+import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.dto.Result;
+#if(${swagger})
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+#end
+#if(${entityLombokModel})
+import lombok.RequiredArgsConstructor;
+#end
+
+import ${package.Controller}.vo.*;
+import ${package.Entity}.${entity};
+import ${cfg.convertPackage}.${tableClassName}Convert;
+import ${package.Service}.${table.serviceName};
+
+/**
+ * <p>
+ * $!{table.comment} controller
+ * </p>
+ *
+ * @author ${author}
+ * @Date ${date}
+ */
+#if(${swagger})
+@Tag(name = " ${table.comment}")
+#end
+#if(${entityLombokModel})
+@RequiredArgsConstructor(onConstructor_={@Autowired})
+#end
+@RestController
+@RequestMapping("/${tableClassNameLow}")
+public class ${table.controllerName} {
+#set($serviceNameLow =  ${table.serviceName.substring(0, 1).toLowerCase()}+${table.serviceName.substring(1)})
+    private final  ${table.serviceName} ${serviceNameLow};
+
+    #if(!${entityLombokModel})
+    @Autowired
+    public ${table.controllerName}(${table.serviceName} ${serviceNameLow}){
+        this.${serviceNameLow}=${serviceNameLow};
+    }
+    #end
+
+    /**
+      * 分页参数信息
+      * @param pageVO 分页参数
+      * @return
+      */
+    @PostMapping("/page")
+    #if(${swagger})
+    @Operation(summary = "获得${table.comment}分页")
+    #end
+    public Result<Page<${tableClassName}RespVO,${tableClassName}PageReqVO>> get${tableClassName}Page(@Validated @RequestBody Page<${entity},${tableClassName}PageReqVO> pageVO) {
+        Page<${entity},${tableClassName}PageReqVO> pageResult = ${serviceNameLow}.get${tableClassName}Page(pageVO);
+        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),GlobalErrorCodeConstants.SUCCESS.getMessage(),${tableClassName}Convert.INSTANCE.convertPage(pageResult));
+    }
+
+
+
+}

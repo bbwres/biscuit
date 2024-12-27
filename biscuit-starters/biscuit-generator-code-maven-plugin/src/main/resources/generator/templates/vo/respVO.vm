@@ -1,0 +1,103 @@
+## 去掉do
+#set ($tableClassName = ${entity.replace('Entity','')})
+#set ($idType = ${idKey.propertyType})
+#set ($tableClassNameLow =  ${tableClassName.substring(0, 1).toLowerCase()}+${tableClassName.substring(1)})
+package ${package.Controller}.vo;
+
+#if(${entityLombokModel})
+import lombok.*;
+import lombok.experimental.Accessors;
+#end
+#if(${swagger})
+import io.swagger.v3.oas.annotations.media.Schema;
+#end
+#foreach($pkg in ${importPackages})
+import ${pkg};
+#end
+import java.io.Serializable;
+
+/**
+* <p>
+* $!{table.comment} Response VO
+* </p>
+*
+* @author ${author}
+* @Date ${date}
+*/
+#if(${swagger})
+@Schema(description = " ${table.comment} Response VO")
+#end
+#if(${entityLombokModel})
+@Data
+@EqualsAndHashCode
+@ToString
+    #if(${chainModel})
+@Accessors(chain = true)
+    #end
+#end
+public class ${tableClassName}RespVO implements Serializable {
+
+#foreach($field in ${table.fields})
+    #if("$!field.comment" != "")
+    /**
+    * ${field.comment}
+    */
+        #if(${swagger})
+    @Schema(description = "${field.comment}")
+        #end
+    #end
+    #set($propertyType = ${field.propertyType})
+    private ${propertyType} ${field.propertyName};
+
+#end
+## ----------  END 字段循环遍历  ----------
+
+#if(!${entityLombokModel})
+    #foreach($field in ${table.fields})
+        #if(${field.propertyType.equals("boolean")})
+            #set($getprefix="is")
+        #else
+            #set($getprefix="get")
+        #end
+
+    public ${field.propertyType} ${getprefix}${field.capitalName}() {
+        return ${field.propertyName};
+    }
+
+        #if(${chainModel})
+    public ${tableClassName}RespVO set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+        #else
+    public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+        #end
+        this.${field.propertyName} = ${field.propertyName};
+        #if(${chainModel})
+        return this;
+        #end
+    }
+    #end
+    ## --foreach end---
+#end
+## --end of #if(!${entityLombokModel})--
+
+#if(${entityColumnConstant})
+    #foreach($field in ${table.fields})
+    public static final String ${field.name.toUpperCase()} = "${field.name}";
+
+    #end
+#end
+
+#if(!${entityLombokModel})
+@Override
+public String toString() {
+return "${entity}{" +
+    #foreach($field in ${table.fields})
+        #if($!{foreach.index}==0)
+        "${field.propertyName}=" + ${field.propertyName} +
+        #else
+        ", ${field.propertyName}=" + ${field.propertyName} +
+        #end
+    #end
+"}";
+}
+#end
+}

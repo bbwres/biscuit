@@ -1,0 +1,57 @@
+package ${cfg.convertPackage};
+
+import java.util.*;
+
+
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+import ${package.Controller}.vo.*;
+import ${package.Entity}.${entity};
+import cn.bbwres.biscuit.dto.Page;
+
+## 去掉do
+#set ($tableClassName = ${entity.replace('Entity','')})
+#set ($idType = ${idKey.propertyType})
+#set ($tableClassNameLow =  ${tableClassName.substring(0, 1).toLowerCase()}+${tableClassName.substring(1)})
+
+
+/**
+ * <p>
+ * $!{table.comment} Convert
+ * </p>
+ *
+ * @author ${author}
+ * @Date ${date}
+ */
+@Mapper
+public interface ${tableClassName}Convert {
+
+    /**
+     * 转换对象
+     */
+     ${tableClassName}Convert INSTANCE = Mappers.getMapper(${tableClassName}Convert.class);
+
+
+    /**
+     * 对象转换
+     * @param bean 分页查询条件
+     * @return
+     */
+     ${tableClassName}RespVO convert(${entity} bean);
+
+    /**
+     * 转换list字段
+     * @param list 请求list
+     * @return
+     */
+    List<${tableClassName}RespVO> convertList(List<${entity}> list);
+
+    /**
+     * 分页查询数据
+     * @param page 分页数据
+     * @return
+     */
+    Page<${tableClassName}RespVO,${tableClassName}PageReqVO> convertPage(Page<${entity},${tableClassName}PageReqVO> page);
+
+
+}
