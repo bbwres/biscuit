@@ -37,6 +37,7 @@ public class GeneratorConstant {
     public static final String STRATEGY_CONFIG_ENTITY_ENABLE_CHAIN_MODEL = "strategyConfig.entity.enableChainModel";
     public static final String STRATEGY_CONFIG_ENTITY_ENABLE_TABLE_FIELD_ANNOTATION = "strategyConfig.entity.enableTableFieldAnnotation";
     public static final String STRATEGY_CONFIG_ENTITY_SUPER_CLASS = "strategyConfig.entity.superClass";
+    public static final String STRATEGY_CONFIG_ENTITY_SUPER_TENANT_CLASS = "strategyConfig.entity.superTenantClass";
 
     /**
      * strategyConfig.service
@@ -59,11 +60,13 @@ public class GeneratorConstant {
     public static final String STRATEGY_CONFIG_MAPPER_ENABLE_BASE_RESULT_MAP = "strategyConfig.mapper.enableBaseResultMap";
     public static final String STRATEGY_CONFIG_MAPPER_ENABLE_BASE_COLUMN_LIST = "strategyConfig.mapper.enableBaseColumnList";
     public static final String STRATEGY_CONFIG_MAPPER_MAPPER_TEMPLATE = "strategyConfig.mapper.mapperTemplate";
+    public static final String STRATEGY_CONFIG_MAPPER_SUPER_CLASS = "strategyConfig.mapper.superClass";
 
     /**
      * injectionConfig
      */
     public static final String INJECTION_CONFIG_BASE_FIELDS = "injectionConfig.baseFields";
     public static final String INJECTION_CONFIG_CUSTOM_FILES = "injectionConfig.customFiles";
+
 
 }

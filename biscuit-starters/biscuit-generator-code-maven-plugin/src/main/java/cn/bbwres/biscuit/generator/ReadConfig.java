@@ -57,8 +57,9 @@ public class ReadConfig {
             prop.load(input);
         } catch (IOException ex) {
             try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
-                log.info("开始读取插件本地配置" );
+                log.info("项目目录不存在插件配置，开始读取插件默认配置" );
                 prop.load(input);
+                log.info("读取插件默认配置完成" );
             } catch (Exception e) {
                 log.info("读取配置信息异常:" + e.getMessage());
             }

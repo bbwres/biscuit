@@ -50,7 +50,7 @@ public class GeneratorCodeMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().info("读取:" + ((Resource) project.getResources().get(0)).getDirectory());
+        getLog().info("read-config:" + ((Resource) project.getResources().get(0)).getDirectory());
 
         ReadConfig readConfig = new ReadConfig(((Resource) project.getResources().get(0)).getDirectory());
         Properties projectConfig = readConfig.readProjectConfig(getLog());
@@ -86,9 +86,14 @@ public class GeneratorCodeMojo extends AbstractMojo {
             dbPassword = readConfig.scannerNext("请输入数据库密码？", null);
         }
 
+        String useTenant = projectConfig.getProperty("useTenant");
+        if (StringUtils.isBlank(useTenant)) {
+            useTenant = "false";
+        }
 
         DataSourceConfig.Builder builder = new DataSourceConfig.Builder(dbUrl, dbUsername, dbPassword);
-        Generator generator = new Generator(builder, outputDir, readConfig.readBiscuitConfig(getLog()), author, parentPath, tableNames);
+        Generator generator = new Generator(builder, outputDir, readConfig.readBiscuitConfig(getLog()),
+                author, parentPath, tableNames, useTenant);
         generator.generator();
     }
 
