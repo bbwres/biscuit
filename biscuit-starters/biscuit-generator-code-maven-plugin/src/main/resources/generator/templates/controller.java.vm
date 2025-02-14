@@ -23,6 +23,7 @@ import ${package.Entity}.${entity};
 import ${cfg.convertPackage}.${tableClassName}Convert;
 import ${package.Service}.${table.serviceName};
 
+#set ($idType = ${idKey.propertyType})
 /**
  * <p>
  * $!{table.comment} controller
@@ -53,7 +54,7 @@ public class ${table.controllerName} {
     /**
       * 分页参数信息
       * @param pageVO 分页参数
-      * @return
+      * @return Result
       */
     @PostMapping("/page")
     #if(${swagger})
@@ -61,8 +62,26 @@ public class ${table.controllerName} {
     #end
     public Result<Page<${tableClassName}RespVO,${tableClassName}PageReqVO>> get${tableClassName}Page(@Validated @RequestBody Page<${entity},${tableClassName}PageReqVO> pageVO) {
         Page<${entity},${tableClassName}PageReqVO> pageResult = ${serviceNameLow}.get${tableClassName}Page(pageVO);
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),GlobalErrorCodeConstants.SUCCESS.getMessage(),${tableClassName}Convert.INSTANCE.convertPage(pageResult));
+        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),GlobalErrorCodeConstants.SUCCESS.getMessage(),
+                    ${tableClassName}Convert.INSTANCE.convertPage(pageResult));
     }
+
+    /**
+    * 根据id获取数据
+    *
+    * @return Result
+    */
+    @GetMapping("/getById")
+    #if(${swagger})
+    @Operation(summary = "根据id获取标签定义的数据",
+            parameters = {@Parameter(name = "id", description = "id", required = true)})
+    #end
+    public Result<${tableClassName}RespVO> getById(@RequestParam("id") ${idType} entityId) {
+        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(),
+                    ${tableClassName}Convert.INSTANCE.convert(${serviceNameLow}.get${tableClassName}(entityId)));
+    }
+
+
 
 
 
