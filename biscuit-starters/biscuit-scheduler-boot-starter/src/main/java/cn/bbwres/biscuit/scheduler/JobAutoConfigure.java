@@ -19,12 +19,12 @@
 package cn.bbwres.biscuit.scheduler;
 
 import cn.bbwres.biscuit.scheduler.annotation.JobDefinition;
-import cn.bbwres.biscuit.scheduler.job.StatefulBeanInvokingJob;
-import cn.bbwres.biscuit.scheduler.service.JobManagerService;
-import cn.bbwres.biscuit.scheduler.service.JobManagerServiceImpl;
 import cn.bbwres.biscuit.scheduler.config.QuartzJdbcProperties;
 import cn.bbwres.biscuit.scheduler.config.SchedulerConstant;
 import cn.bbwres.biscuit.scheduler.job.BeanInvokingJob;
+import cn.bbwres.biscuit.scheduler.job.StatefulBeanInvokingJob;
+import cn.bbwres.biscuit.scheduler.service.JobManagerService;
+import cn.bbwres.biscuit.scheduler.service.JobManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -41,7 +41,6 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -81,20 +80,20 @@ public class JobAutoConfigure {
         quartzProperties.setWaitForJobsToCompleteOnShutdown(quartzJdbcProperties.getWaitForJobsToCompleteOnShutdown());
         //map 参数
         Map<String, String> properties = quartzProperties.getProperties();
-        properties.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME,quartzJdbcProperties.getInstanceName());
-        properties.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_ID,quartzJdbcProperties.getInstanceId());
-        properties.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS,quartzJdbcProperties.getJobStoreClass());
-        if(!ObjectUtils.isEmpty(quartzJdbcProperties.getDataSource())){
-            properties.put("org.quartz.jobStore.dataSource",quartzJdbcProperties.getDataSource());
+        properties.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME, quartzJdbcProperties.getInstanceName());
+        properties.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_ID, quartzJdbcProperties.getInstanceId());
+        properties.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS, quartzJdbcProperties.getJobStoreClass());
+        if (!ObjectUtils.isEmpty(quartzJdbcProperties.getDataSource())) {
+            properties.put("org.quartz.jobStore.dataSource", quartzJdbcProperties.getDataSource());
         }
-        properties.put("org.quartz.jobStore.driverDelegateClass",quartzJdbcProperties.getDriverDelegateClass());
-        properties.put("org.quartz.jobStore.tablePrefix",quartzJdbcProperties.getTablePrefix());
-        properties.put("org.quartz.jobStore.isClustered",quartzJdbcProperties.getIsClustered());
-        properties.put("org.quartz.jobStore.clusterCheckinInterval",quartzJdbcProperties.getClusterCheckinInterval());
-        properties.put("org.quartz.threadPool.threadCount",quartzJdbcProperties.getThreadCount());
-        properties.put("org.quartz.threadPool.threadPriority",quartzJdbcProperties.getThreadPriority());
-        properties.put("org.quartz.threadPool.class",quartzJdbcProperties.getThreadPoolClass());
-        properties.put("org.quartz.jobStore.acquireTriggersWithinLock",quartzJdbcProperties.getAcquireTriggersWithinLock());
+        properties.put("org.quartz.jobStore.driverDelegateClass", quartzJdbcProperties.getDriverDelegateClass());
+        properties.put("org.quartz.jobStore.tablePrefix", quartzJdbcProperties.getTablePrefix());
+        properties.put("org.quartz.jobStore.isClustered", quartzJdbcProperties.getIsClustered());
+        properties.put("org.quartz.jobStore.clusterCheckinInterval", quartzJdbcProperties.getClusterCheckinInterval());
+        properties.put("org.quartz.threadPool.threadCount", quartzJdbcProperties.getThreadCount());
+        properties.put("org.quartz.threadPool.threadPriority", quartzJdbcProperties.getThreadPriority());
+        properties.put("org.quartz.threadPool.class", quartzJdbcProperties.getThreadPoolClass());
+        properties.put("org.quartz.jobStore.acquireTriggersWithinLock", quartzJdbcProperties.getAcquireTriggersWithinLock());
         return quartzProperties;
     }
 
@@ -102,11 +101,11 @@ public class JobAutoConfigure {
     /**
      * 初始 quartzScheduler
      *
-     * @param properties a {@link org.springframework.boot.autoconfigure.quartz.QuartzProperties} object
-     * @param customizers a {@link org.springframework.beans.factory.ObjectProvider} object
-     * @param calendars a {@link java.util.Map} object
+     * @param properties         a {@link org.springframework.boot.autoconfigure.quartz.QuartzProperties} object
+     * @param customizers        a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @param calendars          a {@link java.util.Map} object
      * @param applicationContext a {@link org.springframework.context.ApplicationContext} object
-     * @param dataSource a DataSource object
+     * @param dataSource         a DataSource object
      * @return a {@link org.springframework.scheduling.quartz.SchedulerFactoryBean} object
      */
     @Bean
@@ -122,7 +121,7 @@ public class JobAutoConfigure {
         if (properties.getSchedulerName() != null) {
             schedulerFactoryBean.setSchedulerName(properties.getSchedulerName());
         }
-        if(!properties.getProperties().containsKey("org.quartz.jobStore.dataSource")){
+        if (!properties.getProperties().containsKey("org.quartz.jobStore.dataSource")) {
             schedulerFactoryBean.setDataSource(dataSource);
         }
         schedulerFactoryBean.setAutoStartup(properties.isAutoStartup());
@@ -197,10 +196,8 @@ public class JobAutoConfigure {
      */
     private JobDetail buildJobDetail(JobDefinition jobDefinition, String beanName) {
         JobDataMap jobDataMap = new JobDataMap();
-        if (jobDefinition.arguments().length > 0) {
-            for (cn.bbwres.biscuit.scheduler.annotation.JobDataMap argument : jobDefinition.arguments()) {
-                jobDataMap.put(argument.key(), argument.value());
-            }
+        for (cn.bbwres.biscuit.scheduler.annotation.JobDataMap argument : jobDefinition.arguments()) {
+            jobDataMap.put(argument.key(), argument.value());
         }
         jobDataMap.put(SchedulerConstant.TARGET_BEAN, beanName);
         jobDataMap.put(SchedulerConstant.TARGET_METHOD, jobDefinition.targetMethod());
@@ -223,8 +220,16 @@ public class JobAutoConfigure {
      * @return
      */
     private Trigger buildTrigger(JobDefinition jobDefinition, JobDetail jobDetail) {
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(jobDefinition.cron())
-                .withMisfireHandlingInstructionDoNothing();
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(jobDefinition.cron());
+        if (CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING == jobDefinition.misfireInstruction()) {
+            scheduleBuilder.withMisfireHandlingInstructionDoNothing();
+        }
+        if (CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW == jobDefinition.misfireInstruction()) {
+            scheduleBuilder.withMisfireHandlingInstructionFireAndProceed();
+        }
+        if (Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY == jobDefinition.misfireInstruction()) {
+            scheduleBuilder.withMisfireHandlingInstructionIgnoreMisfires();
+        }
         // 创建任务触发器
         return TriggerBuilder.newTrigger()
                 .forJob(jobDetail)

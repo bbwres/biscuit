@@ -19,6 +19,8 @@
 package cn.bbwres.biscuit.scheduler.annotation;
 
 
+import org.quartz.CronTrigger;
+
 import java.lang.annotation.*;
 
 /**
@@ -80,6 +82,12 @@ public @interface JobDefinition {
      * @return
      */
     boolean useContext() default false;
+
+    /**
+     * 失火策略
+     * @return
+     */
+    int misfireInstruction() default CronTrigger.MISFIRE_INSTRUCTION_SMART_POLICY;
 
     /**
      * 任务参数
