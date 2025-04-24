@@ -104,7 +104,7 @@ public interface JobManagerService {
 
 
     /**
-     * 立即执行 一个任务
+     * 立即执行 一个触发器
      *
      * @param triggerName a {@link java.lang.String} object
      * @param triggerGroup a {@link java.lang.String} object

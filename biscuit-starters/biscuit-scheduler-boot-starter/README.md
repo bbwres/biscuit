@@ -26,3 +26,4 @@ spring.quartz.jdbc.table-prefix=T_QUARTZ_
 1. 上一次运行时间，下一次运行时间，运行结果
 2. 多节点运行时，时间不同步时，不同节点会重复执行。
 3. JobDefinition注解可以在方法上
+4. 任务批处理

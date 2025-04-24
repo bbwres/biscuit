@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.quartz.JobStoreType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
+import java.util.Map;
 
 /**
  * QuartzJdbc 配置
@@ -99,9 +100,9 @@ public class QuartzJdbcProperties {
     private String isClustered = "true";
 
     /**
-     * 集群检查时间 ms
+     * 集群检查时间 ms 默认为15s
      */
-    private String clusterCheckinInterval = "2000";
+    private String clusterCheckinInterval = "15000";
 
     /**
      * 线程池大小
@@ -122,5 +123,10 @@ public class QuartzJdbcProperties {
      * 获取任务触发器时是否加锁
      */
     private String acquireTriggersWithinLock = "true";
+
+    /**
+     * 其他参数配置
+     */
+    private Map<String, String> properties;
 
 }

@@ -94,6 +94,9 @@ public class JobAutoConfigure {
         properties.put("org.quartz.threadPool.threadPriority", quartzJdbcProperties.getThreadPriority());
         properties.put("org.quartz.threadPool.class", quartzJdbcProperties.getThreadPoolClass());
         properties.put("org.quartz.jobStore.acquireTriggersWithinLock", quartzJdbcProperties.getAcquireTriggersWithinLock());
+        if (!CollectionUtils.isEmpty(quartzJdbcProperties.getProperties())) {
+            properties.putAll(quartzJdbcProperties.getProperties());
+        }
         return quartzProperties;
     }
 
