@@ -45,8 +45,6 @@
         <module>biscuit-redis-cache-boot-starter</module>
         <module>biscuit-operation-log-starter</module>
         <module>biscuit-generator-code-maven-plugin</module>
-        <module>biscuit-generator-code-maven-plugin</module>
-        <module>biscuit-generator-code-maven-plugin</module>
     </modules>
 
 
