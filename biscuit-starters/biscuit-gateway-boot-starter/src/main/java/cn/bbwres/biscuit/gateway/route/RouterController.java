@@ -36,8 +36,8 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/route")
-public class RouteController {
+@RequestMapping("/router")
+public class RouterController {
 
     private final RouteLocator routeLocator;
 

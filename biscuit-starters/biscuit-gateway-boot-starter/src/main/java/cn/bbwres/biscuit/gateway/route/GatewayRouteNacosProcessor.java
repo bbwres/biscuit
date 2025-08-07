@@ -31,7 +31,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class GatewayRouteNacosProcessor extends AbstractNacosProcessor {
     private static final String APP_NAME = "spring.application.name";
-    private static final String DYNAMIC_ROUTE = "dynamic-route";
+    private static final String DYNAMIC_ROUTE = "-dynamic-route";
 
     private final DefaultGatewayRoute defaultGatewayRoute;
     private final GatewayProperties gatewayProperties;

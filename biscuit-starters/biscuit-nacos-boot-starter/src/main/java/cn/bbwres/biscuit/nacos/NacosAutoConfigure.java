@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.nacos;
 
 import cn.bbwres.biscuit.nacos.operation.NacosConfigOperation;
+import com.alibaba.cloud.nacos.NacosConfigManager;
 import com.alibaba.nacos.api.config.ConfigService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -36,13 +37,13 @@ public class NacosAutoConfigure {
     /**
      * nacos 配置操作
      *
-     * @param nacosConfigService
+     * @param nacosConfigManager
      * @param environment
      * @return
      */
     @Bean
-    public NacosConfigOperation nacosConfigOperation(ConfigService nacosConfigService, Environment environment) {
-        return new NacosConfigOperation(nacosConfigService, environment);
+    public NacosConfigOperation nacosConfigOperation(NacosConfigManager nacosConfigManager, Environment environment) {
+        return new NacosConfigOperation(nacosConfigManager.getConfigService(), environment);
     }
 
 }
