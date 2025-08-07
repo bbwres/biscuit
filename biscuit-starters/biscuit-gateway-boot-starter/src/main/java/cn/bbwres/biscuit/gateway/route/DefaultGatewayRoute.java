@@ -244,7 +244,6 @@ public class DefaultGatewayRoute implements GatewayRoute, ApplicationEventPublis
 
         Flux<RouteDefinition> routeDefinitions = routeDefinitionLocator.getRouteDefinitions();
         try {
-            //TODO 待测试
             List<RouteDefinition> routeDefinitionList = routeDefinitions.collectList().block();
             if (CollectionUtils.isEmpty(routeDefinitionList)) {
                 return new HashMap<>(2);
