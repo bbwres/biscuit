@@ -43,6 +43,11 @@
             <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-common-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-nacos-boot-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <!--鉴权-->
         <dependency>
@@ -77,6 +82,7 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
 
         <dependency>
             <groupId>javax.servlet</groupId>

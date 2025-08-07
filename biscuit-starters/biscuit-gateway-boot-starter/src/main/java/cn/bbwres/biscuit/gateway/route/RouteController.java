@@ -16,10 +16,9 @@
  *
  */
 
-package cn.bbwres.biscuit.gateway.router;
+package cn.bbwres.biscuit.gateway.route;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,8 +36,8 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/router")
-public class RouterController {
+@RequestMapping("/route")
+public class RouteController {
 
     private final RouteLocator routeLocator;
 

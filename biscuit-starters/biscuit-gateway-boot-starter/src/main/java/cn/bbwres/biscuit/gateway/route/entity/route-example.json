@@ -1,0 +1,13 @@
+[
+  {
+    "id": "route0",
+    "uri": "lb://service-a",
+    "predicates": [
+      "Path=/service-a/**"
+    ],
+    "filters": [
+      "StripPrefix=1"
+    ],
+    "order": 0
+  }
+]

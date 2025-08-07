@@ -22,19 +22,26 @@ import cn.bbwres.biscuit.gateway.adapter.ErrorWebExceptionHandler;
 import cn.bbwres.biscuit.gateway.adapter.ExtensionErrorAttributes;
 import cn.bbwres.biscuit.gateway.authorization.AuthorizationManager;
 import cn.bbwres.biscuit.gateway.cache.ResourceCacheService;
-import cn.bbwres.biscuit.gateway.router.RouterController;
+import cn.bbwres.biscuit.gateway.route.DefaultGatewayRoute;
+import cn.bbwres.biscuit.gateway.route.GatewayRouteNacosProcessor;
+import cn.bbwres.biscuit.gateway.route.RouteController;
 import cn.bbwres.biscuit.gateway.service.ResourceService;
+import cn.bbwres.biscuit.nacos.operation.NacosConfigOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
+import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
+import org.springframework.cloud.gateway.route.RouteDefinitionWriter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -66,7 +73,7 @@ public class GatewayAutoConfigure {
      * gateway 统一错误处理
      *
      * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param messagesProvider a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @param messagesProvider  a {@link org.springframework.beans.factory.ObjectProvider} object
      * @return a {@link cn.bbwres.biscuit.gateway.adapter.ExtensionErrorAttributes} object
      */
     @Bean
@@ -78,8 +85,8 @@ public class GatewayAutoConfigure {
     /**
      * 统一错误处理器
      *
-     * @param errorAttributes a {@link org.springframework.boot.web.reactive.error.ErrorAttributes} object
-     * @param webProperties a {@link org.springframework.boot.autoconfigure.web.WebProperties} object
+     * @param errorAttributes    a {@link org.springframework.boot.web.reactive.error.ErrorAttributes} object
+     * @param webProperties      a {@link org.springframework.boot.autoconfigure.web.WebProperties} object
      * @param applicationContext a {@link org.springframework.context.ApplicationContext} object
      * @return a {@link cn.bbwres.biscuit.gateway.adapter.ErrorWebExceptionHandler} object
      */
@@ -96,7 +103,7 @@ public class GatewayAutoConfigure {
      * 认证管理器
      *
      * @param resourceCacheService a {@link cn.bbwres.biscuit.gateway.cache.ResourceCacheService} object
-     * @param pathMatcher a {@link org.springframework.util.PathMatcher} object
+     * @param pathMatcher          a {@link org.springframework.util.PathMatcher} object
      * @return a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
      */
     @Bean
@@ -109,7 +116,7 @@ public class GatewayAutoConfigure {
      * 资源缓存服务
      *
      * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param resourceService a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
+     * @param resourceService   a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
      * @return a {@link cn.bbwres.biscuit.gateway.cache.ResourceCacheService} object
      */
     @Bean
@@ -165,10 +172,52 @@ public class GatewayAutoConfigure {
      * 路由控制器
      *
      * @param routeLocator a {@link org.springframework.cloud.gateway.route.RouteLocator} object
-     * @return a {@link cn.bbwres.biscuit.gateway.router.RouterController} object
+     * @return a {@link RouteController} object
      */
     @Bean
-    public RouterController routerController(RouteLocator routeLocator) {
-        return new RouterController(routeLocator);
+    public RouteController routerController(RouteLocator routeLocator) {
+        return new RouteController(routeLocator);
     }
+
+
+    /**
+     * 动态路由配置类
+     */
+    @ConditionalOnProperty(prefix = "biscuit.gateway", name = "dynamic-route-enabled", havingValue = "false", matchIfMissing = true)
+    protected static class DynamicRouteConfigurer {
+        /**
+         * 动态路由
+         *
+         * @param routeDefinitionLocator
+         * @param routeDefinitionWriter
+         * @param gatewayProperties
+         * @return
+         */
+        @Bean
+        public DefaultGatewayRoute defaultGatewayRoute(RouteDefinitionLocator routeDefinitionLocator, RouteDefinitionWriter routeDefinitionWriter,
+                                                       org.springframework.cloud.gateway.config.GatewayProperties gatewayProperties) {
+            return new DefaultGatewayRoute(routeDefinitionLocator, routeDefinitionWriter, gatewayProperties);
+        }
+
+        /**
+         * 动态路由
+         *
+         * @param nacosConfigOperation
+         * @param defaultGatewayRoute
+         * @param gatewayProperties
+         * @param environment
+         * @return
+         */
+        @Bean
+        @ConditionalOnBean(NacosConfigOperation.class)
+        public GatewayRouteNacosProcessor gatewayRouteNacosProcessor(NacosConfigOperation nacosConfigOperation,
+                                                                     DefaultGatewayRoute defaultGatewayRoute,
+                                                                     GatewayProperties gatewayProperties,
+                                                                     Environment environment) {
+            return new GatewayRouteNacosProcessor(nacosConfigOperation, defaultGatewayRoute, gatewayProperties, environment);
+        }
+
+    }
+
+
 }

@@ -117,4 +117,18 @@ public class GatewayProperties {
      */
     private Boolean disableCors = false;
 
+    /**
+     * 是否开启动态路由
+     */
+    private Boolean dynamicRouteEnabled = true;
+
+    /**
+     * 动态路由分组
+     */
+    private String dynamicRouteGroup = "DEFAULT_GROUP";
+    /**
+     * 动态路由配置的DataId
+     */
+    private String dynamicRouteDataId;
+
 }
