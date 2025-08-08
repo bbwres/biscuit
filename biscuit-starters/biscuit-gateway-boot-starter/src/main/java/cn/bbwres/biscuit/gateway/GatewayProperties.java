@@ -120,7 +120,7 @@ public class GatewayProperties {
     /**
      * 是否开启动态路由
      */
-    private Boolean dynamicRouteEnabled = true;
+    private Boolean dynamicRouteEnabled;
 
     /**
      * 动态路由分组
