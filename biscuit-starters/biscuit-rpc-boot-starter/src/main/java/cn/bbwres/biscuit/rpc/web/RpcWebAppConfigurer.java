@@ -18,9 +18,15 @@
 
 package cn.bbwres.biscuit.rpc.web;
 
+import cn.bbwres.biscuit.rpc.properties.RpcProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Objects;
 
 /**
  * rpc webConfigurer 配置
@@ -28,16 +34,26 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author zhanglinfeng
  * @version $Id: $Id
  */
+@Slf4j
 @RequiredArgsConstructor
 public class RpcWebAppConfigurer implements WebMvcConfigurer {
 
     private final RpcServerHandlerInterceptorAdapter rpcServerHandlerInterceptorAdapter;
+    private final RpcProperties rpcProperties;
 
 
     /** {@inheritDoc} */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        if (!rpcProperties.getSecurity().isEnable()) {
+            log.info("当前未开启rpc接口安全校验");
+            return ;
+        }
+        if(ObjectUtils.isEmpty(rpcProperties.getSecurity().getPathPatterns())){
+            log.info("当前开启了rpc接口安全校验，但是设置的拦截path为空!");
+            return ;
+        }
         //增加rpc服务端拦截器
-        registry.addInterceptor(rpcServerHandlerInterceptorAdapter).addPathPatterns("/**");
+        registry.addInterceptor(rpcServerHandlerInterceptorAdapter).addPathPatterns(rpcProperties.getSecurity().getPathPatterns());
     }
 }

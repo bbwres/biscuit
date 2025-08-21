@@ -70,17 +70,19 @@ public class WebExceptionConvertErrorCode implements ExceptionConvertErrorCode {
      */
     @Override
     public ErrorMessageInfo exceptionConvertErrorMessage(Exception ex) {
+        ErrorMessageInfo errorMessageInfo = new ErrorMessageInfo();
+        errorMessageInfo.setMessage(ex.toString());
         if (ex instanceof MethodArgumentNotValidException) {
             StringBuilder sb = new StringBuilder();
             BindingResult bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
             for (ObjectError error : bindingResult.getAllErrors()) {
                 sb.append('[').append(error.getDefaultMessage()).append("] ");
             }
-            ErrorMessageInfo errorMessageInfo = new ErrorMessageInfo();
             errorMessageInfo.setMessage(sb.toString());
             errorMessageInfo.setI18nHandler(false);
-            return errorMessageInfo;
+        } else if (ex instanceof HttpRequestMethodNotSupportedException) {
+            errorMessageInfo.setI18nHandler(false);
         }
-        return null;
+        return errorMessageInfo;
     }
 }

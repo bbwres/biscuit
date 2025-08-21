@@ -54,8 +54,7 @@ public class MybatisProperties implements Serializable {
 
     /**
      * 启动自定义配置
-     * 包含 自定义的批量插入数据。
-     * 自定义枚举
+     * 包含 自定义的批量插入数据和自定义枚举解析
      */
     private Boolean enableCustomize = true;
 

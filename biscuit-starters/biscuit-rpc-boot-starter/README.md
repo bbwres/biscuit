@@ -12,16 +12,25 @@ feign.httpclient.connection-timeout=2000
 feign.httpclient.ok-http.read-timeout=30
 feign.httpclient.max-connections=200
 feign.httpclient.time-to-live=900
+
 ````
 
 
+## 远程调用安全配置
 
 1. 服务启动时，随机生成密码，放入到注册中心元数据中
 2. 客户端调用服务时，从注册中心获取到要调用的服务。
 3. 根据调用的服务获取到该服务的随机密码信息
 4. 组装签名参数 放入请求头中。
 5. mvc接收到请求时，会进行全局拦截，来判断当前签名是否正确
-6. 
+
+````properties
+#启动安全配置项
+
+biscuit.rpc.security.enable=true
+biscuit.rpc.security.pathPatterns=/rpc-api
+
+````
 
 
 ## 当前等待测试
@@ -33,3 +42,5 @@ feign.httpclient.time-to-live=900
 
 ## 当前待实现
 1. feign 增加分组功能，参考dubbo 来实现根据传入的分组信息，动态的调用服务。
+
+## 安全配置项

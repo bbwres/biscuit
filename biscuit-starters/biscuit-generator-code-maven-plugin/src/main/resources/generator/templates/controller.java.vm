@@ -13,6 +13,7 @@ import cn.bbwres.biscuit.dto.Result;
 #if(${swagger})
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 #end
 #if(${entityLombokModel})
 import lombok.RequiredArgsConstructor;

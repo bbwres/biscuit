@@ -49,14 +49,11 @@ public class RpcServerHandlerInterceptorAdapter implements HandlerInterceptor {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 拦截器处理
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (!rpcProperties.getSecurity().isEnable()) {
-            return true;
-        }
         if (isExclusion(request)) {
             return true;
         }
@@ -65,7 +62,11 @@ public class RpcServerHandlerInterceptorAdapter implements HandlerInterceptor {
 
         String clientPassword = serviceInstance.getMetadata().get(RpcConstants.CLIENT_PASSWORD);
         String clientName = serviceInstance.getServiceId();
-        return SecurityUtils.checkDataInfo(clientName, clientPassword, clientTime, authorization);
+        boolean checkResult = SecurityUtils.checkDataInfo(clientName, clientPassword, clientTime, authorization);
+        if (!checkResult) {
+            log.info("当前rpc请求安全校验失败!请求接口:[{}]", request.getRequestURI());
+        }
+        return checkResult;
     }
 
     /**

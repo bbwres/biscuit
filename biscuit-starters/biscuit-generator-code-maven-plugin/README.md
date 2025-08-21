@@ -36,15 +36,16 @@
 
 generator.properties配置参数说明
 
-| 参数名称       | 参数说明              | 
-|------------|-------------------|
-| author     | 作者                | 
-| parentPath | 包名                |   
-| tableNames | 表名，多个英文逗号         |   
-| outputDir  | 文件件生成目录           |   
-| dbUrl      | 数据库链接信息           |  
-| dbUsername | 数据库账号接信息          |  
-| dbPassword | 数据库密码接信息          |  
-| useTenant  | 是否使用租户对象，默认为false |  
+| 参数名称               | 参数说明              | 
+|--------------------|-------------------|
+| author             | 作者                | 
+| parentPath         | 包名                |   
+| tableNames         | 表名，多个英文逗号         |   
+| outputDir          | 文件件生成目录           |   
+| dbUrl              | 数据库链接信息           |  
+| dbUsername         | 数据库账号接信息          |  
+| dbPassword         | 数据库密码接信息          |  
+| useTenant          | 是否使用租户对象，默认为false |  
+| enableFileOverride | 是否开启文件覆盖，默认为false |  
 
 

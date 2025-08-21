@@ -90,10 +90,15 @@ public class GeneratorCodeMojo extends AbstractMojo {
         if (StringUtils.isBlank(useTenant)) {
             useTenant = "false";
         }
+        //是否覆盖文件
+        String enableFileOverride = projectConfig.getProperty("enableFileOverride");
+        if (StringUtils.isBlank(enableFileOverride)) {
+            enableFileOverride = "false";
+        }
 
         DataSourceConfig.Builder builder = new DataSourceConfig.Builder(dbUrl, dbUsername, dbPassword);
         Generator generator = new Generator(builder, outputDir, readConfig.readBiscuitConfig(getLog()),
-                author, parentPath, tableNames, useTenant);
+                author, parentPath, tableNames, useTenant,enableFileOverride);
         generator.generator();
     }
 

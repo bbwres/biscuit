@@ -34,14 +34,18 @@ public class SecurityProperties {
      * true -启用
      * false-不启用
      */
-    private boolean enable = true;
-
+    private boolean enable = false;
 
 
     /**
      * 白名单配置信息
      */
     private String[] whiteListUri;
+
+    /**
+     * 匹配的rpc路径
+     */
+    private String[] pathPatterns;
 
 
 }

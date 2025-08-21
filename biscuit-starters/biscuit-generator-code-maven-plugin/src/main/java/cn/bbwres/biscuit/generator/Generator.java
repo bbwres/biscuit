@@ -54,8 +54,14 @@ public class Generator {
      */
     private final String useTenant;
 
+    /**
+     * 是否覆盖文件
+     */
+    private final String enableFileOverride;
+
     public Generator(DataSourceConfig.Builder dbConfigBuilder, String outputDir,
-                     Properties prop, String author, String parentPath, String tableNames, String useTenant) {
+                     Properties prop, String author, String parentPath, String tableNames, String useTenant,
+                     String enableFileOverride) {
         this.dbConfigBuilder = dbConfigBuilder;
         this.outputDir = outputDir;
         this.prop = prop;
@@ -63,6 +69,7 @@ public class Generator {
         this.parentPath = parentPath;
         this.tableNames = tableNames;
         this.useTenant = useTenant;
+        this.enableFileOverride = enableFileOverride;
     }
 
     /**
@@ -147,10 +154,12 @@ public class Generator {
             if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_TABLE_PREFIX))) {
                 builder.addTablePrefix(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_TABLE_PREFIX));
             }
+
             Entity.Builder eb = builder.entityBuilder();
             if (Boolean.parseBoolean(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_ENABLE_LOMBOK))) {
                 eb.enableLombok();
             }
+
             if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_ID_TYPE))) {
                 eb.idType(IdType.valueOf(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_ID_TYPE)));
             }
@@ -220,6 +229,13 @@ public class Generator {
             if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_MAPPER_TEMPLATE))) {
                 mb.mapperTemplate(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_MAPPER_TEMPLATE));
             }
+            //开启文件覆盖
+            if (Boolean.parseBoolean(enableFileOverride)) {
+                eb.enableFileOverride();
+                sb.enableFileOverride();
+                cb.enableFileOverride();
+                mb.enableFileOverride();
+            }
             mb.build();
         });
     }
@@ -251,13 +267,15 @@ public class Generator {
         List<CustomFile> customFiles = new ArrayList<>(16);
 
         for (Map<String, String> stringObjectMap : customFileConfig) {
-            customFiles.add(new CustomFile
-                    .Builder()
+            CustomFile.Builder customFileBuilder = new CustomFile.Builder()
                     .templatePath(stringObjectMap.get("templatePath"))
                     .packageName(stringObjectMap.get("packageName"))
                     .fileName(stringObjectMap.get("fileName"))
-                    .formatNameFunction(tableInfo -> tableInfo.getEntityName().replace("Entity", ""))
-                    .build());
+                    .formatNameFunction(tableInfo -> tableInfo.getEntityName().replace("Entity", ""));
+            if (Boolean.parseBoolean(enableFileOverride)) {
+                customFileBuilder.enableFileOverride();
+            }
+            customFiles.add(customFileBuilder.build());
         }
         builder.customFile(customFiles);
 

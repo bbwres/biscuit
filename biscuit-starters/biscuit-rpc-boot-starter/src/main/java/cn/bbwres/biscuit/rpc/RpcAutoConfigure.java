@@ -78,8 +78,9 @@ public class RpcAutoConfigure {
          * @return RpcWebAppConfigurer
          */
         @Bean("rpcWebAppConfigurer")
-        public RpcWebAppConfigurer rpcWebAppConfigurer(RpcServerHandlerInterceptorAdapter rpcServerHandlerInterceptorAdapter) {
-            return new RpcWebAppConfigurer(rpcServerHandlerInterceptorAdapter);
+        public RpcWebAppConfigurer rpcWebAppConfigurer(RpcServerHandlerInterceptorAdapter rpcServerHandlerInterceptorAdapter,
+                                                       RpcProperties rpcProperties) {
+            return new RpcWebAppConfigurer(rpcServerHandlerInterceptorAdapter, rpcProperties);
         }
 
         /**
@@ -113,8 +114,8 @@ public class RpcAutoConfigure {
      */
     @Bean
     @ConditionalOnBean(LoadBalancerClientFactory.class)
-    public RpcLoadBalancerRequestTransformer rpcLoadBalancerRequestTransformer() {
-        return new RpcLoadBalancerRequestTransformer();
+    public RpcLoadBalancerRequestTransformer rpcLoadBalancerRequestTransformer(RpcProperties rpcProperties) {
+        return new RpcLoadBalancerRequestTransformer(rpcProperties);
     }
 
 }
