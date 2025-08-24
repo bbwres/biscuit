@@ -18,9 +18,9 @@
 
 package cn.bbwres.biscuit.rpc.filter;
 
-import cn.bbwres.biscuit.rpc.properties.RpcProperties;
-import cn.bbwres.biscuit.rpc.properties.SecurityProperties;
-import cn.bbwres.biscuit.rpc.utils.SecurityUtils;
+import cn.bbwres.biscuit.rpc.constants.RpcConstants;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmContainer;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.Response;
@@ -29,6 +29,7 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -47,29 +48,33 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 @Slf4j
 public class GatewayRpcAuthorizationFilter implements GlobalFilter, Ordered {
 
-    private final RpcProperties rpcProperties;
+
+    private final RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer;
 
     /**
      * <p>Constructor for GatewayRpcAuthorizationFilter.</p>
      *
-     * @param rpcProperties a {@link cn.bbwres.biscuit.rpc.properties.RpcProperties} object
+     * @param rpcSecurityAlgorithmContainer a {@link RpcSecurityAlgorithmContainer} object
      */
-    public GatewayRpcAuthorizationFilter(RpcProperties rpcProperties) {
-        this.rpcProperties = rpcProperties;
+    public GatewayRpcAuthorizationFilter(RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
+        this.rpcSecurityAlgorithmContainer = rpcSecurityAlgorithmContainer;
     }
 
-    /** Constant <code>RPC_AUTHORIZATION_FILTER_ORDER=10151</code> */
+    /**
+     * Constant <code>RPC_AUTHORIZATION_FILTER_ORDER=10151</code>
+     */
     public static final int RPC_AUTHORIZATION_FILTER_ORDER = 10151;
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Get the order value of this object.
      * <p>Higher values are interpreted as lower priority. As a consequence,
      * the object with the lowest value has the highest priority (somewhat
      * analogous to Servlet {@code load-on-startup} values).
      * <p>Same order values will result in arbitrary sort positions for the
      * affected objects.
+     *
      * @see #HIGHEST_PRECEDENCE
      * @see #LOWEST_PRECEDENCE
      */
@@ -78,14 +83,11 @@ public class GatewayRpcAuthorizationFilter implements GlobalFilter, Ordered {
         return RPC_AUTHORIZATION_FILTER_ORDER;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        SecurityProperties securityProperties = rpcProperties.getSecurity();
-        if (Objects.isNull(securityProperties) || !securityProperties.isEnable()) {
-            log.debug("当前远程调用安全配置未开启!");
-            return chain.filter(exchange);
-        }
         ServerHttpRequest request = exchange.getRequest();
         //获取服务端
         Response<ServiceInstance> response = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
@@ -94,7 +96,13 @@ public class GatewayRpcAuthorizationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
         ServiceInstance serviceInstance = response.getServer();
-        Map<String, List<String>> stringListMap = SecurityUtils.putHeaderAuthorizationInfo(serviceInstance);
+        String securityAlgorithm = serviceInstance.getMetadata().get(RpcConstants.SERVICE_SECURITY_ALGORITHM);
+        if (ObjectUtils.isEmpty(securityAlgorithm)) {
+            log.debug("当前请求的服务端没有设置安全信息!请求服务端:[{}]", serviceInstance.getInstanceId());
+            return chain.filter(exchange);
+        }
+        RpcSecurityAlgorithmSupport rpcSecurityAlgorithmSupport = rpcSecurityAlgorithmContainer.getRpcSecurityAlgorithmSupport(securityAlgorithm, true);
+        Map<String, List<String>> stringListMap = rpcSecurityAlgorithmSupport.putHeaderAuthorizationInfo(serviceInstance, request.getURI().getPath());
         if (!CollectionUtils.isEmpty(stringListMap)) {
             ServerHttpRequest.Builder serverHttpRequestBuilder = request.mutate();
             for (String headerName : stringListMap.keySet()) {

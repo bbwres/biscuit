@@ -26,20 +26,30 @@ package cn.bbwres.biscuit.rpc.constants;
  */
 public class RpcConstants {
 
+
     /**
-     * 客户端密码的key
+     * 服务端支持的安全算法
      */
-    public static final String CLIENT_PASSWORD = "client.password";
+    public static final String SERVICE_SECURITY_ALGORITHM = "security.algorithm";
+
+    /**
+     * 客户端密钥
+     */
+    public static final String CLIENT_PASSWORD = "client.security.key";
 
     /**
      * 认证信息传递的请求头名称
      */
-    public static final String AUTHORIZATION_HEADER_NAME = "X-Client-Authorization";
+    public static final String AUTHORIZATION_HEADER_NAME = "x-client-authorization";
 
     /**
      * 请求时间戳
      */
-    public static final String CLIENT_TIME_HEADER_NAME = "X-Client-Time";
+    public static final String CLIENT_TIME_HEADER_NAME = "x-client-time";
+    /**
+     * 客户端系统名称
+     */
+    public static final String CLIENT_SYSTEM_NAME_HEADER_NAME = "x-client-system-name";
 
 
 }

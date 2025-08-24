@@ -21,6 +21,7 @@ package cn.bbwres.biscuit.web.swagger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * swagger配置
@@ -54,12 +55,6 @@ public class SwaggerProperties {
     @NotEmpty(message = "版本不能为空")
     private String version;
 
-    /**
-     * 扫描的包路径
-     */
-    @NotEmpty(message = "扫描的 package 不能为空")
-    private String basePackage;
-
     public String getTitle() {
         return title;
     }
@@ -92,11 +87,5 @@ public class SwaggerProperties {
         this.version = version;
     }
 
-    public String getBasePackage() {
-        return basePackage;
-    }
 
-    public void setBasePackage(String basePackage) {
-        this.basePackage = basePackage;
-    }
 }

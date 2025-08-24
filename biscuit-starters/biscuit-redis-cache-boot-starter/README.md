@@ -8,7 +8,7 @@
 
 ```
 <dependency>
-     <groupId>com.lightning</groupId>
+     <groupId>cn.bbwres</groupId>
      <artifactId>biscuit-redis-cache-boot-starter</artifactId>
      <version>${project.version}</version>
  </dependency>

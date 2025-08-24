@@ -19,9 +19,9 @@
 package cn.bbwres.biscuit.rpc.web;
 
 
-import cn.bbwres.biscuit.rpc.constants.RpcConstants;
-import cn.bbwres.biscuit.rpc.properties.RpcProperties;
-import cn.bbwres.biscuit.rpc.utils.SecurityUtils;
+import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmContainer;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
@@ -29,6 +29,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -44,7 +47,9 @@ public class RpcServerHandlerInterceptorAdapter implements HandlerInterceptor {
 
     private final ServiceInstance serviceInstance;
 
-    private final RpcProperties rpcProperties;
+    private final RpcSecurityProperties rpcSecurityProperties;
+
+    private final RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer;
 
 
     /**
@@ -57,14 +62,19 @@ public class RpcServerHandlerInterceptorAdapter implements HandlerInterceptor {
         if (isExclusion(request)) {
             return true;
         }
-        String clientTime = request.getHeader(RpcConstants.CLIENT_TIME_HEADER_NAME);
-        String authorization = request.getHeader(RpcConstants.AUTHORIZATION_HEADER_NAME);
+        RpcSecurityAlgorithmSupport rpcSecurityAlgorithmSupport = rpcSecurityAlgorithmContainer.getRpcSecurityAlgorithmSupport(rpcSecurityProperties.getSecurityAlgorithm(), true);
 
-        String clientPassword = serviceInstance.getMetadata().get(RpcConstants.CLIENT_PASSWORD);
-        String clientName = serviceInstance.getServiceId();
-        boolean checkResult = SecurityUtils.checkDataInfo(clientName, clientPassword, clientTime, authorization);
+        Map<String, String> headerMap = new HashMap<>(16);
+        Enumeration<String> headerNames = request.getHeaderNames();
+        // 遍历枚举，将每个头名称和对应值存入Map
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String headerValue = request.getHeader(headerName);
+            headerMap.put(headerName, headerValue);
+        }
+        boolean checkResult = rpcSecurityAlgorithmSupport.checkDataInfo(serviceInstance, headerMap, request.getRequestURI());
         if (!checkResult) {
-            log.info("当前rpc请求安全校验失败!请求接口:[{}]", request.getRequestURI());
+            log.warn("当前rpc请求安全校验失败!请求接口:[{}]", request.getRequestURI());
         }
         return checkResult;
     }
@@ -77,7 +87,7 @@ public class RpcServerHandlerInterceptorAdapter implements HandlerInterceptor {
      */
     public boolean isExclusion(HttpServletRequest request) {
         String url = request.getRequestURI();
-        String[] whiteListUri = rpcProperties.getSecurity().getWhiteListUri();
+        String[] whiteListUri = rpcSecurityProperties.getWhiteListUri();
         if (Objects.isNull(whiteListUri)) {
             return false;
         }

@@ -20,8 +20,11 @@ package cn.bbwres.biscuit.web.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.OpenAPIService;
@@ -43,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.springdoc.core.Constants.SPRINGDOC_ENABLED;
+
 /**
  * swagger自动配置
  *
@@ -51,14 +56,14 @@ import java.util.Optional;
 @AutoConfiguration
 @ConditionalOnClass({OpenAPI.class})
 @EnableConfigurationProperties(SwaggerProperties.class)
-@ConditionalOnProperty(prefix = "springdoc.api-docs", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = SPRINGDOC_ENABLED, havingValue = "true", matchIfMissing = true)
 public class SwaggerAutoConfiguration {
 
 
     /**
      * 创建openapi
      *
-     * @param properties
+     * @param properties 配置项
      * @return
      */
     @Bean
@@ -89,7 +94,7 @@ public class SwaggerAutoConfiguration {
      * 安全模式，这里配置通过请求头 Authorization 传递 token 参数
      */
     private Map<String, SecurityScheme> buildSecuritySchemes() {
-        Map<String, SecurityScheme> securitySchemes = new HashMap<>();
+        Map<String, SecurityScheme> securitySchemes = new HashMap<>(8);
         SecurityScheme securityScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.OAUTH2)
                 .name(HttpHeaders.AUTHORIZATION)
@@ -118,10 +123,11 @@ public class SwaggerAutoConfiguration {
 
     /**
      * 枚举属性转换
+     *
      * @return
      */
     @Bean
-    public EnumPropertyCustomizer enumPropertyCustomizer(){
+    public EnumPropertyCustomizer enumPropertyCustomizer() {
         return new EnumPropertyCustomizer();
     }
 

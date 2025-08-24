@@ -18,14 +18,16 @@
 
 package cn.bbwres.biscuit.rpc.filter;
 
-import cn.bbwres.biscuit.rpc.properties.RpcProperties;
-import cn.bbwres.biscuit.rpc.properties.SecurityProperties;
-import cn.bbwres.biscuit.rpc.utils.SecurityUtils;
+import cn.bbwres.biscuit.rpc.constants.RpcConstants;
+import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmContainer;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer;
 import org.springframework.http.HttpRequest;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -40,25 +42,34 @@ import java.util.Objects;
 @Slf4j
 public class RpcLoadBalancerRequestTransformer implements LoadBalancerRequestTransformer {
 
-    private final RpcProperties rpcProperties;
+    private final RpcSecurityProperties rpcSecurityProperties;
 
-    public RpcLoadBalancerRequestTransformer(RpcProperties rpcProperties) {
-        this.rpcProperties = rpcProperties;
+
+    private final RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer;
+
+    public RpcLoadBalancerRequestTransformer(RpcSecurityProperties rpcSecurityProperties,
+                                             RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
+        this.rpcSecurityProperties = rpcSecurityProperties;
+        this.rpcSecurityAlgorithmContainer = rpcSecurityAlgorithmContainer;
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public HttpRequest transformRequest(HttpRequest request, ServiceInstance instance) {
         if (Objects.isNull(instance)) {
             return request;
         }
-        SecurityProperties securityProperties = rpcProperties.getSecurity();
-        if (Objects.isNull(securityProperties) || !securityProperties.isEnable()) {
-            log.debug("当前远程调用安全配置未开启!");
+        String securityAlgorithm = instance.getMetadata().get(RpcConstants.SERVICE_SECURITY_ALGORITHM);
+        if (ObjectUtils.isEmpty(securityAlgorithm)) {
+            log.debug("当前请求的服务端没有设置安全信息!请求服务端:[{}]", instance.getInstanceId());
             return request;
         }
-        Map<String, List<String>> stringListMap = SecurityUtils.putHeaderAuthorizationInfo(instance);
+        RpcSecurityAlgorithmSupport rpcSecurityAlgorithmSupport = rpcSecurityAlgorithmContainer.getRpcSecurityAlgorithmSupport(securityAlgorithm, true);
+
+        Map<String, List<String>> stringListMap = rpcSecurityAlgorithmSupport.putHeaderAuthorizationInfo(instance, request.getURI().getPath());
         if (!CollectionUtils.isEmpty(stringListMap)) {
             for (String headerName : stringListMap.keySet()) {
                 request.getHeaders().put(headerName, stringListMap.get(headerName));

@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.rpc.properties;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 安全配置项
@@ -27,14 +28,31 @@ import lombok.Data;
  * @version $Id: $Id
  */
 @Data
-public class SecurityProperties {
+@ConfigurationProperties("biscuit.rpc.security")
+public class RpcSecurityProperties {
 
     /**
      * 是否启用安全配置
      * true -启用
      * false-不启用
      */
-    private boolean enable = false;
+    private boolean enable = true;
+
+    /**
+     * 是否启用防重放检查
+     * true -启用
+     * false-不启用
+     */
+    private boolean enableReplayCheck = true;
+    /**
+     * 防止重放检查时间
+     */
+    private Long replayCheckTime = 1000 * 60 * 5L;
+
+    /**
+     * 使用的安全算法
+     */
+    private String securityAlgorithm = "MD5";
 
 
     /**
@@ -44,8 +62,9 @@ public class SecurityProperties {
 
     /**
      * 匹配的rpc路径
+     * 默认拦截所有请求
      */
-    private String[] pathPatterns;
+    private String[] pathPatterns = new String[]{"/**"};
 
 
 }

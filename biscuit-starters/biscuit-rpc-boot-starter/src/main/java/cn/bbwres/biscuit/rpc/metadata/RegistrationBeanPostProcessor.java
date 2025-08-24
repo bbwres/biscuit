@@ -18,13 +18,16 @@
 
 package cn.bbwres.biscuit.rpc.metadata;
 
-import cn.bbwres.biscuit.rpc.constants.RpcConstants;
+import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmContainer;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cloud.client.serviceregistry.Registration;
 
 import java.util.Map;
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  * 服务注册处理
@@ -32,18 +35,33 @@ import java.util.UUID;
  * @author zhanglinfeng
  * @version $Id: $Id
  */
+@Slf4j
 public class RegistrationBeanPostProcessor implements BeanPostProcessor {
+    public RegistrationBeanPostProcessor(RpcSecurityProperties rpcSecurityProperties,
+                                         RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
+        this.rpcSecurityProperties = rpcSecurityProperties;
+        this.rpcSecurityAlgorithmContainer = rpcSecurityAlgorithmContainer;
+    }
+
+    private final RpcSecurityProperties rpcSecurityProperties;
+
+    private final RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer;
+
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 初始化
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof Registration) {
             Map<String, String> metadata = ((Registration) bean).getMetadata();
-            metadata.put(RpcConstants.CLIENT_PASSWORD, UUID.randomUUID().toString());
+            RpcSecurityAlgorithmSupport support = rpcSecurityAlgorithmContainer.getRpcSecurityAlgorithmSupport(rpcSecurityProperties.getSecurityAlgorithm(), false);
+            if (Objects.isNull(support)) {
+                return bean;
+            }
+            metadata.putAll(support.initSecurityMetadata());
         }
         return bean;
     }

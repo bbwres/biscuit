@@ -18,7 +18,6 @@
 
 package org.springframework.cloud.openfeign.loadbalancer;
 
-import cn.bbwres.biscuit.rpc.utils.SecurityUtils;
 import feign.Client;
 import feign.Request;
 import feign.RequestTemplate;
@@ -58,7 +57,7 @@ final class LoadBalancerUtils {
             if (loadBalanced && lbResponse.hasServer()) {
                 RequestTemplate requestTemplate = feignRequest.requestTemplate();
                 ServiceInstance serviceInstance = lbResponse.getServer();
-                Map<String, List<String>> stringListMap = SecurityUtils.putHeaderAuthorizationInfo(serviceInstance);
+                Map<String, List<String>> stringListMap =new HashMap<>(1); //SecurityUtils.putHeaderAuthorizationInfo(serviceInstance,requestTemplate.path());
 
                 for (String headerName : stringListMap.keySet()) {
                     requestTemplate.header(headerName, stringListMap.get(headerName));

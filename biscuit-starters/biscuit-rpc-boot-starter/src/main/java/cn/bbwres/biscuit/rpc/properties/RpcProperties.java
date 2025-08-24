@@ -32,10 +32,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class RpcProperties {
 
 
-    /**
-     * 安全配置项
-     */
-    private SecurityProperties security = new SecurityProperties();
-
-
 }
