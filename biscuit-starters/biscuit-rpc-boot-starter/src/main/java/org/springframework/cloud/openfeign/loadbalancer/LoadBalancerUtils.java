@@ -18,6 +18,9 @@
 
 package org.springframework.cloud.openfeign.loadbalancer;
 
+import cn.bbwres.biscuit.rpc.constants.RpcConstants;
+import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
+import cn.bbwres.biscuit.rpc.utils.SecurityUtil;
 import feign.Client;
 import feign.Request;
 import feign.RequestTemplate;
@@ -30,6 +33,7 @@ import org.springframework.cloud.client.loadbalancer.ResponseData;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -57,12 +61,15 @@ final class LoadBalancerUtils {
             if (loadBalanced && lbResponse.hasServer()) {
                 RequestTemplate requestTemplate = feignRequest.requestTemplate();
                 ServiceInstance serviceInstance = lbResponse.getServer();
-                Map<String, List<String>> stringListMap =new HashMap<>(1); //SecurityUtils.putHeaderAuthorizationInfo(serviceInstance,requestTemplate.path());
+                String securityAlgorithm = serviceInstance.getMetadata().get(RpcConstants.SERVICE_SECURITY_ALGORITHM);
+                if (!ObjectUtils.isEmpty(securityAlgorithm)) {
+                    RpcSecurityAlgorithmSupport rpcSecurityAlgorithmSupport = SecurityUtil.getRpcSecurityAlgorithmSupport(securityAlgorithm, true);
+                    Map<String, List<String>> stringListMap = rpcSecurityAlgorithmSupport.putHeaderAuthorizationInfo(serviceInstance, requestTemplate.path());
 
-                for (String headerName : stringListMap.keySet()) {
-                    requestTemplate.header(headerName, stringListMap.get(headerName));
+                    for (String headerName : stringListMap.keySet()) {
+                        requestTemplate.header(headerName, stringListMap.get(headerName));
+                    }
                 }
-
                 feignRequest = Request.create(feignRequest.httpMethod(), feignRequest.url(), requestTemplate.headers(), feignRequest.body(),
                         feignRequest.charset(), requestTemplate);
             }

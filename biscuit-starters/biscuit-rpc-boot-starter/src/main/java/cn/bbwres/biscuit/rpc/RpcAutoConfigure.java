@@ -24,6 +24,7 @@ import cn.bbwres.biscuit.rpc.metadata.RegistrationBeanPostProcessor;
 import cn.bbwres.biscuit.rpc.properties.RpcProperties;
 import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
 import cn.bbwres.biscuit.rpc.security.*;
+import cn.bbwres.biscuit.rpc.utils.SecurityUtil;
 import cn.bbwres.biscuit.rpc.web.RpcServerHandlerInterceptorAdapter;
 import cn.bbwres.biscuit.rpc.web.RpcWebAppConfigurer;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,16 @@ import java.util.List;
 @AutoConfiguration
 @EnableConfigurationProperties({RpcProperties.class, RpcSecurityProperties.class})
 public class RpcAutoConfigure {
+
+    /**
+     * spring bean 的工具类
+     *
+     * @return SecurityUtil
+     */
+    @Bean
+    public SecurityUtil securityUtil() {
+        return new SecurityUtil();
+    }
 
 
     /**
