@@ -74,7 +74,7 @@ public class ${table.controllerName} {
     */
     @GetMapping("/getById")
     #if(${swagger})
-    @Operation(summary = "根据id获取标签定义的数据",
+    @Operation(summary = "根据id获取${table.comment}详情数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     #end
     public Result<${tableClassName}RespVO> getById(@RequestParam("id") ${idType} entityId) {
