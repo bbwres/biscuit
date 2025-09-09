@@ -21,14 +21,13 @@ package cn.bbwres.biscuit.web.utils;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.utils.JsonUtil;
 import cn.bbwres.biscuit.utils.NetworkUtil;
+import cn.bbwres.biscuit.utils.SpringContextUtil;
 import cn.bbwres.biscuit.web.BiscuitWebProperties;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
@@ -39,21 +38,14 @@ import java.util.Objects;
  */
 public class WebFrameworkUtils {
 
-    private BiscuitWebProperties biscuitWebProperties;
 
-
-    @Autowired
-    public void setBiscuitWebProperties(BiscuitWebProperties biscuitWebProperties) {
-        this.biscuitWebProperties = biscuitWebProperties;
-    }
-
-    private static WebFrameworkUtils webFrameworkUtils;
-
-
-    @PostConstruct
-    public void initialize() {
-        webFrameworkUtils = this;
-        webFrameworkUtils.biscuitWebProperties = biscuitWebProperties;
+    /**
+     * 获取配置文件
+     *
+     * @return
+     */
+    private static BiscuitWebProperties getBiscuitWebProperties() {
+        return SpringContextUtil.getBean(BiscuitWebProperties.class);
     }
 
 
@@ -72,7 +64,7 @@ public class WebFrameworkUtils {
      * @return
      */
     public static UserBaseInfo<?> getRequestUser() {
-        String userInfoHeaderName = webFrameworkUtils.biscuitWebProperties.getUserInfoHeaderName();
+        String userInfoHeaderName = getBiscuitWebProperties().getUserInfoHeaderName();
         String userInfoStr = getHeader(userInfoHeaderName);
         if (Objects.isNull(userInfoStr)) {
             return null;
@@ -165,7 +157,7 @@ public class WebFrameworkUtils {
      *
      * @return ua
      */
-    protected String getUserAgent() {
+    public static String getUserAgent() {
         String ua = getHeader(USER_AGENT);
         return ua != null ? ua : "";
     }

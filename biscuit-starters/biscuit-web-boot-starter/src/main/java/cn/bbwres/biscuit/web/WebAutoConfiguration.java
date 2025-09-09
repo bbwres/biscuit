@@ -22,7 +22,6 @@ import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.web.config.WebAppMvcConfigurer;
 import cn.bbwres.biscuit.web.handler.BiscuitHandlerExceptionResolver;
 import cn.bbwres.biscuit.web.handler.WebExceptionConvertErrorCode;
-import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +43,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -164,15 +162,6 @@ public class WebAutoConfiguration {
         return new WebExceptionConvertErrorCode();
     }
 
-    /**
-     * 请求处理
-     *
-     * @return
-     */
-    @Bean
-    public WebFrameworkUtils webFrameworkUtils() {
-        return new WebFrameworkUtils();
-    }
 
     /**
      * 默认解析器 其中locale表示默认语言
