@@ -63,8 +63,7 @@ public class ${table.controllerName} {
     #end
     public Result<Page<${tableClassName}RespVO,${tableClassName}PageReqVO>> get${tableClassName}Page(@Validated @RequestBody Page<${entity},${tableClassName}PageReqVO> pageVO) {
         Page<${entity},${tableClassName}PageReqVO> pageResult = ${serviceNameLow}.get${tableClassName}Page(pageVO);
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    ${tableClassName}Convert.INSTANCE.convertPage(pageResult));
+        return Result.success(${tableClassName}Convert.INSTANCE.convertPage(pageResult));
     }
 
     /**
@@ -78,8 +77,7 @@ public class ${table.controllerName} {
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     #end
     public Result<${tableClassName}RespVO> getById(@RequestParam("id") ${idType} entityId) {
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    ${tableClassName}Convert.INSTANCE.convert(${serviceNameLow}.get${tableClassName}(entityId)));
+        return Result.success(${tableClassName}Convert.INSTANCE.convert(${serviceNameLow}.get${tableClassName}(entityId)));
     }
 
 
