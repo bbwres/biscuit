@@ -16,30 +16,27 @@
  *
  */
 
-package cn.bbwres.biscuit;
+package cn.bbwres.biscuit.web.supplier;
 
-import cn.bbwres.biscuit.utils.SpringContextUtil;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.context.annotation.Bean;
+import cn.bbwres.biscuit.entity.UserBaseInfo;
+import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
+
+import java.util.function.Supplier;
 
 /**
- * 公共包自动配置类
+ * 获取当前登录用户的 Supplier
+ * 主要用于数据库的自动填充
  *
  * @author zhanglinfeng
  */
-@AutoConfiguration
-public class CommonAutoConfiguration {
-
-
+public class UserInfoSupplier implements Supplier<UserBaseInfo<?>> {
     /**
-     * spring 上下文工具类
+     * Gets a result.
      *
-     * @return
+     * @return a result
      */
-    @Bean
-    public SpringContextUtil springContextUtil() {
-        return new SpringContextUtil();
+    @Override
+    public UserBaseInfo<?> get() {
+        return WebFrameworkUtils.getRequestUser(true);
     }
-
-
 }

@@ -52,6 +52,7 @@
         <dynamic.datasource.version>4.3.0</dynamic.datasource.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <fastjson.version>1.2.83</fastjson.version>
+        <jackson.version>2.15.4</jackson.version>
         <springdoc.version>1.7.0</springdoc.version>
         <swagger.version>2.2.9</swagger.version>
         <jsoup.version>1.17.2</jsoup.version>
@@ -118,6 +119,17 @@
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
                 <version>${bcprov-jdk18on.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>

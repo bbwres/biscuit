@@ -16,30 +16,11 @@
  *
  */
 
-package cn.bbwres.biscuit;
-
-import cn.bbwres.biscuit.utils.SpringContextUtil;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.context.annotation.Bean;
+package cn.bbwres.biscuit.validate;
 
 /**
- * 公共包自动配置类
- *
+ * 数据校验-查询 组
  * @author zhanglinfeng
  */
-@AutoConfiguration
-public class CommonAutoConfiguration {
-
-
-    /**
-     * spring 上下文工具类
-     *
-     * @return
-     */
-    @Bean
-    public SpringContextUtil springContextUtil() {
-        return new SpringContextUtil();
-    }
-
-
+public interface ValidateQueryGroup {
 }

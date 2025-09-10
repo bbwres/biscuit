@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.mybatis.handler;
 
+import cn.bbwres.biscuit.entity.BaseEntity;
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.mybatis.config.MybatisProperties;
@@ -58,8 +59,10 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
 
-        strictInsertFill(metaObject, CREATE_TIME, LocalDateTime.class, LocalDateTime.now());
-        strictInsertFill(metaObject, CREATOR, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
+        if (metaObject.getOriginalObject() instanceof BaseEntity) {
+            strictInsertFill(metaObject, CREATE_TIME, LocalDateTime.class, LocalDateTime.now());
+            strictInsertFill(metaObject, CREATOR, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
+        }
         if (mybatisTenantProperties.isEnabled() && metaObject.getOriginalObject() instanceof BaseTenantEntity) {
             //获取租户id
             strictInsertFill(metaObject, TENANT_ID, () -> mybatisProperties.obtainUserInfo(userBaseInfo -> ObjectUtils.isEmpty(userBaseInfo.getTenantId()) ?
@@ -75,8 +78,11 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        strictUpdateFill(metaObject, UPDATE_TIME, LocalDateTime.class, LocalDateTime.now());
-        strictUpdateFill(metaObject, UPDATER, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
+        if (metaObject.getOriginalObject() instanceof BaseEntity) {
+            strictUpdateFill(metaObject, UPDATE_TIME, LocalDateTime.class, LocalDateTime.now());
+            strictUpdateFill(metaObject, UPDATER, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
+        }
+
     }
 
 

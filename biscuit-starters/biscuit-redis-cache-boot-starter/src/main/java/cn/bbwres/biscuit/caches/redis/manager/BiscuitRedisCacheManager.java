@@ -18,6 +18,8 @@
 
 package cn.bbwres.biscuit.caches.redis.manager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.cache.*;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.lang.Nullable;
@@ -32,7 +34,10 @@ import java.util.*;
  *
  * @author zhanglinfeng
  */
+
 public class BiscuitRedisCacheManager extends RedisCacheManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BiscuitRedisCacheManager.class);
 
     private final String delimitSymbol;
 
@@ -69,8 +74,13 @@ public class BiscuitRedisCacheManager extends RedisCacheManager {
             name = array[0];
             // 解析TTL
             if (array.length > 1) {
-                long ttl = Long.parseLong(array[1]);
-                cacheConfig = cacheConfig.entryTtl(Duration.ofSeconds(ttl));
+                try {
+                    long ttl = Long.parseLong(array[1]);
+                    cacheConfig = cacheConfig.entryTtl(Duration.ofSeconds(ttl));
+                } catch (Exception e) {
+                    LOGGER.info("当前缓存的ttl解析失败！因此使用默认的缓存名字和ttl!缓存名字为:[{}],失败原因为:[{}]", name, e.getMessage());
+                }
+
             }
         }
         return super.createRedisCache(name, cacheConfig);
