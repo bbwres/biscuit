@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,10 +39,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * 开启注解式缓存
+ * 设置EnableCaching为最高优先级，在aop时，最先执行，最后释放。
+ * 可以确保 当@Transactional 与@CacheEvict一起使用时，默认设置的情况下，可能会因为先清除缓存后提交事务，从而产生缓存和数据库数据不一致的问题。
  *
  * @author zlf
  */
-@EnableCaching
+@EnableCaching(order = Ordered.HIGHEST_PRECEDENCE)
 @AutoConfiguration
 @EnableConfigurationProperties({BiscuitRedisProperties.class})
 @AutoConfigureBefore(RedisAutoConfiguration.class)
