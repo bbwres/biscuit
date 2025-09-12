@@ -22,7 +22,7 @@
     <parent>
         <groupId>cn.bbwres</groupId>
         <artifactId>biscuit-starters</artifactId>
-        <version>0.0.7</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
     <artifactId>biscuit-redis-lock-boot-starter</artifactId>
     <name>biscuit-redis-lock-start</name>
