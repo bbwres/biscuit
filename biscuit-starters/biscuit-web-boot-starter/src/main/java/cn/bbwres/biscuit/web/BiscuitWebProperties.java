@@ -60,7 +60,7 @@ public class BiscuitWebProperties {
     /**
      * 参数验证国际化配置
      */
-    private String validatorI18nBaseName = "i18n/validatorMessages";
+    private String validatorI18nBaseName = "validator/i18n/validatorMessages";
 
     /**
      * 参数验证国际化配置缓存时间
