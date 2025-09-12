@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-nacos-boot-starter</artifactId>
+    <name>biscuit-nacos-boot-starter</name>
     <description>nacos 相关包</description>
 
 

@@ -25,6 +25,7 @@
         <version>0.0.7</version>
     </parent>
     <artifactId>biscuit-mongodb-boot-starter</artifactId>
+    <name>biscuit-mongodb-boot-starter</name>
     <description>spring boot mongodb start</description>
 
     <dependencies>

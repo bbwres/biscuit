@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-security-captcha-boot-starter</artifactId>
+    <name>biscuit-security-captcha-boot-starter</name>
     <description>支持图形验证码的包</description>
 
 

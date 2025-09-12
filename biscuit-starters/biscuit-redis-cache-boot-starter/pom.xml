@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-redis-cache-boot-starter</artifactId>
+    <name>biscuit-redis-cache-boot-starter</name>
     <description>基于spring cache的redis缓存</description>
 
     <dependencies>

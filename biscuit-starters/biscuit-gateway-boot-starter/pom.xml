@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-gateway-boot-starter</artifactId>
+    <name>biscuit-gateway-boot-starter</name>
     <description>网关服务</description>
 
     <dependencies>

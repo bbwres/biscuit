@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-rpc-boot-starter</artifactId>
+    <name>biscuit-rpc-boot-starter</name>
     <description>rpc 工具包</description>
 
 

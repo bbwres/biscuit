@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-web-boot-starter</artifactId>
+    <name>biscuit-web-boot-starter</name>
     <description>web服务包</description>
 
     <dependencies>

@@ -28,6 +28,7 @@
     <artifactId>biscuit-dependencies</artifactId>
     <description>依赖清单</description>
     <packaging>pom</packaging>
+    <name>biscuit-dependencies</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

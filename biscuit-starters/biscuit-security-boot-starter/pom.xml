@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-security-boot-starter</artifactId>
+    <name>biscuit-security-boot-starter</name>
     <description>安全相关工具包</description>
 
 

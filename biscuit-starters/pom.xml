@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-starters</artifactId>
+    <name>biscuit-starters</name>
     <packaging>pom</packaging>
     <description>starters</description>
     <modules>

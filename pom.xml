@@ -26,6 +26,7 @@
     <packaging>pom</packaging>
     <url>https://github.com/bbwres/biscuit</url>
     <description>spring cloud 开发脚手架</description>
+    <name>biscuit</name>
     <modules>
         <module>biscuit-dependencies</module>
         <module>biscuit-starters</module>

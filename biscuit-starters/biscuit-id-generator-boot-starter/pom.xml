@@ -25,6 +25,7 @@
         <version>0.0.7</version>
     </parent>
     <artifactId>biscuit-id-generator-boot-starter</artifactId>
+    <name>biscuit-id-generator-boot-starter</name>
     <description>ID 生成器</description>
 
     <dependencies>

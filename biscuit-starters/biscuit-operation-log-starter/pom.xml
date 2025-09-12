@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-operation-log-starter</artifactId>
+    <name>biscuit-operation-log-starter</name>
     <description>操作日志服务包</description>
 
     <dependencies>

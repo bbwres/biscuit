@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-common-boot-starter</artifactId>
+    <name>biscuit-common-boot-starter</name>
     <description>公共服务包</description>
 
 

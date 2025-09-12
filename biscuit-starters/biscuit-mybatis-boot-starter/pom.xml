@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>biscuit-mybatis-boot-starter</artifactId>
+    <name>biscuit-mybatis-boot-starter</name>
     <description>mybatis plus 的依赖</description>
 
 

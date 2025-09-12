@@ -25,6 +25,7 @@
         <version>0.0.7</version>
     </parent>
     <artifactId>biscuit-scheduler-boot-starter</artifactId>
+    <name>biscuit-scheduler-boot-starter</name>
     <description>定时任务start</description>
 
     <dependencies>
