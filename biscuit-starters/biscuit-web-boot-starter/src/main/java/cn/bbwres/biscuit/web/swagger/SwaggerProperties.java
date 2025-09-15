@@ -18,10 +18,8 @@
 
 package cn.bbwres.biscuit.web.swagger;
 
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 /**
  * swagger配置

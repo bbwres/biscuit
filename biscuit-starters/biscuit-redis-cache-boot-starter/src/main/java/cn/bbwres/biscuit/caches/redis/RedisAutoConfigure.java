@@ -82,9 +82,7 @@ public class RedisAutoConfigure {
     @Bean
     @ConditionalOnProperty(prefix = "biscuit.redis", name = "enable-json-serializer-value", havingValue = "true", matchIfMissing = true)
     public Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer() {
-        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        serializer.setObjectMapper(JsonUtil.getObjectMapper());
-        return serializer;
+        return new Jackson2JsonRedisSerializer<>(JsonUtil.getObjectMapper(), Object.class);
     }
 
     /**

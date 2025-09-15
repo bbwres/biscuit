@@ -21,6 +21,8 @@ package cn.bbwres.biscuit.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 
+import java.io.Serial;
+
 /**
  * 租户基础类
  *
@@ -29,6 +31,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
  */
 public class BaseTenantEntity extends BaseEntity {
 
+    @Serial
     private static final long serialVersionUID = -6563481654761263760L;
     /**
      * 租户id

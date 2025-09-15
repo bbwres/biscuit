@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.exception.constants;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -26,6 +27,7 @@ import java.io.Serializable;
  * @author zhanglinfeng
  */
 public class ErrorCode implements Serializable {
+    @Serial
     private static final long serialVersionUID = 9022572900152622888L;
 
     /**

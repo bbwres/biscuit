@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -30,6 +31,7 @@ import java.io.Serializable;
  */
 @Schema(description = "排序信息")
 public class SortInfo implements Serializable {
+    @Serial
     private static final long serialVersionUID = -4981916565823419803L;
 
     /**

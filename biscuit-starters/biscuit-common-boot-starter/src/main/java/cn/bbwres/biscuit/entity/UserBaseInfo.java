@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -28,6 +29,7 @@ import java.io.Serializable;
  */
 public class UserBaseInfo<T> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 2330611822113249402L;
     /**
      * 用户id

@@ -33,7 +33,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 枚举属性自定义
@@ -60,8 +59,7 @@ public class EnumPropertyCustomizer implements PropertyCustomizer {
             // 是否是枚举
             if (BaseEnum.class.isAssignableFrom(fieldClazz)) {
                 // 获取父接口
-                if (fieldClazz.getGenericInterfaces()[0] instanceof ParameterizedType) {
-                    ParameterizedType parameterizedType = (ParameterizedType) fieldClazz.getGenericInterfaces()[0];
+                if (fieldClazz.getGenericInterfaces()[0] instanceof ParameterizedType parameterizedType) {
                     // 通过父接口获取泛型中枚举值的class类型
                     Type actualTypeArgument = parameterizedType.getActualTypeArguments()[0];
                     Schema<?> schema = getSchemaByType(actualTypeArgument, property);
@@ -97,10 +95,10 @@ public class EnumPropertyCustomizer implements PropertyCustomizer {
                     }
                     return codedEnum.getValue() + " - " + codedEnum.getDisplayName();
                 })
-                .collect(Collectors.toList());
+                .toList();
         StringBuilder str = new StringBuilder();
         if (!CollectionUtils.isEmpty(displayValues)) {
-            str.append(displayValues.get(0));
+            str.append(displayValues.getFirst());
             for (int i = 1; i < displayValues.size(); i++) {
                 str.append(",").append(displayValues.get(i));
             }

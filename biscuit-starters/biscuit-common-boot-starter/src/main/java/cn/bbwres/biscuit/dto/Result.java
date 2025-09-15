@@ -23,6 +23,7 @@ import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -33,6 +34,7 @@ import java.io.Serializable;
  */
 @Schema(description = "通用返回对象")
 public class Result<T> implements Serializable {
+    @Serial
     private static final long serialVersionUID = -6435479828255665882L;
 
     /**

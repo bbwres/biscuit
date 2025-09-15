@@ -53,7 +53,7 @@ public class RedisListenerConfig {
     public Config redissonConfig(RedisProperties redisProperties) {
         Config config = new Config();
         String redisLink = "redis://%s";
-        if (redisProperties.isSsl()) {
+        if (redisProperties.getSsl().isEnabled()) {
             redisLink = "rediss://%s";
         }
         //主从模式

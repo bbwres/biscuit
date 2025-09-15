@@ -33,7 +33,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.ObjectUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -42,6 +41,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Map;
 
 /**
@@ -74,7 +74,7 @@ public class JsonUtil {
                 .setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT))
                 .registerModule(javaTimeModule);
         //设置不序列化为空的字段
-        OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        OBJECT_MAPPER.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         //反序列化未知字段不报错
         OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         //序列化未知字段不报错
@@ -107,20 +107,7 @@ public class JsonUtil {
         return null;
     }
 
-    /**
-     * 对象转换json之后转换base64
-     *
-     * @param t
-     * @param <T>
-     * @return
-     */
-    public static <T> String toJsonBase64(T t) {
-        String json = toJson(t);
-        if (ObjectUtils.isEmpty(json)) {
-            return null;
-        }
-        return Base64Utils.encodeToUrlSafeString(json.getBytes());
-    }
+
 
     /**
      * json  转对象
@@ -149,9 +136,25 @@ public class JsonUtil {
      * @return
      */
     public static <T> T toObjectByBase64Json(String base64Json, Class<T> clazz) {
-        String json = new String(Base64Utils.decodeFromUrlSafeString(base64Json), StandardCharsets.UTF_8);
+        String json = new String(Base64.getDecoder().decode(base64Json), StandardCharsets.UTF_8);
         return toObject(json, clazz);
     }
+
+    /**
+     * 对象转换json之后转换base64
+     *
+     * @param t
+     * @param <T>
+     * @return
+     */
+    public static <T> String toJsonBase64(T t) {
+        String json = toJson(t);
+        if (ObjectUtils.isEmpty(json)) {
+            return null;
+        }
+        return Base64.getEncoder().encodeToString(json.getBytes());
+    }
+
 
 
     /**

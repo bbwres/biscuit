@@ -23,6 +23,8 @@ import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -33,8 +35,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -80,8 +80,7 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
         message.setI18nHandler(true);
         String errorCode = null;
 
-        if (ex instanceof SystemRuntimeException) {
-            SystemRuntimeException systemRuntimeException = (SystemRuntimeException) ex;
+        if (ex instanceof SystemRuntimeException systemRuntimeException) {
             message.setMessage(ObjectUtils.isEmpty(ex.getMessage()) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage() : ex.getMessage());
             errorCode = systemRuntimeException.getErrorCode();
             return resultModelAndView(errorCode, message);

@@ -21,6 +21,8 @@ package cn.bbwres.biscuit.exception;
 
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 
+import java.io.Serial;
+
 /**
  * 参数校验异常
  *
@@ -29,6 +31,7 @@ import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 public class ParamsCheckRuntimeException extends SystemRuntimeException {
 
     public static final String DEFAULT_ERROR_CODE = GlobalErrorCodeConstants.BAD_REQUEST.getCode();
+    @Serial
     private static final long serialVersionUID = -6668831091899992624L;
 
     /**

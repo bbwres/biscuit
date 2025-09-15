@@ -17,12 +17,13 @@
   ~  */
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.bbwres</groupId>
         <artifactId>biscuit</artifactId>
-        <version>0.0.8-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>biscuit-starters</artifactId>
@@ -31,19 +32,20 @@
     <description>starters</description>
     <modules>
         <module>biscuit-common-boot-starter</module>
-        <module>biscuit-gateway-boot-starter</module>
+        <!--        <module>biscuit-gateway-boot-starter</module>-->
         <module>biscuit-i18n-boot-starter</module>
         <module>biscuit-id-generator-boot-starter</module>
-        <module>biscuit-mongodb-boot-starter</module>
+        <!--        <module>biscuit-mongodb-boot-starter</module>-->
         <module>biscuit-mybatis-boot-starter</module>
         <module>biscuit-nacos-boot-starter</module>
         <module>biscuit-redis-lock-boot-starter</module>
-        <module>biscuit-rpc-boot-starter</module>
+        <module>biscuit-redis-cache-boot-starter</module>
+        <!--        <module>biscuit-rpc-boot-starter</module>-->
         <module>biscuit-scheduler-boot-starter</module>
         <module>biscuit-web-boot-starter</module>
-        <module>biscuit-security-boot-starter</module>
-        <module>biscuit-security-captcha-boot-starter</module>
-        <module>biscuit-redis-cache-boot-starter</module>
+        <!--        <module>biscuit-security-boot-starter</module>-->
+        <!--        <module>biscuit-security-captcha-boot-starter</module>-->
+
         <module>biscuit-operation-log-starter</module>
         <module>biscuit-generator-code-maven-plugin</module>
     </modules>

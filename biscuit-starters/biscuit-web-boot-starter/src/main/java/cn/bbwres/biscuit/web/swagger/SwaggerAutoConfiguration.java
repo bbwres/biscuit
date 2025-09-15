@@ -20,20 +20,18 @@ package cn.bbwres.biscuit.web.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springdoc.core.OpenAPIService;
-import org.springdoc.core.PropertyResolverUtils;
-import org.springdoc.core.SecurityService;
-import org.springdoc.core.SpringDocConfigProperties;
 import org.springdoc.core.customizers.OpenApiBuilderCustomizer;
 import org.springdoc.core.customizers.ServerBaseUrlCustomizer;
+import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.core.providers.JavadocProvider;
+import org.springdoc.core.service.OpenAPIService;
+import org.springdoc.core.service.SecurityService;
+import org.springdoc.core.utils.Constants;
+import org.springdoc.core.utils.PropertyResolverUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -46,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.springdoc.core.Constants.SPRINGDOC_ENABLED;
 
 /**
  * swagger自动配置
@@ -56,7 +53,7 @@ import static org.springdoc.core.Constants.SPRINGDOC_ENABLED;
 @AutoConfiguration
 @ConditionalOnClass({OpenAPI.class})
 @EnableConfigurationProperties(SwaggerProperties.class)
-@ConditionalOnProperty(name = SPRINGDOC_ENABLED, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = Constants.SPRINGDOC_ENABLED, havingValue = "true", matchIfMissing = true)
 public class SwaggerAutoConfiguration {
 
 
@@ -108,7 +105,7 @@ public class SwaggerAutoConfiguration {
      * 自定义 OpenAPI 处理器
      */
     @Bean
-    public OpenAPIService openApiBuilder(Optional<OpenAPI> openAPI,
+    public OpenAPIService openApiBuilder(Optional<OpenAPI> openApi,
                                          SecurityService securityParser,
                                          SpringDocConfigProperties springDocConfigProperties,
                                          PropertyResolverUtils propertyResolverUtils,
@@ -116,7 +113,7 @@ public class SwaggerAutoConfiguration {
                                          Optional<List<ServerBaseUrlCustomizer>> serverBaseUrlCustomizers,
                                          Optional<JavadocProvider> javadocProvider) {
 
-        return new OpenAPIService(openAPI, securityParser, springDocConfigProperties,
+        return new OpenAPIService(openApi, securityParser, springDocConfigProperties,
                 propertyResolverUtils, openApiBuilderCustomizers, serverBaseUrlCustomizers, javadocProvider);
     }
 

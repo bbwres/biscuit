@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.exception;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -26,6 +27,7 @@ import java.io.Serializable;
  * @author zhanglinfeng
  */
 public class ErrorMessageInfo implements Serializable {
+    @Serial
     private static final long serialVersionUID = -8071875532333309320L;
 
     /**

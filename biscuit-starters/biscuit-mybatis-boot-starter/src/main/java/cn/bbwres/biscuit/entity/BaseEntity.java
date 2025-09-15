@@ -21,6 +21,7 @@ package cn.bbwres.biscuit.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -32,6 +33,7 @@ import java.time.LocalDateTime;
  */
 public class BaseEntity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 375884071908914508L;
     /**
      * 创建时间

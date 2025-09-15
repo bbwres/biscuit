@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.mybatis.config;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -26,6 +27,7 @@ import java.io.Serializable;
  * @author zhanglinfeng
  */
 public class MapperBasePackage implements Serializable {
+    @Serial
     private static final long serialVersionUID = -3218296198348042946L;
 
     /**

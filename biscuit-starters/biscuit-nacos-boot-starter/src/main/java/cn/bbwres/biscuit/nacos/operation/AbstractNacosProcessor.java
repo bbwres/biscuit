@@ -19,12 +19,12 @@
 package cn.bbwres.biscuit.nacos.operation;
 
 import com.alibaba.nacos.api.config.listener.Listener;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.ExecutorService;
 
 /**

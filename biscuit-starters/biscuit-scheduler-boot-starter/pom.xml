@@ -22,7 +22,7 @@
     <parent>
         <groupId>cn.bbwres</groupId>
         <artifactId>biscuit-starters</artifactId>
-        <version>0.0.8-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>biscuit-scheduler-boot-starter</artifactId>
     <name>biscuit-scheduler-boot-starter</name>

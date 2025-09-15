@@ -23,6 +23,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
@@ -35,6 +36,7 @@ import java.util.function.Supplier;
  */
 @ConfigurationProperties(prefix = Constants.MYBATIS_PLUS)
 public class MybatisProperties implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

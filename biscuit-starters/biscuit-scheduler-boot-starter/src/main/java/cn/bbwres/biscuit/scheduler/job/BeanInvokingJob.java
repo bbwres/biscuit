@@ -37,8 +37,12 @@ import org.springframework.util.MethodInvoker;
 @Slf4j
 public class BeanInvokingJob implements Job {
 
-    @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     /** {@inheritDoc} */
     @Override

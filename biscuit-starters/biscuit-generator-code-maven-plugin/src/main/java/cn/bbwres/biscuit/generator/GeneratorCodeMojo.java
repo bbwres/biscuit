@@ -50,9 +50,9 @@ public class GeneratorCodeMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().info("read-config:" + ((Resource) project.getResources().get(0)).getDirectory());
+        getLog().info("read-config:" + ((Resource) project.getResources().getFirst()).getDirectory());
 
-        ReadConfig readConfig = new ReadConfig(((Resource) project.getResources().get(0)).getDirectory());
+        ReadConfig readConfig = new ReadConfig(((Resource) project.getResources().getFirst()).getDirectory());
         Properties projectConfig = readConfig.readProjectConfig(getLog());
         String outputDir = System.getProperty("user.dir");
         String author = projectConfig.getProperty("author");

@@ -47,8 +47,7 @@ public class MybatisPlusPropertiesBeanPostProcessor implements BeanPostProcessor
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof MybatisPlusProperties) {
-            MybatisPlusProperties mybatisPlusProperties = (MybatisPlusProperties) bean;
+        if (bean instanceof MybatisPlusProperties mybatisPlusProperties) {
             Class<?> typeHandler = mybatisPlusProperties.getConfiguration().getDefaultEnumTypeHandler();
             LOG.info("MybatisConfigurationInitializer:old: typeHandler = {}", typeHandler);
             if (typeHandler == null || EnumTypeHandler.class.equals(typeHandler)

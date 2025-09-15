@@ -21,6 +21,7 @@ package cn.bbwres.biscuit.mybatis.config;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @ConfigurationProperties(prefix = Constants.MYBATIS_PLUS + ".tenant")
 public class MybatisTenantProperties implements Serializable {
+    @Serial
     private static final long serialVersionUID = 6030955700286744649L;
 
     private boolean enabled = false;

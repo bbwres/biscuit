@@ -21,6 +21,8 @@ package cn.bbwres.biscuit.exception;
 
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 
+import java.io.Serial;
+
 /**
  * 系统运行时业务异常
  *
@@ -34,6 +36,7 @@ public class SystemBusinessRuntimeException extends SystemRuntimeException {
      * 000 异常明细
      */
     public static final String DEFAULT_ERROR_CODE = GlobalErrorCodeConstants.BUSINESS_ERROR.getCode();
+    @Serial
     private static final long serialVersionUID = -6668831091899992624L;
 
     /**
