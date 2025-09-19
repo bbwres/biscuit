@@ -28,9 +28,9 @@ import java.util.regex.Pattern;
  * @author zhanglinfeng
  * @version $Id: $Id
  */
-public final class XSSUtils {
+public final class XssUtils {
 
-    private XSSUtils() {
+    private XssUtils() {
     }
 
     private static final Pattern[] PATTERNS = {
@@ -66,7 +66,7 @@ public final class XSSUtils {
      * @param value a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    public static String stripXSS(String value) {
+    public static String stripXss(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
         }

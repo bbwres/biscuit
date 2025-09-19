@@ -4,6 +4,7 @@ package cn.bbwres.biscuit.gateway.route.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
 
@@ -13,6 +14,7 @@ import java.util.*;
 @Data
 @EqualsAndHashCode
 public class GatewayRouteInfoEntity implements Serializable {
+    @Serial
     private static final long serialVersionUID = 8006129440015626673L;
 
     /**

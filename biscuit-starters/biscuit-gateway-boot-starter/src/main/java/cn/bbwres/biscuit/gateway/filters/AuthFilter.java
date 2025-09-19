@@ -83,7 +83,7 @@ public class AuthFilter implements GlobalFilter, Ordered {
         }
         List<String> headerList = Arrays.stream(headers)
                 .filter(header -> exchange.getRequest().getHeaders().containsKey(header))
-                .collect(Collectors.toList());
+                .toList();
         // 如果包含，则移除。参考 RemoveRequestHeaderGatewayFilterFactory 实现
         ServerHttpRequest request = exchange.getRequest().mutate()
                 .headers(httpHeaders -> {

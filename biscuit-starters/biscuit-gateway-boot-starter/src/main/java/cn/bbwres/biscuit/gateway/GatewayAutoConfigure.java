@@ -20,12 +20,9 @@ package cn.bbwres.biscuit.gateway;
 
 import cn.bbwres.biscuit.gateway.adapter.ErrorWebExceptionHandler;
 import cn.bbwres.biscuit.gateway.adapter.ExtensionErrorAttributes;
-import cn.bbwres.biscuit.gateway.authorization.AuthorizationManager;
-import cn.bbwres.biscuit.gateway.cache.ResourceCacheService;
 import cn.bbwres.biscuit.gateway.route.DefaultGatewayRoute;
 import cn.bbwres.biscuit.gateway.route.GatewayRouteNacosProcessor;
 import cn.bbwres.biscuit.gateway.route.RouterController;
-import cn.bbwres.biscuit.gateway.service.ResourceService;
 import cn.bbwres.biscuit.nacos.operation.NacosConfigOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -45,9 +42,6 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.oauth2.server.resource.web.server.ServerBearerTokenAuthenticationConverter;
-import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.server.ServerWebExchange;
@@ -65,7 +59,6 @@ import java.util.List;
  */
 @Slf4j
 @AutoConfiguration
-@EnableWebFluxSecurity
 @EnableConfigurationProperties({GatewayProperties.class})
 public class GatewayAutoConfigure {
 
@@ -100,44 +93,7 @@ public class GatewayAutoConfigure {
         return errorWebExceptionHandler;
     }
 
-    /**
-     * 认证管理器
-     *
-     * @param resourceCacheService a {@link cn.bbwres.biscuit.gateway.cache.ResourceCacheService} object
-     * @param pathMatcher          a {@link org.springframework.util.PathMatcher} object
-     * @return a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
-     */
-    @Bean
-    public AuthorizationManager authorizationManager(ResourceCacheService resourceCacheService,
-                                                     PathMatcher pathMatcher) {
-        return new AuthorizationManager(resourceCacheService, pathMatcher);
-    }
 
-    /**
-     * 资源缓存服务
-     *
-     * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param resourceService   a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
-     * @return a {@link cn.bbwres.biscuit.gateway.cache.ResourceCacheService} object
-     */
-    @Bean
-    public ResourceCacheService resourceCacheService(GatewayProperties gatewayProperties,
-                                                     ResourceService resourceService) {
-        return new ResourceCacheService(gatewayProperties, resourceService);
-    }
-
-
-    /**
-     * 设置获取token的转换器
-     *
-     * @return a {@link org.springframework.security.web.server.authentication.ServerAuthenticationConverter} object
-     */
-    @Bean
-    public ServerAuthenticationConverter serverAuthenticationConverter() {
-        ServerBearerTokenAuthenticationConverter converter = new ServerBearerTokenAuthenticationConverter();
-        converter.setAllowUriQueryParameter(true);
-        return converter;
-    }
 
 
     /**

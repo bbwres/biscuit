@@ -112,7 +112,7 @@ public class XssUriRegexGatewayFilterFactory extends AbstractGatewayFilterFactor
             log.info("当前请求的CONTENT_TYPE为:{}", contentType);
             MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>(serverHttpRequest.getQueryParams().size());
             for (Map.Entry<String, List<String>> entry : serverHttpRequest.getQueryParams().entrySet()) {
-                queryParams.addAll(entry.getKey(), entry.getValue().stream().map(XSSUtils::stripXSS).collect(Collectors.toList()));
+                queryParams.addAll(entry.getKey(), entry.getValue().stream().map(XssUtils::stripXss).collect(Collectors.toList()));
             }
 
             // 参考api文档中GatewapFilter中“修改请求消息体拦截器”：ModifyRequestBodyGatewayFilterFactory.java
@@ -121,7 +121,7 @@ public class XssUriRegexGatewayFilterFactory extends AbstractGatewayFilterFactor
                 @Override
                 public String apply(String s) {
                     log.info("转换之前的报文为:[{}]", s);
-                    String msg = XSSUtils.stripXSS(s);
+                    String msg = XssUtils.stripXss(s);
                     log.info("转换之后的报文为:[{}]", msg);
                     return msg;
                 }

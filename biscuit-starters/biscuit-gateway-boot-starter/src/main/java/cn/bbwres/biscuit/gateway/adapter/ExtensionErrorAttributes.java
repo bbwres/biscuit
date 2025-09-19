@@ -90,14 +90,12 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
     private String getErrorCode(Throwable error) {
         String errorCode = gatewayProperties.getSystemErrCode();
 
-        if (error instanceof SystemRuntimeException) {
-            SystemRuntimeException systemRuntimeException = (SystemRuntimeException) error;
+        if (error instanceof SystemRuntimeException systemRuntimeException) {
             errorCode = systemRuntimeException.getErrorCode();
         }
 
-        if (error instanceof ResponseStatusException) {
-            ResponseStatusException responseStatusException = (ResponseStatusException) error;
-            errorCode = GlobalErrorCodeConstants.GLOBAL_HTTP_CODE_PREFIX.getCode() + responseStatusException.getRawStatusCode();
+        if (error instanceof ResponseStatusException responseStatusException) {
+            errorCode = GlobalErrorCodeConstants.GLOBAL_HTTP_CODE_PREFIX.getCode() + responseStatusException.getStatusCode();
         }
         return errorCode;
     }

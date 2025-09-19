@@ -38,9 +38,12 @@ import java.util.List;
 @Slf4j
 public class ExtendMongoServiceImpl<T,Q, ID, D extends ExtendMongoRepository<T, ID>> implements ExtendMongoService<T,Q, ID, D> {
 
-    @Autowired
     protected D mongodbDao;
 
+    @Autowired
+    public void setMongodbDao(D mongodbDao) {
+        this.mongodbDao = mongodbDao;
+    }
 
     /** {@inheritDoc} */
     @Override

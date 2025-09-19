@@ -21,6 +21,8 @@ package cn.bbwres.biscuit.gateway.exception;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serial;
+
 /**
  * 外部接口请求异常
  *
@@ -29,6 +31,7 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 public class AccessRequestException extends RuntimeException {
+    @Serial
     private static final long serialVersionUID = -3167373523458709045L;
 
     /**

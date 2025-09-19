@@ -22,13 +22,13 @@ package cn.bbwres.biscuit.rpc.web;
 import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
 import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmContainer;
 import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
