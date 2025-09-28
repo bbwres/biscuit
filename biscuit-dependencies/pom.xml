@@ -33,10 +33,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!--基础组件-->
-        <spring.version>6.2.10</spring.version>
+        <spring.version>6.2.11</spring.version>
         <spring.boot.version>3.5.5</spring.boot.version>
         <spring.cloud.version>2025.0.0</spring.cloud.version>
         <spring.cloud.alibaba.version>2023.0.3.3</spring.cloud.alibaba.version>
+        <spring-security.version>6.5.5</spring-security.version>
         <!--        <tomcat-embed.version>2023.0.3.3</tomcat-embed.version>-->
         <netty.version>4.1.127.Final</netty.version>
         <okhttp.version>5.1.0</okhttp.version>
@@ -237,6 +238,13 @@
                 <version>${redisson.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-bom</artifactId>
+                <version>${spring-security.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
             <dependency>
                 <groupId>org.springdoc</groupId>

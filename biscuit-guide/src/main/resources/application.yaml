@@ -1,0 +1,10 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  mvc:
+    static-path-pattern: /static/**
+
+logging:
+  level:
+    root: trace

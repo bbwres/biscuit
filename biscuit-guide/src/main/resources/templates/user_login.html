@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 | 多方式登录体验</title>
+    <!-- Tailwind CSS -->
+    <script src="/static/tailwindcss-3.4.17.js"></script>
+    <!-- Font Awesome -->
+    <link href="/static/font-awesome.min.css" rel="stylesheet">
+<!--    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">-->
+
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#6B7280',
+                        accent: '#3B82F6',
+                        neutral: '#F3F4F6',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+
+            .bg-gradient-custom {
+                background: linear-gradient(135deg, rgba(22, 93, 255, 0.9), rgba(59, 130, 246, 0.8));
+            }
+
+            .backdrop-blur-custom {
+                backdrop-filter: blur(0px);
+            }
+
+            .shadow-custom {
+                box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+            }
+
+            .transition-custom {
+                transition: all 0.3s ease;
+            }
+        }
+    </style>
+
+    <style>
+        /* 导入字体 */
+        @import url('/static/css2.css');
+
+        /* 全局样式 */
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 1s ease-in-out;
+        }
+
+        /* 动画效果 */
+        .form-input:focus {
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.4);
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 登录方式切换动画 */
+        .login-tab {
+            transition: all 0.3s ease;
+        }
+
+        .login-panel {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 加载动画 */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* 验证码倒计时 */
+        @keyframes countdown {
+            0% {
+                width: 100%;
+            }
+            100% {
+                width: 0%;
+            }
+        }
+
+        .countdown-bar {
+            animation: countdown 60s linear forwards;
+        }
+
+        /* 登录框位置调整 */
+        .login-container {
+            transition: justify-content 0.5s ease;
+        }
+
+        /* 图形验证码 */
+        .captcha-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .captcha-image {
+            width: 120px;
+            height: 44px;
+            margin-left: 10px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* 模态框动画 */
+        .modal-enter {
+            animation: modalEnter 0.3s ease forwards;
+        }
+
+        @keyframes modalEnter {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(5px);
+        }
+
+        #footer {
+            backdrop-filter: blur(0px);
+            padding: 1rem 0; /* 增加上下内边距 */
+            width: 100%; /* 确保宽度为100% */
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-neutral font-inter antialiased" id="login-bg">
+<!-- 背景遮罩 -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-custom z-0"></div>
+
+<!-- 新增：右上角语言切换器 -->
+<div class="fixed top-6 right-6 z-20">
+    <div class="relative inline-block text-left">
+        <button type="button" id="language-button"
+                class="bg-white/90 hover:bg-white text-gray-800 px-2  rounded-lg shadow-md flex items-center space-x-2 transition-custom">
+            <i class="fa fa-globe"></i>
+            <span id="current-language-text">中文</span>
+            <i class="fa fa-chevron-down text-xs"></i>
+        </button>
+
+        <div id="language-dropdown"
+             class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="language-button">
+                <a href="#"
+                   class="language-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                   role="menuitem" data-lang="zh-CN">中文</a>
+                <a href="#"
+                   class="language-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                   role="menuitem" data-lang="en-US">English</a>
+                <a href="#"
+                   class="language-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                   role="menuitem" data-lang="ja-JP">日本語</a>
+                <a href="#"
+                   class="language-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                   role="menuitem" data-lang="ko-KR">한국어</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 主容器 -->
+<div class="relative min-h-screen flex flex-col items-center justify-center px-4 py-12 z-10">
+    <!-- 登录卡片容器，用于位置调整 -->
+    <div id="login-container" class="w-full max-w-6xl flex justify-center">
+        <!-- 登录卡片 -->
+        <div class="w-full max-w-md">
+            <div class="bg-white/95 backdrop-blur-custom rounded-2xl shadow-custom overflow-hidden">
+                <!-- 卡片头部 -->
+                <div class="p-3 border-b border-gray-100">
+                    <div class="text-center mb-2">
+                        <h1 class="text-[clamp(1.5rem,4vw,2rem)] font-bold text-gray-800" data-i18n="welcome_back">
+                            欢迎回来</h1>
+                        <p class="text-secondary" data-i18n="login_prompt">请使用以下方式登录您的账户</p>
+                    </div>
+                </div>
+
+                <!-- 登录方式选择器 -->
+                <div class="px-6 pt-3 border-b border-gray-100">
+                    <div class="flex">
+                        <button id="password-tab"
+                                class="login-tab flex-1 py-3 text-center font-medium text-primary border-b-2 border-primary">
+                            <span data-i18n="password_login">账号密码</span>
+                        </button>
+                        <button id="phone-tab"
+                                class="login-tab flex-1 py-3 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-custom">
+                            <span data-i18n="phone_login">手机号登录</span>
+                        </button>
+                        <button id="qrcode-tab"
+                                class="login-tab flex-1 py-3 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-custom">
+                            <span data-i18n="qrcode_login">扫码登录</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 登录表单容器 -->
+                <div class="p-6">
+                    <!-- 账号密码登录面板 -->
+                    <div id="password-panel" class="login-panel space-y-6">
+                        <form id="password-form">
+                            <!-- 用户名/邮箱输入框 -->
+                            <div>
+                                <label for="username" class="block text-sm font-medium text-gray-700 mb-1"
+                                       data-i18n="username_or_email">用户名或邮箱</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <input type="text" id="username" name="username"
+                                           class="form-input block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-custom outline-none"
+                                           data-i18n-placeholder="username_or_email"  placeholder="请输入用户名或邮箱" required>
+                                </div>
+                            </div>
+
+                            <!-- 密码输入框 -->
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-1"
+                                       data-i18n="password">密码</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                        <i class="fa fa-lock"></i>
+                                    </div>
+                                    <input type="password" id="password" name="password"
+                                           class="form-input block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-custom outline-none"
+                                           placeholder="请输入密码" data-i18n-placeholder="password"  required>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-400 hover:text-gray-600"
+                                         id="toggle-password">
+                                        <i class="fa fa-eye-slash" id="password-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 图形验证码（初始隐藏，密码错误3次后显示） -->
+                            <div id="password-captcha-container" class="hidden">
+                                <label for="password-captcha" class="block text-sm font-medium text-gray-700 mb-1"
+                                       data-i18n="captcha">图形验证码</label>
+                                <div class="captcha-container">
+                                    <div class="relative flex-1">
+                                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                            <i class="fa fa-shield"></i>
+                                        </div>
+                                        <input type="text" id="password-captcha" name="password-captcha"
+                                               class="form-input block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-custom outline-none"
+                                               placeholder="请输入图形验证码"  data-i18n-placeholder="captcha"  >
+                                    </div>
+                                    <div id="password-captcha-image"
+                                         class="captcha-image bg-gray-200 flex items-center justify-center text-gray-600"
+                                         data-i18n="click_to_refresh">点击刷新
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 记住我和忘记密码 -->
+                            <div class="pt-4 flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input id="remember-me" name="remember-me" type="checkbox"
+                                           class="h-4 w-4 text-primary focus:ring-primary/50 border-gray-300 rounded">
+                                    <label for="remember-me" class="ml-2 block text-sm text-gray-700"
+                                           data-i18n="remember_me">记住我</label>
+                                </div>
+                                <div class="text-sm">
+                                    <a href="#" class="font-medium text-primary hover:text-primary/80 transition-custom"
+                                       data-i18n="forgot_password">忘记密码?</a>
+                                </div>
+                            </div>
+
+                            <!-- 登录按钮 - 与输入框有明确间隔 -->
+                            <div class="pt-4">
+                                <button type="submit" id="password-login-button"
+                                        class="btn-primary w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-custom">
+                                    <span id="password-login-text" data-i18n="login">登录</span>
+                                    <span id="password-login-spinner" class="ml-2 hidden"><i
+                                            class="fa fa-circle-o-notch fa-spin"></i></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 手机号登录面板 -->
+                    <div id="phone-panel" class="login-panel space-y-6 hidden">
+                        <form id="phone-form">
+                            <!-- 手机号输入框 -->
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1"
+                                       data-i18n="phone_number">手机号</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                        <i class="fa fa-phone"></i>
+                                    </div>
+                                    <input type="tel" id="phone" name="phone"
+                                           class="form-input block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-custom outline-none"
+                                           placeholder="请输入手机号" data-i18n-placeholder="phone_number" required>
+                                </div>
+                            </div>
+
+                            <!-- 短信验证码输入框 -->
+                            <div>
+                                <label for="verify-code" class="block text-sm font-medium text-gray-700 mb-1"
+                                       data-i18n="verify_code">短信验证码</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                        <i class="fa fa-mobile"></i>
+                                    </div>
+                                    <input type="text" id="verify-code" name="verify-code"
+                                           class="form-input block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-custom outline-none"
+                                           placeholder="请输入短信验证码" data-i18n-placeholder="verify_code" required>
+                                    <button type="button" id="send-code-button"
+                                            class="absolute inset-y-0 right-0 flex items-center px-4 text-sm font-medium text-primary hover:text-primary/80 transition-custom">
+                                        <span data-i18n="get_code">获取验证码</span>
+                                    </button>
+                                </div>
+                                <div id="countdown-container"
+                                     class="mt-1 h-1 w-full bg-gray-200 rounded-full overflow-hidden hidden">
+                                    <div id="countdown-bar" class="h-full bg-primary"></div>
+                                </div>
+                                <p id="code-sent" class="mt-1 text-xs text-green-600 hidden" data-i18n="code_sent">
+                                    验证码已发送至您的手机，请注意查收</p>
+                            </div>
+
+                            <!-- 登录按钮 - 与输入框有明确间隔 -->
+                            <div class="pt-4">
+                                <button type="submit" id="phone-login-button"
+                                        class="btn-primary w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-custom">
+                                    <span id="phone-login-text" data-i18n="login">登录</span>
+                                    <span id="phone-login-spinner" class="ml-2 hidden"><i
+                                            class="fa fa-circle-o-notch fa-spin"></i></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 扫码登录面板 -->
+                    <div id="qrcode-panel" class="login-panel space-y-6 hidden">
+                        <div class="text-center">
+                            <div class="inline-block p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                                <!-- 模拟二维码 -->
+                                <div class="w-48 h-48 bg-white relative">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-40 h-40 border-8 border-primary rounded-lg flex items-center justify-center">
+                                            <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
+                                                <div class="w-8 h-8 bg-white rounded-full"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 二维码角落 -->
+                                    <div class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary"></div>
+                                    <div class="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary"></div>
+                                    <div class="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary"></div>
+                                    <div class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary"></div>
+                                </div>
+                            </div>
+
+                            <p class="mt-4 text-sm text-gray-600" data-i18n="scan_qrcode">请使用手机App扫码登录</p>
+                            <button type="button" id="refresh-qrcode"
+                                    class="mt-4 text-primary hover:text-primary/80 text-sm font-medium">
+                                <i class="fa fa-refresh mr-1"></i> <span data-i18n="refresh_qrcode">刷新二维码</span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- 注册链接 -->
+                    <div class="mt-6 text-center">
+                        <p class="text-sm text-gray-600" data-i18n="no_account">
+                            还没有账户? <a href="#"
+                                           class="font-medium text-primary hover:text-primary/80 transition-custom"
+                                           data-i18n="register_now">立即注册</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <!-- 页脚 -->
+    <div id="footer" class="mt-8 text-center text-gray-400 text-sm pt-8 backdrop-blur-custom">
+        <p data-i18n="copyright">© 2025 您的公司名称. 保留所有权利.</p>
+        <div class="mt-2 space-x-4">
+            <a href="#" class="hover:text-white transition-custom" data-i18n="privacy_policy">隐私政策</a>
+            <a href="#" class="hover:text-white transition-custom" data-i18n="terms_of_service">服务条款</a>
+            <a href="#" class="hover:text-white transition-custom" data-i18n="contact_us">联系我们</a>
+        </div>
+    </div>
+</div>
+
+
+<!-- 图形验证码模态框 -->
+<div id="captcha-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 modal-backdrop"></div>
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden modal-enter transform transition-all">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="verify_identity">验证您的身份</h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-3" data-i18n="verify_prompt">
+                            请完成以下验证，以确保您不是机器人</p>
+
+                        <div class="captcha-container">
+                            <div class="relative flex-1">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                    <i class="fa fa-shield"></i>
+                                </div>
+                                <input type="text" id="modal-captcha"
+                                       class="form-input block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-custom outline-none"
+                                       placeholder="请输入图形验证码" data-i18n-placeholder="captcha_required" required>
+                            </div>
+                            <div id="modal-captcha-image"
+                                 class="captcha-image bg-gray-200 flex items-center justify-center text-gray-600"
+                                 data-i18n="click_to_refresh">点击刷新
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex space-x-3">
+                        <button type="button" id="modal-cancel"
+                                class="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-custom"
+                                data-i18n="cancel">取消
+                        </button>
+                        <button type="button" id="modal-confirm"
+                                class="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-custom"
+                                data-i18n="confirm">确认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 国际化语言包
+    const translations = {
+        'zh-CN': {
+            welcome_back: '欢迎回来',
+            login_prompt: '请使用以下方式登录您的账户',
+            password_login: '账号密码',
+            phone_login: '手机号登录',
+            qrcode_login: '扫码登录',
+            username_or_email: '用户名或邮箱',
+            password: '密码',
+            remember_me: '记住我',
+            forgot_password: '忘记密码?',
+            login: '登录',
+            phone_number: '手机号',
+            verify_code: '短信验证码',
+            get_code: '获取验证码',
+            code_sent: '验证码已发送至您的手机，请注意查收',
+            scan_qrcode: '请使用手机App扫码登录',
+            qrcode_expiry: '二维码将在 {count} 秒后过期',
+            refresh_qrcode: '刷新二维码',
+            no_app: '没有手机App? {link}',
+            use_password_login: '使用账号密码登录',
+            other_login_methods: '或使用以下方式登录',
+            no_account: '还没有账户? {link}',
+            register_now: '立即注册',
+            copyright: '© 2025 您的公司名称. 保留所有权利.',
+            privacy_policy: '隐私政策',
+            terms_of_service: '服务条款',
+            contact_us: '联系我们',
+            customize_login_page: '自定义登录页面',
+            language: '语言',
+            chinese: '中文',
+            english: 'English',
+            japanese: '日本語',
+            korean: '한국어',
+            login_box_position: '登录框位置',
+            left: '靠左',
+            center: '居中',
+            right: '靠右',
+            background_image: '背景图片',
+            upload_custom_bg: '上传自定义背景',
+            select_image_file: '选择图片文件',
+            uploading: '上传中...',
+            theme_color: '主题颜色',
+            reset_to_default: '重置为默认设置',
+            captcha: '图形验证码',
+            click_to_refresh: '点击刷新',
+            captcha_required: '请输入图形验证码',
+            captcha_incorrect: '图形验证码不正确',
+            password_error: '用户名或密码错误',
+            password_error_limit: '用户名或密码错误次数过多，请输入图形验证码',
+            phone_error: '请输入有效的手机号',
+            code_error: '请输入6位验证码',
+            sending: '发送中...',
+            refreshing: '刷新中...',
+            logging_in: '登录中',
+            login_success: '登录成功！（这只是一个前端演示）',
+            qrcode_expired: '二维码已过期，请刷新',
+            verify_identity: '验证您的身份',
+            verify_prompt: '请完成以下验证，以确保您不是机器人',
+            cancel: '取消',
+            confirm: '确认'
+        },
+        'en-US': {
+            welcome_back: 'Welcome Back',
+            login_prompt: 'Please log in to your account using one of the following methods',
+            password_login: 'Password Login',
+            phone_login: 'Phone Login',
+            qrcode_login: 'QR Code Login',
+            username_or_email: 'Username or Email',
+            password: 'Password',
+            remember_me: 'Remember Me',
+            forgot_password: 'Forgot Password?',
+            login: 'Log In',
+            phone_number: 'Phone Number',
+            verify_code: 'SMS Verification Code',
+            get_code: 'Get Code',
+            code_sent: 'Verification code has been sent to your phone',
+            scan_qrcode: 'Please use the mobile app to scan the QR code',
+            qrcode_expiry: 'QR code will expire in {count} seconds',
+            refresh_qrcode: 'Refresh QR Code',
+            no_app: 'Don\'t have the app? {link}',
+            use_password_login: 'Use password login',
+            other_login_methods: 'Or log in using',
+            no_account: 'Don\'t have an account? {link}',
+            register_now: 'Register Now',
+            copyright: '© 2025 Your Company Name. All rights reserved.',
+            privacy_policy: 'Privacy Policy',
+            terms_of_service: 'Terms of Service',
+            contact_us: 'Contact Us',
+            customize_login_page: 'Customize Login Page',
+            language: 'Language',
+            chinese: 'Chinese',
+            english: 'English',
+            japanese: 'Japanese',
+            korean: 'Korean',
+            login_box_position: 'Login Box Position',
+            left: 'Left',
+            center: 'Center',
+            right: 'Right',
+            background_image: 'Background Image',
+            upload_custom_bg: 'Upload Custom Background',
+            select_image_file: 'Select Image File',
+            uploading: 'Uploading...',
+            theme_color: 'Theme Color',
+            reset_to_default: 'Reset to Default',
+            captcha: 'CAPTCHA',
+            click_to_refresh: 'Click to Refresh',
+            captcha_required: 'Please enter the CAPTCHA',
+            captcha_incorrect: 'CAPTCHA is incorrect',
+            password_error: 'Username or password is incorrect',
+            password_error_limit: 'Too many failed attempts, please enter the CAPTCHA',
+            phone_error: 'Please enter a valid phone number',
+            code_error: 'Please enter a 6-digit verification code',
+            sending: 'Sending...',
+            refreshing: 'Refreshing...',
+            logging_in: 'Logging in',
+            login_success: 'Login successful! (This is just a front-end demo)',
+            qrcode_expired: 'QR code has expired, please refresh',
+            verify_identity: 'Verify Your Identity',
+            verify_prompt: 'Please complete the following verification to prove you\'re not a robot',
+            cancel: 'Cancel',
+            confirm: 'Confirm'
+        },
+        'ja-JP': {
+            welcome_back: 'おかえりなさい',
+            login_prompt: '以下の方法でアカウントにログインしてください',
+            password_login: 'パスワードログイン',
+            phone_login: '電話番号ログイン',
+            qrcode_login: 'QRコードログイン',
+            username_or_email: 'ユーザー名またはメールアドレス',
+            password: 'パスワード',
+            remember_me: 'ログイン情報を記憶',
+            forgot_password: 'パスワードを忘れた場合',
+            login: 'ログイン',
+            phone_number: '電話番号',
+            verify_code: 'SMS確認コード',
+            get_code: 'コードを取得',
+            code_sent: '確認コードが携帯電話に送信されました',
+            scan_qrcode: 'モバイルアプリを使用してQRコードをスキャンしてください',
+            qrcode_expiry: 'QRコードは {count} 秒後に期限切れになります',
+            refresh_qrcode: 'QRコードを更新',
+            no_app: 'アプリがない場合? {link}',
+            use_password_login: 'パスワードログインを使用',
+            other_login_methods: 'または以下を使用してログイン',
+            no_account: 'アカウントがない場合? {link}',
+            register_now: '今すぐ登録',
+            copyright: '© 2025 会社名. 全著作権所有.',
+            privacy_policy: 'プライバシーポリシー',
+            terms_of_service: '利用規約',
+            contact_us: 'お問い合わせ',
+            customize_login_page: 'ログインページをカスタマイズ',
+            language: '言語',
+            chinese: '中国語',
+            english: '英語',
+            japanese: '日本語',
+            korean: '韓国語',
+            login_box_position: 'ログインボックスの位置',
+            left: '左寄せ',
+            center: '中央',
+            right: '右寄せ',
+            background_image: '背景画像',
+            upload_custom_bg: 'カスタム背景をアップロード',
+            select_image_file: '画像ファイルを選択',
+            uploading: 'アップロード中...',
+            theme_color: 'テーマカラー',
+            reset_to_default: 'デフォルトにリセット',
+            captcha: 'CAPTCHA',
+            click_to_refresh: 'クリックして更新',
+            captcha_required: 'CAPTCHAを入力してください',
+            captcha_incorrect: 'CAPTCHAが正しくない',
+            password_error: 'ユーザー名またはパスワードが正しくない',
+            password_error_limit: '失敗した試行が多すぎます。CAPTCHAを入力してください',
+            phone_error: '有効な電話番号を入力してください',
+            code_error: '6桁の確認コードを入力してください',
+            sending: '送信中...',
+            refreshing: '更新中...',
+            logging_in: 'ログイン中',
+            login_success: 'ログイン成功！（これはフロントエンドのデモです）',
+            qrcode_expired: 'QRコードの有効期限が切れました。更新してください',
+            verify_identity: 'あなたの身元を確認',
+            verify_prompt: '以下の確認を完了して、ロボットではないことを証明してください',
+            cancel: 'キャンセル',
+            confirm: '確認'
+        },
+        'ko-KR': {
+            welcome_back: '환영합니다',
+            login_prompt: '다음 방법 중 하나를 사용하여 계정에 로그인하세요',
+            password_login: '비밀번호 로그인',
+            phone_login: '휴대폰 로그인',
+            qrcode_login: 'QR 코드 로그인',
+            username_or_email: '사용자 이름 또는 이메일',
+            password: '비밀번호',
+            remember_me: '로그인 정보 저장',
+            forgot_password: '비밀번호를 잊으셨습니까?',
+            login: '로그인',
+            phone_number: '휴대폰 번호',
+            verify_code: 'SMS 인증 코드',
+            get_code: '코드 받기',
+            code_sent: '인증 코드가 휴대폰으로 전송되었습니다',
+            scan_qrcode: '모바일 앱을 사용하여 QR 코드를 스캔하세요',
+            qrcode_expiry: 'QR 코드는 {count}초 후에 만료됩니다',
+            refresh_qrcode: 'QR 코드 새로고침',
+            no_app: '앱이 없으신가요? {link}',
+            use_password_login: '비밀번호 로그인 사용',
+            other_login_methods: '또는 다음을 사용하여 로그인',
+            no_account: '계정이 없으신가요? {link}',
+            register_now: '지금 가입',
+            copyright: '© 2025 회사명. 모든 권리 보유.',
+            privacy_policy: '개인정보 정책',
+            terms_of_service: '서비스 약관',
+            contact_us: '문의하기',
+            customize_login_page: '로그인 페이지 사용자 정의',
+            language: '언어',
+            chinese: '중국어',
+            english: '영어',
+            japanese: '일본어',
+            korean: '한국어',
+            login_box_position: '로그인 상자 위치',
+            left: '왼쪽',
+            center: '중앙',
+            right: '오른쪽',
+            background_image: '배경 이미지',
+            upload_custom_bg: '사용자 정의 배경 업로드',
+            select_image_file: '이미지 파일 선택',
+            uploading: '업로드 중...',
+            theme_color: '테마 색상',
+            reset_to_default: '기본값으로 재설정',
+            captcha: 'CAPTCHA',
+            click_to_refresh: '클릭하여 새로고침',
+            captcha_required: 'CAPTCHA를 입력하세요',
+            captcha_incorrect: 'CAPTCHA가 올바르지 않습니다',
+            password_error: '사용자 이름 또는 비밀번호가 잘못되었습니다',
+            password_error_limit: '실패한 시도가 너무 많습니다. CAPTCHA를 입력하세요',
+            phone_error: '유효한 전화번호를 입력하세요',
+            code_error: '6자리 인증 코드를 입력하세요',
+            sending: '전송 중...',
+            refreshing: '새로고침 중...',
+            logging_in: '로그인 중',
+            login_success: '로그인 성공! (이것은 단순한 프론트엔드 데모입니다)',
+            qrcode_expired: 'QR 코드가 만료되었습니다. 새로고침하세요',
+            verify_identity: '당신의 신원 확인',
+            verify_prompt: '로봇이 아님을 증명하기 위해 다음 확인을 완료하세요',
+            cancel: '취소',
+            confirm: '확인'
+        }
+    };
+
+    // 当前语言
+    let currentLang = 'zh-CN';
+
+    // 密码错误计数器
+    let passwordErrorCount = 0;
+
+    const loginBg = document.getElementById('login-bg');
+    const loginContainer = document.getElementById('login-container');
+
+    // 替换语言选择器相关元素
+    const languageButton = document.getElementById('language-button');
+    const languageDropdown = document.getElementById('language-dropdown');
+    const languageOptions = document.querySelectorAll('.language-option');
+    const currentLanguageText = document.getElementById('current-language-text');
+
+    // 登录方式切换元素
+    const passwordTab = document.getElementById('password-tab');
+    const phoneTab = document.getElementById('phone-tab');
+    const qrcodeTab = document.getElementById('qrcode-tab');
+
+    const passwordPanel = document.getElementById('password-panel');
+    const phonePanel = document.getElementById('phone-panel');
+    const qrcodePanel = document.getElementById('qrcode-panel');
+
+    // 密码登录表单元素
+    const togglePassword = document.getElementById('toggle-password');
+    const passwordInput = document.getElementById('password');
+    const passwordIcon = document.getElementById('password-icon');
+    const passwordForm = document.getElementById('password-form');
+    const passwordLoginButton = document.getElementById('password-login-button');
+    const passwordLoginText = document.getElementById('password-login-text');
+    const passwordLoginSpinner = document.getElementById('password-login-spinner');
+    const passwordCaptchaContainer = document.getElementById('password-captcha-container');
+    const passwordCaptcha = document.getElementById('password-captcha');
+    const passwordCaptchaImage = document.getElementById('password-captcha-image');
+
+    // 手机号登录表单元素
+    const phoneForm = document.getElementById('phone-form');
+    const phoneInput = document.getElementById('phone');
+    const verifyCodeInput = document.getElementById('verify-code');
+    const sendCodeButton = document.getElementById('send-code-button');
+    const countdownContainer = document.getElementById('countdown-container');
+    const countdownBar = document.getElementById('countdown-bar');
+    const codeSent = document.getElementById('code-sent');
+    const phoneLoginButton = document.getElementById('phone-login-button');
+    const phoneLoginText = document.getElementById('phone-login-text');
+    const phoneLoginSpinner = document.getElementById('phone-login-spinner');
+
+    // 扫码登录元素
+    const expiryCount = document.getElementById('expiry-count');
+    const refreshQrcode = document.getElementById('refresh-qrcode');
+
+    // 验证码模态框元素
+    const captchaModal = document.getElementById('captcha-modal');
+    const modalCaptcha = document.getElementById('modal-captcha');
+    const modalCaptchaImage = document.getElementById('modal-captcha-image');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalConfirm = document.getElementById('modal-confirm');
+
+    // 初始化背景图
+    const defaultBg = '/static/backgroundImage.jpg';
+    const defaultColor = '#165DFF';
+    const defaultPosition = 'center';
+
+    // 检查本地存储中的设置
+    if (localStorage.getItem('loginBg')) {
+        loginBg.style.backgroundImage = `url(${localStorage.getItem('loginBg')})`;
+    } else {
+        loginBg.style.backgroundImage = `url(${defaultBg})`;
+    }
+
+    if (localStorage.getItem('themeColor')) {
+        updateThemeColor(localStorage.getItem('themeColor'));
+    } else {
+        updateThemeColor(defaultColor);
+    }
+
+    if (localStorage.getItem('loginPosition')) {
+        setLoginPosition(localStorage.getItem('loginPosition'));
+    } else {
+        setLoginPosition(defaultPosition);
+    }
+
+    if (localStorage.getItem('language')) {
+        currentLang = localStorage.getItem('language');
+    }
+
+    // 初始化图形验证码
+    generateCaptcha(passwordCaptchaImage);
+    generateCaptcha(modalCaptchaImage);
+
+    // 初始化语言
+    updateLanguage(currentLang);
+    updateLanguageButtonText();
+
+    // 更新主题颜色
+    function updateThemeColor(color) {
+        // 更新CSS变量
+        document.documentElement.style.setProperty('--tw-color-primary', color);
+
+        // 更新元素颜色
+        const primaryElements = document.querySelectorAll('.btn-primary, .text-primary, .focus\\:ring-primary\\/50, .focus\\:border-primary');
+        primaryElements.forEach(el => {
+            if (el.classList.contains('btn-primary')) {
+                el.style.backgroundColor = color;
+                el.style.borderColor = color;
+            }
+            if (el.classList.contains('text-primary')) {
+                el.style.color = color;
+            }
+        });
+    }
+
+    // 更新语言
+    function updateLanguage(lang) {
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                // 处理包含占位符的文本
+                if (translations[lang][key].includes('{count}')) {
+                    element.innerHTML = translations[lang][key].replace('{count}', '<span id="expiry-count">60</span>');
+                } else if (translations[lang][key].includes('{link}')) {
+                    // 处理包含链接的文本
+                    const linkText = element.querySelector('a') ? element.querySelector('a').getAttribute('data-i18n') : '';
+                    const linkHtml = `<a href="#" class="font-medium text-primary hover:text-primary/80 transition-custom" data-i18n="${linkText}">${translations[lang][linkText] || linkText}</a>`;
+                    element.innerHTML = translations[lang][key].replace('{link}', linkHtml);
+                } else {
+                    element.textContent = translations[lang][key];
+                }
+            }
+        });
+        // 2. 新增：更新所有带有 data-i18n-placeholder 属性的元素的 placeholder
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-i18n-placeholder');
+            if (translations[lang] && translations[lang][key]) {
+                element.placeholder = translations[lang][key];
+            }
+        });
+    }
+
+    function setLoginPosition(position) {
+        // 设置选中按钮样式
+        if (position === 'left') {
+            loginContainer.classList.remove('justify-center', 'justify-end');
+            loginContainer.classList.add('justify-start');
+        } else if (position === 'center') {
+            loginContainer.classList.remove('justify-start', 'justify-end');
+            loginContainer.classList.add('justify-center');
+        } else if (position === 'right') {
+            loginContainer.classList.remove('justify-start', 'justify-center');
+            loginContainer.classList.add('justify-end');
+        }
+
+        // 保存到本地存储
+        localStorage.setItem('loginPosition', position);
+    }
+
+    // 登录方式切换
+    passwordTab.addEventListener('click', () => {
+        switchToTab('password');
+    });
+
+    phoneTab.addEventListener('click', () => {
+        switchToTab('phone');
+    });
+
+    qrcodeTab.addEventListener('click', () => {
+        switchToTab('qrcode');
+    });
+
+    function switchToTab(tabName) {
+        // 重置所有标签样式
+        passwordTab.classList.remove('text-primary', 'border-primary');
+        passwordTab.classList.add('text-gray-500', 'border-transparent');
+
+        phoneTab.classList.remove('text-primary', 'border-primary');
+        phoneTab.classList.add('text-gray-500', 'border-transparent');
+
+        qrcodeTab.classList.remove('text-primary', 'border-primary');
+        qrcodeTab.classList.add('text-gray-500', 'border-transparent');
+
+        // 隐藏所有面板
+        passwordPanel.classList.add('hidden');
+        phonePanel.classList.add('hidden');
+        qrcodePanel.classList.add('hidden');
+
+        // 显示选中的标签和面板
+        if (tabName === 'password') {
+            passwordTab.classList.remove('text-gray-500', 'border-transparent');
+            passwordTab.classList.add('text-primary', 'border-primary');
+            passwordPanel.classList.remove('hidden');
+        } else if (tabName === 'phone') {
+            phoneTab.classList.remove('text-gray-500', 'border-transparent');
+            phoneTab.classList.add('text-primary', 'border-primary');
+            phonePanel.classList.remove('hidden');
+        } else if (tabName === 'qrcode') {
+            qrcodeTab.classList.remove('text-gray-500', 'border-transparent');
+            qrcodeTab.classList.add('text-primary', 'border-primary');
+            qrcodePanel.classList.remove('hidden');
+        }
+    }
+
+    // 密码显示/隐藏切换
+    togglePassword.addEventListener('click', () => {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        // 切换图标
+        if (type === 'password') {
+            passwordIcon.classList.remove('fa-eye');
+            passwordIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordIcon.classList.remove('fa-eye-slash');
+            passwordIcon.classList.add('fa-eye');
+        }
+    });
+
+    // 生成图形验证码
+    function generateCaptcha(element) {
+        // 创建画布
+        const canvas = document.createElement('canvas');
+        canvas.width = 120;
+        canvas.height = 44;
+        const ctx = canvas.getContext('2d');
+
+        // 设置背景色
+        ctx.fillStyle = getRandomColor(240, 255);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 绘制干扰线
+        for (let i = 0; i < 5; i++) {
+            ctx.strokeStyle = getRandomColor(150, 200);
+            ctx.beginPath();
+            ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+            ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+            ctx.stroke();
+        }
+
+        // 绘制干扰点
+        for (let i = 0; i < 50; i++) {
+            ctx.fillStyle = getRandomColor(50, 150);
+            ctx.beginPath();
+            ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // 生成随机验证码
+        const code = generateRandomCode(4);
+
+        // 绘制验证码
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // 每个字符使用不同颜色和旋转角度
+        for (let i = 0; i < code.length; i++) {
+            const char = code.charAt(i);
+            ctx.fillStyle = getRandomColor(50, 150);
+
+            // 轻微旋转每个字符
+            const x = 30 + i * 20;
+            const y = canvas.height / 2;
+            const angle = (Math.random() - 0.5) * 0.3;
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.fillText(char, 0, 0);
+            ctx.restore();
+        }
+
+        // 将验证码存储在元素上
+        element.dataset.captcha = code.toLowerCase();
+
+        // 清除之前的内容并添加画布
+        element.innerHTML = '';
+        element.appendChild(canvas);
+    }
+
+    // 生成随机颜色
+    function getRandomColor(min, max) {
+        const r = Math.floor(Math.random() * (max - min + 1)) + min;
+        const g = Math.floor(Math.random() * (max - min + 1)) + min;
+        const b = Math.floor(Math.random() * (max - min + 1)) + min;
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    // 生成随机验证码
+    function generateRandomCode(length) {
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let code = '';
+        for (let i = 0; i < length; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+    }
+
+    // 密码登录表单提交
+    passwordForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!username) {
+            alert(translations[currentLang].username_or_email || '请输入用户名或邮箱');
+            return;
+        }
+
+        if (!password) {
+            alert(translations[currentLang].password || '请输入密码');
+            return;
+        }
+
+        // 检查是否需要验证码
+        let captchaValid = true;
+        if (passwordErrorCount >= 3) {
+            const userCaptcha = passwordCaptcha.value.trim().toLowerCase();
+            const actualCaptcha = passwordCaptchaImage.dataset.captcha;
+
+            if (!userCaptcha) {
+                alert(translations[currentLang].captcha_required || '请输入图形验证码');
+                return;
+            }
+
+            if (userCaptcha !== actualCaptcha) {
+                alert(translations[currentLang].captcha_incorrect || '图形验证码不正确');
+                generateCaptcha(passwordCaptchaImage);
+                passwordCaptcha.value = '';
+                captchaValid = false;
+            }
+        }
+
+        if (!captchaValid) {
+            return;
+        }
+
+        // 显示加载状态
+        passwordLoginButton.classList.add('opacity-75');
+        passwordLoginText.textContent = translations[currentLang].logging_in || '登录中';
+        passwordLoginSpinner.classList.remove('hidden');
+        passwordLoginButton.disabled = true;
+
+        // 模拟登录请求
+        setTimeout(() => {
+            // 重置按钮状态
+            passwordLoginButton.classList.remove('opacity-75');
+            passwordLoginText.textContent = translations[currentLang].login || '登录';
+            passwordLoginSpinner.classList.add('hidden');
+            passwordLoginButton.disabled = false;
+
+            // 模拟密码错误
+            if (username !== 'admin' || password !== 'password') {
+                passwordErrorCount++;
+
+                // 密码错误3次后显示验证码
+                if (passwordErrorCount >= 3) {
+                    passwordCaptchaContainer.classList.remove('hidden');
+                    generateCaptcha(passwordCaptchaImage);
+                    alert(translations[currentLang].password_error_limit || '用户名或密码错误次数过多，请输入图形验证码');
+                } else {
+                    alert(translations[currentLang].password_error || '用户名或密码错误');
+                }
+
+                // 清空密码和验证码
+                passwordInput.value = '';
+                if (passwordCaptchaContainer.classList.contains('hidden') === false) {
+                    passwordCaptcha.value = '';
+                }
+            } else {
+                // 模拟登录成功
+                alert(translations[currentLang].login_success || '登录成功！（这只是一个前端演示）');
+
+                // 重置密码错误计数
+                passwordErrorCount = 0;
+                passwordCaptchaContainer.classList.add('hidden');
+            }
+        }, 1500);
+    });
+
+    // 打开验证码模态框
+    sendCodeButton.addEventListener('click', () => {
+        const phone = phoneInput.value.trim();
+
+        if (!phone) {
+            alert(translations[currentLang].phone_number || '请输入手机号');
+            phoneInput.focus();
+            return;
+        }
+
+        if (!/^1[3-9]\d{9}$/.test(phone) && currentLang === 'zh-CN') {
+            alert(translations[currentLang].phone_error || '请输入有效的手机号');
+            phoneInput.focus();
+            return;
+        }
+
+        // 保存当前手机号，用于后续验证
+        captchaModal.dataset.phone = phone;
+
+        // 重置模态框验证码
+        generateCaptcha(modalCaptchaImage);
+        modalCaptcha.value = '';
+
+        // 显示模态框
+        captchaModal.classList.remove('hidden');
+        modalCaptcha.focus();
+    });
+
+    // 验证码模态框确认按钮
+    modalConfirm.addEventListener('click', () => {
+        const userCaptcha = modalCaptcha.value.trim().toLowerCase();
+        const actualCaptcha = modalCaptchaImage.dataset.captcha;
+
+        if (!userCaptcha) {
+            alert(translations[currentLang].captcha_required || '请输入图形验证码');
+            modalCaptcha.focus();
+            return;
+        }
+
+        if (userCaptcha !== actualCaptcha) {
+            alert(translations[currentLang].captcha_incorrect || '图形验证码不正确');
+            generateCaptcha(modalCaptchaImage);
+            modalCaptcha.value = '';
+            modalCaptcha.focus();
+            return;
+        }
+
+        // 隐藏模态框
+        captchaModal.classList.add('hidden');
+
+        // 模拟发送验证码
+        sendCodeButton.disabled = true;
+        sendCodeButton.innerHTML = '<span data-i18n="sending">发送中...</span>';
+        setTimeout(() => {
+            sendCodeButton.innerHTML = '<span style="color: #ccc" data-i18n="get_code">获取验证码</span>';
+            countdownContainer.classList.remove('hidden');
+            countdownBar.classList.add('countdown-bar');
+            codeSent.classList.remove('hidden');
+
+            // 60秒后恢复按钮
+            setTimeout(() => {
+                sendCodeButton.disabled = false;
+                sendCodeButton.innerHTML = '<span data-i18n="get_code" >获取验证码</span>';
+                countdownContainer.classList.add('hidden');
+                countdownBar.classList.remove('countdown-bar');
+                codeSent.classList.add('hidden');
+            }, 60000);
+        }, 1000);
+    });
+
+    // 验证码模态框取消按钮
+    modalCancel.addEventListener('click', () => {
+        captchaModal.classList.add('hidden');
+    });
+
+    // 点击模态框背景关闭
+    captchaModal.addEventListener('click', (e) => {
+        if (e.target === captchaModal) {
+            captchaModal.classList.add('hidden');
+        }
+    });
+
+    // 模态框验证码图片点击刷新
+    modalCaptchaImage.addEventListener('click', () => {
+        generateCaptcha(modalCaptchaImage);
+        modalCaptcha.value = '';
+    });
+
+    // 手机号登录表单提交
+    phoneForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const phone = phoneInput.value.trim();
+        const code = verifyCodeInput.value.trim();
+
+        if (!phone) {
+            alert(translations[currentLang].phone_number || '请输入手机号');
+            return;
+        }
+
+        if (!/^1[3-9]\d{9}$/.test(phone) && currentLang === 'zh-CN') {
+            alert(translations[currentLang].phone_error || '请输入有效的手机号');
+            return;
+        }
+
+        if (!code) {
+            alert(translations[currentLang].verify_code || '请输入短信验证码');
+            return;
+        }
+
+        if (code.length !== 6) {
+            alert(translations[currentLang].code_error || '请输入6位验证码');
+            return;
+        }
+
+        // 显示加载状态
+        phoneLoginButton.classList.add('opacity-75');
+        phoneLoginText.textContent = translations[currentLang].logging_in || '登录中';
+        phoneLoginSpinner.classList.remove('hidden');
+        phoneLoginButton.disabled = true;
+
+        // 模拟登录请求
+        setTimeout(() => {
+            // 重置按钮状态
+            phoneLoginButton.classList.remove('opacity-75');
+            phoneLoginText.textContent = translations[currentLang].login || '登录';
+            phoneLoginSpinner.classList.add('hidden');
+            phoneLoginButton.disabled = false;
+
+            // 模拟登录成功
+            alert(translations[currentLang].login_success || '登录成功！（这只是一个前端演示）');
+        }, 1500);
+    });
+
+    // 验证码图片点击刷新
+    passwordCaptchaImage.addEventListener('click', () => {
+        generateCaptcha(passwordCaptchaImage);
+        passwordCaptcha.value = '';
+    });
+
+    // 点击语言按钮，切换下拉菜单显示/隐藏
+    languageButton.addEventListener('click', () => {
+        languageDropdown.classList.toggle('hidden');
+    });
+
+    // 点击语言选项
+    languageOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.preventDefault(); // 阻止 a 标签的默认跳转行为
+
+            const selectedLang = option.getAttribute('data-lang');
+            if (selectedLang !== currentLang) {
+                currentLang = selectedLang;
+                localStorage.setItem('language', currentLang);
+                updateLanguage(currentLang);
+                updateLanguageButtonText(); // 更新按钮上显示的语言
+            }
+
+            // 隐藏下拉菜单
+            languageDropdown.classList.add('hidden');
+        });
+    });
+
+    // 点击页面其他地方，关闭下拉菜单
+    document.addEventListener('click', (e) => {
+        if (!languageButton.contains(e.target) && !languageDropdown.contains(e.target)) {
+            languageDropdown.classList.add('hidden');
+        }
+    });
+
+    // 新增：更新语言按钮上显示的文本
+    function updateLanguageButtonText() {
+        const langNames = {
+            'zh-CN': '中文',
+            'en-US': 'English',
+            'ja-JP': '日本語',
+            'ko-KR': '한국어'
+        };
+        currentLanguageText.textContent = langNames[currentLang];
+    }
+
+
+    // 刷新二维码
+    refreshQrcode.addEventListener('click', () => {
+        // 模拟刷新二维码
+        refreshQrcode.disabled = true;
+        refreshQrcode.innerHTML = '<i class="fa fa-refresh fa-spin mr-1"></i> <span data-i18n="refreshing">刷新中...</span>';
+
+        setTimeout(() => {
+            refreshQrcode.disabled = false;
+            refreshQrcode.innerHTML = '<i class="fa fa-refresh mr-1"></i> <span data-i18n="refresh_qrcode">刷新二维码</span>';
+        }, 1000);
+    });
+
+
+    // 页面加载动画
+    window.addEventListener('load', () => {
+        document.body.classList.add('opacity-100');
+        document.body.classList.remove('opacity-0');
+    });
+
+</script>
+</body>
+</html>
