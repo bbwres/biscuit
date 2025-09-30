@@ -22,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.Collection;
 
 /**
@@ -32,6 +33,8 @@ import java.util.Collection;
 public class AuthUser extends User {
 
 
+    @Serial
+    private static final long serialVersionUID = -3572844524204535698L;
     /**
      * 中文名称
      */

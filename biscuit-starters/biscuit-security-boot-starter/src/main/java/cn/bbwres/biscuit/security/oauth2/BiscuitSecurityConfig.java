@@ -20,42 +20,15 @@ package cn.bbwres.biscuit.security.oauth2;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginEventListener;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginService;
 import cn.bbwres.biscuit.security.oauth2.event.DefaultAuthenticationLoginServiceImpl;
-import cn.bbwres.biscuit.security.oauth2.granter.EnhancerTokenGranter;
 import cn.bbwres.biscuit.security.oauth2.handler.Oauth2ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
-import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
-import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
-import org.springframework.security.oauth2.provider.code.RedisAuthorizationCodeServices;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
-import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 授权认证配置
@@ -63,190 +36,15 @@ import java.util.Map;
  * @author zhanglinfeng
  */
 @AutoConfiguration
-@EnableAuthorizationServer
+@EnableWebSecurity
 @EnableConfigurationProperties(BiscuitSecurityProperties.class)
 public class BiscuitSecurityConfig {
 
 
     /**
-     * redis token
-     */
-    @Configuration
-    @ConditionalOnProperty(prefix = "biscuit.security", name = "token-store-type", havingValue = "redis")
-    public static class RedisToken {
-
-        /**
-         * redis token
-         *
-         * @param connectionFactory
-         * @return
-         */
-        @Bean
-        public TokenStore redisTokenStore(RedisConnectionFactory connectionFactory) {
-            return new RedisTokenStore(connectionFactory);
-        }
-
-
-    }
-
-    /**
-     * jwt toekn
-     */
-    @Configuration
-    @ConditionalOnProperty(prefix = "biscuit.security", name = "token-store-type", havingValue = "jwt")
-    public static class JwtToken {
-
-
-        /**
-         * jwt  token 初始化类
-         *
-         * @param biscuitSecurityProperties
-         * @return
-         */
-        @Bean
-        @Order(900)
-        public JwtAccessTokenConverter jwtAccessTokenConverter(BiscuitSecurityProperties biscuitSecurityProperties) {
-            JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-            converter.setSigningKey(biscuitSecurityProperties.getJwtPrivateKey());
-            converter.setVerifierKey(biscuitSecurityProperties.getJwtPublicKey());
-            return converter;
-        }
-
-
-        /**
-         * jwt token 存储
-         *
-         * @param jwtAccessTokenConverter
-         * @return
-         */
-        @Bean
-        public TokenStore jwtTokenStore(JwtAccessTokenConverter jwtAccessTokenConverter) {
-            return new JwtTokenStore(jwtAccessTokenConverter);
-        }
-
-    }
-
-
-    /**
-     * 设置token扩展
-     *
-     * @return
-     */
-    @Bean
-    @Order(10)
-    public TokenEnhancer tokenEnhancer() {
-        return (accessToken, authentication) -> {
-            Map<String, Object> additionalInfo = new HashMap<>(8);
-            additionalInfo.put("expires_at", accessToken.getExpiration());
-            if (authentication.getPrincipal() instanceof AuthUser) {
-                additionalInfo.put("zh_name", (((AuthUser) authentication.getPrincipal()).getZhName()));
-                additionalInfo.put("user_id", (((AuthUser) authentication.getPrincipal()).getUserId()));
-                additionalInfo.put("tenant_id", (((AuthUser) authentication.getPrincipal()).getTenantId()));
-            }
-
-            ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
-            return accessToken;
-        };
-    }
-
-    /**
-     * token 增强
-     *
-     * @param tokenEnhancers
-     * @return
-     */
-    @Bean
-    public TokenEnhancerChain tokenEnhancerChain(List<TokenEnhancer> tokenEnhancers) {
-        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-        tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
-        return tokenEnhancerChain;
-    }
-
-
-    /**
-     * AuthenticationManager 配置信息
-     *
-     * @param authenticationConfiguration
-     * @return
-     * @throws Exception
-     */
-    @Bean
-    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-
-    /**
-     * redis 授权码服务
-     */
-    @Configuration
-    @ConditionalOnClass(RedisConnectionFactory.class)
-    @ConditionalOnProperty(prefix = "biscuit.security", name = "authorization-code-store-type", havingValue = "redis",matchIfMissing = true)
-    public static class RedisAuthorizationCodeConfig {
-        /**
-         * 默认的AuthorizationCodeServices 为redis
-         *
-         * @return
-         */
-        @Bean
-        @ConditionalOnMissingBean
-        public AuthorizationCodeServices authorizationCodeServices(RedisConnectionFactory connectionFactory) {
-            return new RedisAuthorizationCodeServices(connectionFactory);
-        }
-
-    }
-
-    /**
-     * redis 授权码服务
-     */
-    @Configuration
-    @ConditionalOnClass(DataSource.class)
-    @ConditionalOnProperty(prefix = "biscuit.security", name = "authorization-code-store-type", havingValue = "jdbc")
-    public static class JdbcAuthorizationCodeConfig {
-        /**
-         * 默认使用jdbc 存储授权码
-         *
-         * @param dataSource
-         * @return
-         */
-        @Bean
-        @ConditionalOnMissingBean
-        public AuthorizationCodeServices authorizationCodeServices(DataSource dataSource) {
-            return new JdbcAuthorizationCodeServices(dataSource);
-        }
-
-    }
-
-
-    /**
-     * 创建token服务
-     *
-     * @return
-     */
-    @Bean
-    public AuthorizationServerTokenServices defaultTokenServices(TokenStore tokenStore,
-                                                                 ClientDetailsService clientDetailsService,
-                                                                 AuthenticationManager authenticationManager,
-                                                                 TokenEnhancerChain tokenEnhancerChain,
-                                                                 BiscuitSecurityProperties biscuitSecurityProperties) {
-
-        MyDefaultTokenServices tokenServices = new MyDefaultTokenServices();
-        tokenServices.setTokenStore(tokenStore);
-        tokenServices.setSupportRefreshToken(biscuitSecurityProperties.getSupportRefreshToken());
-        tokenServices.setReuseRefreshToken(biscuitSecurityProperties.getReuseRefreshToken());
-        tokenServices.setClientDetailsService(clientDetailsService);
-        tokenServices.setTokenEnhancer(tokenEnhancerChain);
-        //单终端登陆
-        tokenServices.setSingleClientToken(biscuitSecurityProperties.getSingleClientToken());
-        tokenServices.setAuthenticationManager(authenticationManager);
-        return tokenServices;
-    }
-
-
-    /**
      * 密码管理
      *
-     * @return
+     * @return PasswordEncoder
      */
     @Bean
     public PasswordEncoder passwordEncoder(BiscuitSecurityProperties biscuitSecurityProperties) {
@@ -275,37 +73,6 @@ public class BiscuitSecurityConfig {
     @ConditionalOnMissingBean
     public AuthenticationLoginEventListener authenticationLoginEventListener(AuthenticationLoginService authenticationLoginService) {
         return new AuthenticationLoginEventListener(authenticationLoginService);
-    }
-
-
-    /**
-     * 认证适配器
-     *
-     * @param tokenStore                tokenStore
-     * @param myClientDetailsService    客户端杜甫
-     * @param authenticationManager     认证服务
-     * @param tokenEnhancerChain        token增强
-     * @param biscuitSecurityProperties 配置
-     * @param userDetailsService        用户信息
-     * @param defaultTokenServices      token服务
-     * @param authorizationCodeServices code服务
-     * @param enhancerTokenGranters     TokenGranter的扩展
-     * @return AuthorizationServerConfigurerAdapter
-     */
-    @Bean
-    public AuthorizationServerConfigurerAdapter authorizationServerConfiguration(TokenStore tokenStore,
-                                                                                 ClientDetailsService myClientDetailsService,
-                                                                                 AuthenticationManager authenticationManager,
-                                                                                 TokenEnhancerChain tokenEnhancerChain,
-                                                                                 BiscuitSecurityProperties biscuitSecurityProperties,
-                                                                                 UserDetailsService userDetailsService,
-                                                                                 AuthorizationServerTokenServices defaultTokenServices,
-                                                                                 AuthorizationCodeServices authorizationCodeServices,
-                                                                                 List<EnhancerTokenGranter> enhancerTokenGranters) {
-        return new AuthorizationServerConfiguration(myClientDetailsService, biscuitSecurityProperties, tokenStore,
-                authenticationManager, tokenEnhancerChain, userDetailsService, defaultTokenServices, authorizationCodeServices,
-                enhancerTokenGranters);
-
     }
 
 

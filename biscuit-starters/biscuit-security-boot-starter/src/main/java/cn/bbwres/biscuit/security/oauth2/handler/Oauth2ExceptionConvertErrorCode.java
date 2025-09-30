@@ -20,8 +20,6 @@ package cn.bbwres.biscuit.security.oauth2.handler;
 
 import cn.bbwres.biscuit.exception.ErrorMessageInfo;
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
-import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 
 /**
  * oauth 的错误码
@@ -37,10 +35,7 @@ public class Oauth2ExceptionConvertErrorCode implements ExceptionConvertErrorCod
      */
     @Override
     public String exceptionConvertErrorCode(Exception ex) {
-        if (ex instanceof OAuth2Exception) {
-            return GlobalErrorCodeConstants.GLOBAL_HTTP_CODE_PREFIX.getCode() + ((OAuth2Exception) ex).getHttpErrorCode();
-        }
-        return null;
+        return ex.getMessage();
     }
 
     /**
@@ -51,9 +46,7 @@ public class Oauth2ExceptionConvertErrorCode implements ExceptionConvertErrorCod
      */
     @Override
     public ErrorMessageInfo exceptionConvertErrorMessage(Exception ex) {
-        if (ex instanceof OAuth2Exception) {
-            return new ErrorMessageInfo(ex.getMessage(), false);
-        }
-        return null;
+
+        return new ErrorMessageInfo(ex.getMessage(), false);
     }
 }

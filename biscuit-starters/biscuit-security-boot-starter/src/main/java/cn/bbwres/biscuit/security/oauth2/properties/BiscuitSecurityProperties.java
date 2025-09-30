@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.security.oauth2.properties;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpMethod;
 
@@ -26,6 +27,7 @@ import org.springframework.http.HttpMethod;
  *
  * @author zhanglinfeng
  */
+@Data
 @ConfigurationProperties("biscuit.security")
 public class BiscuitSecurityProperties {
 
@@ -58,6 +60,14 @@ public class BiscuitSecurityProperties {
 
 
     /**
+     * 是否自动生成jwt密钥
+     */
+    private Boolean autoGeneratorJwtKey = true;
+    /**
+     * 自动生成的jwt密钥长度
+     */
+    private Integer autoGeneratorJwtKeySize = 1024;
+    /**
      * jwt 私钥
      */
     private String jwtPrivateKey;
@@ -66,6 +76,7 @@ public class BiscuitSecurityProperties {
      * jwt 公钥
      */
     private String jwtPublicKey;
+
 
     /**
      * 是否支持刷新令牌
@@ -102,107 +113,4 @@ public class BiscuitSecurityProperties {
     private String captchaCodeKeyName = "captcha_code_key";
 
 
-    public Boolean getSingleClientToken() {
-        return singleClientToken;
-    }
-
-    public void setSingleClientToken(Boolean singleClientToken) {
-        this.singleClientToken = singleClientToken;
-    }
-
-    public TokenStoreType getTokenStoreType() {
-        return tokenStoreType;
-    }
-
-    public void setTokenStoreType(TokenStoreType tokenStoreType) {
-        this.tokenStoreType = tokenStoreType;
-    }
-
-    public Integer getPasswordStrength() {
-        return passwordStrength;
-    }
-
-    public void setPasswordStrength(Integer passwordStrength) {
-        this.passwordStrength = passwordStrength;
-    }
-
-    public String getJwtPrivateKey() {
-        return jwtPrivateKey;
-    }
-
-    public void setJwtPrivateKey(String jwtPrivateKey) {
-        this.jwtPrivateKey = jwtPrivateKey;
-    }
-
-    public String getJwtPublicKey() {
-        return jwtPublicKey;
-    }
-
-    public void setJwtPublicKey(String jwtPublicKey) {
-        this.jwtPublicKey = jwtPublicKey;
-    }
-
-    public Boolean getSupportRefreshToken() {
-        return supportRefreshToken;
-    }
-
-    public void setSupportRefreshToken(Boolean supportRefreshToken) {
-        this.supportRefreshToken = supportRefreshToken;
-    }
-
-    public Boolean getReuseRefreshToken() {
-        return reuseRefreshToken;
-    }
-
-    public void setReuseRefreshToken(Boolean reuseRefreshToken) {
-        this.reuseRefreshToken = reuseRefreshToken;
-    }
-
-    public HttpMethod[] getAllowedTokenEndpointRequestMethods() {
-        return allowedTokenEndpointRequestMethods;
-    }
-
-    public void setAllowedTokenEndpointRequestMethods(HttpMethod[] allowedTokenEndpointRequestMethods) {
-        this.allowedTokenEndpointRequestMethods = allowedTokenEndpointRequestMethods;
-    }
-
-    public String getTokenKeyAccessSecurity() {
-        return tokenKeyAccessSecurity;
-    }
-
-    public void setTokenKeyAccessSecurity(String tokenKeyAccessSecurity) {
-        this.tokenKeyAccessSecurity = tokenKeyAccessSecurity;
-    }
-
-    public String getCheckTokenAccessSecurity() {
-        return checkTokenAccessSecurity;
-    }
-
-    public void setCheckTokenAccessSecurity(String checkTokenAccessSecurity) {
-        this.checkTokenAccessSecurity = checkTokenAccessSecurity;
-    }
-
-    public String getCaptchaCodeValueName() {
-        return captchaCodeValueName;
-    }
-
-    public void setCaptchaCodeValueName(String captchaCodeValueName) {
-        this.captchaCodeValueName = captchaCodeValueName;
-    }
-
-    public String getCaptchaCodeKeyName() {
-        return captchaCodeKeyName;
-    }
-
-    public void setCaptchaCodeKeyName(String captchaCodeKeyName) {
-        this.captchaCodeKeyName = captchaCodeKeyName;
-    }
-
-    public TokenStoreType getAuthorizationCodeStoreType() {
-        return authorizationCodeStoreType;
-    }
-
-    public void setAuthorizationCodeStoreType(TokenStoreType authorizationCodeStoreType) {
-        this.authorizationCodeStoreType = authorizationCodeStoreType;
-    }
 }

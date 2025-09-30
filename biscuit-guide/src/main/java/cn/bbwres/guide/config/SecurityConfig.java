@@ -51,6 +51,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -58,6 +59,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -100,6 +102,7 @@ public class SecurityConfig {
             throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
+
         //获取认证的AuthenticationManagers
         AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
 
@@ -124,7 +127,7 @@ public class SecurityConfig {
                                 new LoginUrlAuthenticationEntryPoint("/login") {
                                     @Override
                                     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-                                        if (request.getRequestURI().contains("token")) {
+                                        if (!request.getRequestURI().equals("/oauth2/authorize")) {
                                             response.getWriter().write("{\"code\":\"need_login\"}");
                                             return;
                                         }
@@ -140,7 +143,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,JWKSource<SecurityContext> jwkSource)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, JWKSource<SecurityContext> jwkSource)
             throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> {
@@ -175,8 +178,8 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer((oauth2ResourceServer) ->
                         oauth2ResourceServer.jwt((jwt) ->
-                                        jwt.decoder(jwtDecoder(jwkSource))
-                                ))
+                                jwt.decoder(jwtDecoder(jwkSource))
+                        ))
         ;
 
         return http.build();
@@ -194,12 +197,34 @@ public class SecurityConfig {
 
 
     @Bean
-    public OAuth2TokenGenerator<? extends OAuth2Token> oAuth2TokenGenerator(JWKSource<SecurityContext> jwkSource) {
+    public OAuth2TokenGenerator<? extends OAuth2Token> oAuth2TokenGenerator(JWKSource<SecurityContext> jwkSource,
+                                                                            OAuth2TokenCustomizer<OAuth2TokenClaimsContext> accessTokenCustomizer) {
+        OAuth2AccessTokenGenerator oAuth2AccessTokenGenerator = new OAuth2AccessTokenGenerator();
+        oAuth2AccessTokenGenerator.setAccessTokenCustomizer(accessTokenCustomizer);
         return new DelegatingOAuth2TokenGenerator(
                 new JwtGenerator(new NimbusJwtEncoder(jwkSource)),
-                new OAuth2AccessTokenGenerator(),
+                oAuth2AccessTokenGenerator,
                 new OAuth2RefreshTokenGenerator()
         );
+    }
+
+    /**
+     * 扩展token
+     * @return
+     */
+    @Bean
+    public OAuth2TokenCustomizer<OAuth2TokenClaimsContext> accessTokenCustomizer(){
+        return context -> {
+            // Customize claims
+            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
+                // Customize headers/claims for access_token
+                OAuth2TokenClaimsSet.Builder claims = context.getClaims();
+                claims.claim("test","dddd");
+                claims.claim("scop",context.getAuthorizedScopes());
+
+            }
+
+        };
     }
 
     @Bean
@@ -228,6 +253,8 @@ public class SecurityConfig {
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .tokenSettings(TokenSettings.builder()
+                        //设置不透明token
+                        .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
                         .accessTokenTimeToLive(Duration.ofSeconds(1800))
                         .refreshTokenTimeToLive(Duration.ofSeconds(3600)).build())
                 .clientSettings(ClientSettings.builder().requireProofKey(true).build())

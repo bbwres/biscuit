@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.exception;
 
 
+import cn.bbwres.biscuit.exception.constants.ErrorCode;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import org.springframework.util.ObjectUtils;
 
@@ -58,6 +59,15 @@ public class SystemRuntimeException extends RuntimeException {
     public SystemRuntimeException(String errorCode, String message) {
         super(message);
         this.errorCode = ObjectUtils.isEmpty(errorCode) ? DEFAULT_ERROR_CODE : errorCode;
+    }
+
+    /**
+     * 异常处理
+     * @param errorCodeObj
+     */
+    public SystemRuntimeException(ErrorCode errorCodeObj) {
+        super(errorCodeObj.getMessage());
+        this.errorCode = errorCodeObj.getCode();
     }
 
 

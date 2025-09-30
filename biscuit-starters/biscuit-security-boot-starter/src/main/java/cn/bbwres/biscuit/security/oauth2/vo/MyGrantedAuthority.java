@@ -19,6 +19,8 @@ package cn.bbwres.biscuit.security.oauth2.vo;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serial;
+
 
 /**
  * 系统权限信息
@@ -27,6 +29,7 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class MyGrantedAuthority implements GrantedAuthority {
 
+    @Serial
     private static final long serialVersionUID = 8611348088697699904L;
     /**
      * 角色编码
