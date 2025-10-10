@@ -1,1 +1,4 @@
-cn.bbwres.biscuit.security.oauth2.BiscuitSecurityConfig
+cn.bbwres.biscuit.security.oauth2.config.BiscuitSecurityConfig
+cn.bbwres.biscuit.security.oauth2.config.CustomGrantConfig
+cn.bbwres.biscuit.security.oauth2.config.Oauth2Config
+cn.bbwres.biscuit.security.oauth2.config.TokenGeneratorConfig

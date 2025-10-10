@@ -20,7 +20,6 @@ package cn.bbwres.biscuit.security.oauth2.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.HttpMethod;
 
 /**
  * 安全相关配置属性
@@ -66,7 +65,7 @@ public class BiscuitSecurityProperties {
     /**
      * 自动生成的jwt密钥长度
      */
-    private Integer autoGeneratorJwtKeySize = 1024;
+    private Integer autoGeneratorJwtKeySize = 2048;
     /**
      * jwt 私钥
      */
@@ -77,32 +76,6 @@ public class BiscuitSecurityProperties {
      */
     private String jwtPublicKey;
 
-
-    /**
-     * 是否支持刷新令牌
-     */
-    private Boolean supportRefreshToken = true;
-
-    /**
-     * 重用刷新令牌
-     */
-    private Boolean reuseRefreshToken = true;
-
-    /**
-     * token 支持的请求方法
-     */
-    private HttpMethod[] allowedTokenEndpointRequestMethods = new HttpMethod[]{HttpMethod.POST};
-
-    /**
-     * 获取token的访问权限字符串
-     */
-    private String tokenKeyAccessSecurity = "permitAll()";
-
-    /**
-     * 检查token的访问权限字符串
-     */
-    private String checkTokenAccessSecurity = "permitAll()";
-
     /**
      * 验证码值的请求参数名称
      */
@@ -111,6 +84,11 @@ public class BiscuitSecurityProperties {
      * 验证码key的请求参数名称
      */
     private String captchaCodeKeyName = "captcha_code_key";
+
+    /**
+     * 登录的页面地址
+     */
+    private String loginUrl = "/login";
 
 
 }

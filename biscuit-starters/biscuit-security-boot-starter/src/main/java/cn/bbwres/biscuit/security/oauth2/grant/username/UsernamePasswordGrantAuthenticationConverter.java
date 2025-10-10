@@ -16,8 +16,9 @@
  *
  */
 
-package cn.bbwres.biscuit.security.oauth2.granter;
+package cn.bbwres.biscuit.security.oauth2.grant.username;
 
+import cn.bbwres.biscuit.security.oauth2.utils.ParamsUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +26,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.web.authentication.AuthenticationConverter;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
@@ -56,7 +56,7 @@ public class UsernamePasswordGrantAuthenticationConverter implements Authenticat
 
         Authentication clientPrincipal = SecurityContextHolder.getContext().getAuthentication();
 
-        MultiValueMap<String, String> parameters = getFormParameters(request);
+        MultiValueMap<String, String> parameters = ParamsUtil.getFormParameters(request);
 
         // code (REQUIRED)
         String username = parameters.getFirst(OAuth2ParameterNames.USERNAME);
@@ -82,22 +82,4 @@ public class UsernamePasswordGrantAuthenticationConverter implements Authenticat
         return new UsernamePasswordGrantAuthenticationToken(clientPrincipal, additionalParameters, username, password);
     }
 
-    /**
-     * 获取
-     * @param request
-     * @return
-     */
-    private MultiValueMap<String, String> getFormParameters(HttpServletRequest request) {
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameterMap.forEach((key, values) -> {
-            String queryString = StringUtils.hasText(request.getQueryString()) ? request.getQueryString() : "";
-            if (!queryString.contains(key)) {
-                for (String value : values) {
-                    parameters.add(key, value);
-                }
-            }
-        });
-        return parameters;
-    }
 }

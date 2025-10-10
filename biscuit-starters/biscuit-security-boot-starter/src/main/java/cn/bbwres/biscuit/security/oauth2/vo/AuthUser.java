@@ -17,6 +17,7 @@
  */
 package cn.bbwres.biscuit.security.oauth2.vo;
 
+import lombok.Getter;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -30,6 +31,7 @@ import java.util.Collection;
  *
  * @author zhanglinfeng
  */
+@Getter
 public class AuthUser extends User {
 
 
@@ -96,31 +98,4 @@ public class AuthUser extends User {
     }
 
 
-    public String getZhName() {
-        return zhName;
-    }
-
-    public void setZhName(String zhName) {
-        this.zhName = zhName;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    public Boolean getNoUserInfo() {
-        return noUserInfo;
-    }
-
-    public void setNoUserInfo(Boolean noUserInfo) {
-        this.noUserInfo = noUserInfo;
-    }
 }

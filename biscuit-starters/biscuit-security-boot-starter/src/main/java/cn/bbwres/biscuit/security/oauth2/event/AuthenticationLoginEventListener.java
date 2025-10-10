@@ -49,8 +49,7 @@ public class AuthenticationLoginEventListener {
     @EventListener
     public void successEvent(AuthenticationSuccessEvent event) {
         if (event.getAuthentication().getDetails() != null) {
-            if (event.getAuthentication().getPrincipal() instanceof AuthUser) {
-                AuthUser authUser = (AuthUser) event.getAuthentication().getPrincipal();
+            if (event.getAuthentication().getPrincipal() instanceof AuthUser authUser) {
                 log.info("当前用户:{} 登录成功的！", authUser);
                 authenticationLoginService.loginSuccess(authUser);
             }

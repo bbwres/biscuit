@@ -15,7 +15,7 @@
  *  * limitations under the License.
  *
  */
-package cn.bbwres.biscuit.security.oauth2;
+package cn.bbwres.biscuit.security.oauth2.config;
 
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginEventListener;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginService;
@@ -40,13 +40,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableConfigurationProperties(BiscuitSecurityProperties.class)
 public class BiscuitSecurityConfig {
 
-
     /**
      * 密码管理
      *
      * @return PasswordEncoder
      */
-    @Bean
+  //  @Bean
     public PasswordEncoder passwordEncoder(BiscuitSecurityProperties biscuitSecurityProperties) {
         return new BCryptPasswordEncoder(biscuitSecurityProperties.getPasswordStrength());
     }
@@ -55,7 +54,7 @@ public class BiscuitSecurityConfig {
     /**
      * 登录事件处理服务
      *
-     * @return
+     * @return AuthenticationLoginService
      */
     @Bean
     @ConditionalOnMissingBean
@@ -66,8 +65,8 @@ public class BiscuitSecurityConfig {
     /**
      * 登录事件
      *
-     * @param authenticationLoginService
-     * @return
+     * @param authenticationLoginService authenticationLoginService
+     * @return AuthenticationLoginEventListener
      */
     @Bean
     @ConditionalOnMissingBean

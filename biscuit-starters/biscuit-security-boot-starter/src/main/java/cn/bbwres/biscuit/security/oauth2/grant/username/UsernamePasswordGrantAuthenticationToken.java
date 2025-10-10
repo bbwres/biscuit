@@ -16,7 +16,7 @@
  *
  */
 
-package cn.bbwres.biscuit.security.oauth2.granter;
+package cn.bbwres.biscuit.security.oauth2.grant.username;
 
 import lombok.Getter;
 import org.springframework.lang.Nullable;

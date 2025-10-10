@@ -21,6 +21,7 @@ package cn.bbwres.biscuit.security.oauth2.config;
 
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.security.oauth2.constants.Oauth2ErrorCodeConstants;
+import cn.bbwres.biscuit.security.oauth2.constants.Oauth2SystemConstants;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
 import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -29,11 +30,14 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.converter.RsaKeyConverters;
-import org.springframework.security.oauth2.core.OAuth2Token;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -48,60 +52,97 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * token 生成相关配置
+ *
  * @author zhanglinfeng
  */
 @Slf4j
-@Configuration
+@AutoConfiguration
 public class TokenGeneratorConfig {
 
 
     /**
      * OAuth2TokenGenerator 配置
      *
-     * @param tokenGenerators
+     * @return DelegatingOAuth2TokenGenerator
+     */
+    @Bean
+    public DelegatingOAuth2TokenGenerator oauth2TokenGenerator(ObjectProvider<OAuth2TokenCustomizer<OAuth2TokenClaimsContext>> accessTokenCustomizer,
+                                                               ObjectProvider<OAuth2TokenCustomizer<JwtEncodingContext>> jwtCustomizer,
+                                                               JWKSource<SecurityContext> jwkSource) {
+        OAuth2AccessTokenGenerator oAuth2AccessTokenGenerator = new OAuth2AccessTokenGenerator();
+        OAuth2TokenCustomizer<OAuth2TokenClaimsContext> oauth2TokenClaimsContextCustomizer = accessTokenCustomizer.getIfAvailable();
+        if (!ObjectUtils.isEmpty(oauth2TokenClaimsContextCustomizer)) {
+            oAuth2AccessTokenGenerator.setAccessTokenCustomizer(oauth2TokenClaimsContextCustomizer);
+        }
+        JwtGenerator jwtGenerator = new JwtGenerator(new NimbusJwtEncoder(jwkSource));
+        OAuth2TokenCustomizer<JwtEncodingContext> jwtEncodingContextCustomizer = jwtCustomizer.getIfAvailable();
+        if (!ObjectUtils.isEmpty(jwtEncodingContextCustomizer)) {
+            jwtGenerator.setJwtCustomizer(jwtEncodingContextCustomizer);
+        }
+        return new DelegatingOAuth2TokenGenerator(oAuth2AccessTokenGenerator,
+                new OAuth2RefreshTokenGenerator(),
+                jwtGenerator);
+    }
+
+
+    /**
+     * 扩展token
+     *
+     * @return OAuth2TokenCustomizer
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public OAuth2TokenCustomizer<OAuth2TokenClaimsContext> accessTokenCustomizer() {
+        return context -> {
+            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
+                OAuth2TokenClaimsSet.Builder claims = context.getClaims();
+                claims.claims(claimsMap -> claimsMap.putAll(buildClaimsMap(context)));
+            }
+        };
+    }
+
+    /**
+     * 扩展token
+     *
+     * @return OAuth2TokenCustomizer
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public OAuth2TokenCustomizer<JwtEncodingContext> jwtEncodingContext() {
+        return context -> {
+            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
+                JwtClaimsSet.Builder claims = context.getClaims();
+                claims.claims(claimsMap -> claimsMap.putAll(buildClaimsMap(context)));
+            }
+        };
+    }
+
+    /**
+     * 设置ClaimsMap信息
+     *
+     * @param context
      * @return
      */
-    @Bean
-    public OAuth2TokenGenerator<? extends OAuth2Token> oauth2TokenGenerator(OAuth2TokenGenerator<? extends OAuth2Token>... tokenGenerators) {
-        return new DelegatingOAuth2TokenGenerator(tokenGenerators);
-    }
+    private Map<String, Object> buildClaimsMap(OAuth2TokenContext context) {
+        Map<String, Object> claims = new HashMap<>(16);
+        Authentication principal = context.getPrincipal();
+        if (principal.getPrincipal() instanceof AuthUser user) {
+            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "zh_name", user.getZhName());
+            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "user_id", user.getUserId());
+            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "tenant_id", user.getTenantId());
+        }
+        Set<String> roles = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities())
+                .stream()
+                .map(c -> c.replaceFirst("^ROLE_", ""))
+                .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
 
-
-    /**
-     * accessToken 生成处理
-     *
-     * @param accessTokenCustomizer accessTokenCustomizer
-     * @return OAuth2AccessTokenGenerator
-     */
-    @Bean
-    public OAuth2AccessTokenGenerator oauth2AccessTokenGenerator(OAuth2TokenCustomizer<OAuth2TokenClaimsContext> accessTokenCustomizer) {
-        OAuth2AccessTokenGenerator oAuth2AccessTokenGenerator = new OAuth2AccessTokenGenerator();
-        oAuth2AccessTokenGenerator.setAccessTokenCustomizer(accessTokenCustomizer);
-        return oAuth2AccessTokenGenerator;
-    }
-
-    /**
-     * RefreshToken  生成处理
-     *
-     * @return OAuth2RefreshTokenGenerator
-     */
-    @Bean
-    public OAuth2RefreshTokenGenerator oauth2RefreshTokenGenerator() {
-        return new OAuth2RefreshTokenGenerator();
-    }
-
-    /**
-     * JwtGenerator  生成处理
-     *
-     * @return JwtGenerator
-     */
-    @Bean
-    public JwtGenerator jwtGenerator(JWKSource<SecurityContext> jwkSource) {
-        return new JwtGenerator(new NimbusJwtEncoder(jwkSource));
+        claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "roles", roles);
+        return claims;
     }
 
     /**
@@ -168,30 +209,4 @@ public class TokenGeneratorConfig {
     }
 
 
-
-
-    /**
-     * 扩展token
-     *
-     * @return OAuth2TokenCustomizer
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public OAuth2TokenCustomizer<OAuth2TokenClaimsContext> accessTokenCustomizer() {
-        return context -> {
-            // Customize claims
-            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
-                // Customize headers/claims for access_token
-                OAuth2TokenClaimsSet.Builder claims = context.getClaims();
-                if (context.getPrincipal() instanceof AuthUser) {
-                    AuthUser user = context.getPrincipal();
-                    claims.claim("zh_name", user.getZhName());
-                    claims.claim("user_id", user.getUserId());
-                    claims.claim("tenant_id", user.getTenantId());
-                    claims.claim("scop", context.getAuthorizedScopes());
-                }
-            }
-
-        };
-    }
 }

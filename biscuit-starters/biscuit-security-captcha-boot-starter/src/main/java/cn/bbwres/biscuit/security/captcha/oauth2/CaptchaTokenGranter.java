@@ -18,7 +18,7 @@
 package cn.bbwres.biscuit.security.captcha.oauth2;
 
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
-import cn.bbwres.biscuit.security.oauth2.granter.EnhancerTokenGranter;
+import cn.bbwres.biscuit.security.oauth2.grant.EnhancerTokenGranter;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
