@@ -22,7 +22,9 @@ import cn.bbwres.biscuit.security.oauth2.grant.username.UsernamePasswordAuthenti
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
 
@@ -44,7 +46,7 @@ public class CustomGrantConfig {
     @Bean
     public UsernamePasswordAuthenticationGrant usernamePasswordAuthenticationGrant(OAuth2AuthorizationService authorizationService,
                                                                                    DelegatingOAuth2TokenGenerator tokenGenerator,
-                                                                                   AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return new UsernamePasswordAuthenticationGrant(authorizationService, tokenGenerator, authenticationConfiguration);
+                                                                                   UserDetailsService userDetailsService) throws Exception {
+        return new UsernamePasswordAuthenticationGrant(authorizationService, tokenGenerator, new DaoAuthenticationProvider(userDetailsService));
     }
 }

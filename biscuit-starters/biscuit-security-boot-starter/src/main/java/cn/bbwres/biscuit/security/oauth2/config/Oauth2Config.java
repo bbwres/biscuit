@@ -34,8 +34,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
@@ -98,17 +96,6 @@ public class Oauth2Config {
                 oAuth2AccessTokenGenerator,
                 new OAuth2RefreshTokenGenerator()
         );
-    }
-
-    /**
-     * OAuth2AuthorizationService服务
-     *
-     * @return OAuth2AuthorizationService
-     */
-    @Bean
-    public OAuth2AuthorizationService authorizationService() {
-        //TODO token 存储配置
-        return new InMemoryOAuth2AuthorizationService();
     }
 
 

@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.security.oauth2.grant.username;
 
 import cn.bbwres.biscuit.security.oauth2.grant.AbstractCustomAuthenticationGrant;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
@@ -38,13 +39,13 @@ public class UsernamePasswordAuthenticationGrant extends AbstractCustomAuthentic
      *
      * @param authorizationService
      * @param tokenGenerator
-     * @param authenticationConfiguration
+     * @param daoAuthenticationProvider
      * @throws Exception
      */
     public UsernamePasswordAuthenticationGrant(OAuth2AuthorizationService authorizationService, DelegatingOAuth2TokenGenerator tokenGenerator,
-                                               AuthenticationConfiguration authenticationConfiguration) throws Exception {
+                                               DaoAuthenticationProvider daoAuthenticationProvider) throws Exception {
         super(new UsernamePasswordGrantAuthenticationConverter(), new UsernamePasswordGrantAuthenticationProvider(authorizationService, tokenGenerator,
-                authenticationConfiguration.getAuthenticationManager()));
+                daoAuthenticationProvider));
     }
 
 

@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.security.oauth2.grant.username;
 
 import cn.bbwres.biscuit.security.oauth2.grant.AbstractGrantAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -34,14 +35,14 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
  */
 public class UsernamePasswordGrantAuthenticationProvider extends AbstractGrantAuthenticationProvider {
 
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationProvider authenticationProvider;
 
 
     public UsernamePasswordGrantAuthenticationProvider(OAuth2AuthorizationService authorizationService,
                                                        OAuth2TokenGenerator<?> tokenGenerator,
-                                                       AuthenticationManager authenticationManager) {
+                                                       AuthenticationProvider authenticationProvider) {
         super(authorizationService, tokenGenerator);
-        this.authenticationManager = authenticationManager;
+        this.authenticationProvider = authenticationProvider;
     }
 
 
@@ -59,7 +60,7 @@ public class UsernamePasswordGrantAuthenticationProvider extends AbstractGrantAu
                 customCodeGrantAuthentication.getPassword());
         // Allow subclasses to set the "details" property
         authRequest.setDetails(customCodeGrantAuthentication);
-        return authenticationManager.authenticate(authRequest);
+        return authenticationProvider.authenticate(authRequest);
     }
 
 

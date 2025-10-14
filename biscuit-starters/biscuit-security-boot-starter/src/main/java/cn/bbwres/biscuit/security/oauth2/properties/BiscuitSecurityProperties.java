@@ -37,25 +37,10 @@ public class BiscuitSecurityProperties {
      * 默认为false
      */
     private Boolean singleClientToken = false;
-
-
     /**
-     * token 存储的类型
-     * 默认为jwt
+     * token 存储的位置
      */
-    private TokenStoreType tokenStoreType = TokenStoreType.JWT;
-    /**
-     * 授权码存储的类型
-     */
-    private TokenStoreType authorizationCodeStoreType = TokenStoreType.REDIS;
-
-    /**
-     * the log rounds to use, between 4 and 31
-     * 密码强度
-     * 最少为4，最大为31. 越大对性能影响越高
-     * 默认为10
-     */
-    private Integer passwordStrength = 10;
+    private String tokenStoreType = TokenStoreType.redis.name();
 
 
     /**

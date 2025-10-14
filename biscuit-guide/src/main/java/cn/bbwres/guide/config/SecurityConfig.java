@@ -35,6 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -43,6 +44,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -122,6 +124,7 @@ public class SecurityConfig {
                 .username("user")
                 .password("zlf")
                 .roles("USER_1")
+               // .passwordEncoder(aa->"{MD5}45fda22435f89f22f2ce6756a3cf32c4")
                 .build();
 
         return new InMemoryUserDetailsManager(userDetails);
@@ -134,8 +137,11 @@ public class SecurityConfig {
                 .clientSecret("{noop}zlf")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                //设置公开的、无需客户端认证的客户端
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(new AuthorizationGrantType("password"))
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
                 .postLogoutRedirectUri("http://127.0.0.1:8080/")
@@ -143,7 +149,8 @@ public class SecurityConfig {
                 .scope(OidcScopes.PROFILE)
                 .tokenSettings(TokenSettings.builder()
                         //设置不透明token
-                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                       // .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                        .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
                         //刷新token只能使用一次
                         .reuseRefreshTokens(false)
                         // .accessTokenFormat(OAuth2TokenFormat.REFERENCE)

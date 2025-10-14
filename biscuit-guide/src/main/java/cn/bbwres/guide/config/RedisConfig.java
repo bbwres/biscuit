@@ -16,27 +16,19 @@
  *
  */
 
-package cn.bbwres.biscuit.security.oauth2.properties;
+package cn.bbwres.guide.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 /**
- * TokenStore的类型
+ * redis配置
  *
  * @author zhanglinfeng
  */
+@EnableRedisRepositories("cn.bbwres.biscuit.security.oauth2.service.redis.repository")
+@Configuration(proxyBeanMethods = false)
+public class RedisConfig {
 
-public enum TokenStoreType {
 
-    /**
-     * 内存存储token
-     */
-    in_memory,
-    /**
-     * 数据库存储token信息
-     */
-    jdbc,
-
-    /**
-     * redis 存储token信息
-     */
-    redis
 }

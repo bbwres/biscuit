@@ -142,6 +142,7 @@ public class TokenGeneratorConfig {
                 .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
 
         claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "roles", roles);
+        claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "grant_type", context.getAuthorizationGrantType().getValue());
         return claims;
     }
 

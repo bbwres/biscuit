@@ -4,7 +4,18 @@ spring:
 
   mvc:
     static-path-pattern: /static/**
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
 logging:
   level:
     root: debug
+
+biscuit:
+  security:
+    token-store-type: redis
+
+server:
+  port: 8911

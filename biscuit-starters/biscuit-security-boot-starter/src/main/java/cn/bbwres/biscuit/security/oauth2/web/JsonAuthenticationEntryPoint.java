@@ -18,6 +18,8 @@
 
 package cn.bbwres.biscuit.security.oauth2.web;
 
+import cn.bbwres.biscuit.dto.Result;
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.utils.JsonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,10 +61,8 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
         // 构建 JSON 响应体
-        Map<String, Object> error = new HashMap<>(16);
-        error.put("code", 401);
-        error.put("message", "请先登录");
-        error.put("path", request.getRequestURI());
+        Result<String> error = Result.error(GlobalErrorCodeConstants.INVALID_TOKEN);
+        error.setData(request.getRequestURI());
         // 转换为 JSON 并写入响应
         JsonUtil.getObjectMapper().writeValue(response.getWriter(), error);
     }

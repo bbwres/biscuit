@@ -138,7 +138,7 @@ public class Result<T> implements Serializable {
      * @return 处理失败的数据
      */
     public static <T> Result<T> error(ErrorCode errorCode) {
-        return new Result<>(errorCode.getCode(), null);
+        return new Result<>(errorCode.getCode(), errorCode.getMessage());
     }
 
     /**

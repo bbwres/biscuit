@@ -40,16 +40,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableConfigurationProperties(BiscuitSecurityProperties.class)
 public class BiscuitSecurityConfig {
 
-    /**
-     * 密码管理
-     *
-     * @return PasswordEncoder
-     */
-  //  @Bean
-    public PasswordEncoder passwordEncoder(BiscuitSecurityProperties biscuitSecurityProperties) {
-        return new BCryptPasswordEncoder(biscuitSecurityProperties.getPasswordStrength());
-    }
-
 
     /**
      * 登录事件处理服务

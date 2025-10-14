@@ -19,9 +19,12 @@
 package cn.bbwres.biscuit.security.oauth2.web;
 
 import cn.bbwres.biscuit.dto.Result;
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
+import cn.bbwres.biscuit.utils.JsonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -34,6 +37,7 @@ import java.io.IOException;
  *
  * @author zhanglinfeng
  */
+@Slf4j
 public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
 
@@ -55,7 +59,9 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         if (!request.getRequestURI().equals(authorizationServerSettings.getAuthorizationEndpoint())) {
-            response.getWriter().write("{\"code\":\"need_login\"}");
+            log.info("当前请求失败！", authException);
+            Result<Void> error = Result.error(GlobalErrorCodeConstants.INVALID_TOKEN);
+            response.getWriter().write(JsonUtil.toJson(error));
             return;
         }
         super.commence(request, response, authException);

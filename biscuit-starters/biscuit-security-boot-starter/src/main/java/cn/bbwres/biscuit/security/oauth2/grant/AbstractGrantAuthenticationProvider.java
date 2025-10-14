@@ -35,6 +35,7 @@ import org.springframework.security.oauth2.server.authorization.context.Authoriz
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
+import org.springframework.util.StopWatch;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -85,8 +86,8 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
         if (!registeredClient.getAuthorizationGrantTypes().contains(oauth2AuthorizationGrantAuthentication.getGrantType())) {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
         }
-        Authentication userAuthenticate = authenticateHandler(oauth2AuthorizationGrantAuthentication);
 
+        Authentication userAuthenticate = authenticateHandler(oauth2AuthorizationGrantAuthentication);
         // Generate the access token
         DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
                 .registeredClient(registeredClient)
@@ -129,7 +130,6 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
                 generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),
                 generatedAccessToken.getExpiresAt(), registeredClient.getScopes());
 
-
         OAuth2TokenFormat accessTokenFormat = registeredClient.getTokenSettings().getAccessTokenFormat();
         authorizationBuilder.token(accessToken, (metadata) -> {
                     if (generatedAccessToken instanceof ClaimAccessor claimAccessor) {
@@ -152,10 +152,8 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
         }
 
         OAuth2Authorization authorization = authorizationBuilder.build();
-
         // Save the OAuth2Authorization
         authorizationService.save(authorization);
-
 
         return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, additionalParameters);
     }
