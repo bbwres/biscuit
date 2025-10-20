@@ -16,28 +16,34 @@
  *
  */
 
-package cn.bbwres.biscuit.security.oauth2.constants;
+package cn.bbwres.biscuit.security.oauth2.service.redis.pojo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
+import java.util.Set;
 
 /**
- * Oauth2 相关配置常量
+ * accessToken 信息
  *
  * @author zhanglinfeng
  */
-public interface Oauth2SystemConstants {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class OAuth2AuthorizationAccessToken extends BaseOAuth2AuthorizationToken {
+    @Serial
+    private static final long serialVersionUID = 914094183203192957L;
+
 
     /**
-     * 自定义的token claims 的前缀
+     * accessToken 授权范围
      */
-    String CUSTOM_CLAIMS_PREFIX = "custom_";
-    /**
-     * scop 参数
-     */
-    String PARAMS_SCOPE = "scope";
+    private Set<String> scopes;
 
     /**
-     * 单个用户登录
+     * accessToken的TokenType
      */
-    String CLIENT_SETTING_SINGLE_USER_LOGIN = "client.single_user_login";
-
+    private String tokenType;
 
 }

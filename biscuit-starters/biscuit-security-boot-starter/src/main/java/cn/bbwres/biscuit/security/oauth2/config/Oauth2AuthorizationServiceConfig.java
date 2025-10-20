@@ -20,7 +20,6 @@ package cn.bbwres.biscuit.security.oauth2.config;
 
 import cn.bbwres.biscuit.security.oauth2.service.redis.RedisOAuth2AuthorizationConsentService;
 import cn.bbwres.biscuit.security.oauth2.service.redis.RedisOAuth2AuthorizationService;
-import cn.bbwres.biscuit.security.oauth2.service.redis.repository.OAuth2AuthorizationGrantAuthorizationRepository;
 import cn.bbwres.biscuit.security.oauth2.service.redis.repository.OAuth2UserConsentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,8 +37,11 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.mapping.RedisMappingContext;
 import org.springframework.data.redis.repository.support.RedisRepositoryFactory;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 
@@ -93,19 +95,22 @@ public class Oauth2AuthorizationServiceConfig {
 
         /**
          * 基于redis 认证的 OAuth2AuthorizationService
-         * @param registeredClientRepository 客户端信息
-         * @param authorizationGrantAuthorizationRepository 资源信息
+         *
+         * @param registeredClientRepository                客户端信息
+         * @param redisTemplate 资源信息
          * @return OAuth2AuthorizationService
          */
         @Bean
         public OAuth2AuthorizationService authorizationService(RegisteredClientRepository registeredClientRepository,
-                                                                    @Qualifier("redisOAuth2AuthorizationGrantAuthorizationRepository") OAuth2AuthorizationGrantAuthorizationRepository authorizationGrantAuthorizationRepository) {
+                                                               @Qualifier("oauth2RedisTemplate") RedisTemplate<Object, Object> redisTemplate,
+                                                               UserDetailsService userDetailsService) {
             return new RedisOAuth2AuthorizationService(registeredClientRepository,
-                    authorizationGrantAuthorizationRepository);
+                    redisTemplate, userDetailsService);
         }
 
         /**
          * 基于redis 认证的 OAuth2AuthorizationService
+         *
          * @param oauth2UserConsentRepository 资源信息
          * @return OAuth2AuthorizationConsentService
          */
@@ -115,8 +120,9 @@ public class Oauth2AuthorizationServiceConfig {
         }
 
         @Bean("oauth2RedisTemplate")
-        public RedisTemplate<?, ?> oauth2RedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-            RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
+        public RedisTemplate<Object, Object> oauth2RedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+            RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+            redisTemplate.setKeySerializer(new StringRedisSerializer());
             redisTemplate.setConnectionFactory(redisConnectionFactory);
             return redisTemplate;
         }
@@ -135,21 +141,6 @@ public class Oauth2AuthorizationServiceConfig {
             RedisKeyValueTemplate redisKeyValueTemplate = new RedisKeyValueTemplate(redisKeyValueAdapter, new RedisMappingContext());
             RepositoryFactorySupport factory = new RedisRepositoryFactory(redisKeyValueTemplate);
             return factory.getRepository(OAuth2UserConsentRepository.class);
-        }
-
-        /**
-         * 手动创建并注册 OAuth2UserConsentRepository 的 Bean。
-         *
-         * @param oauth2RedisTemplate Spring Boot 自动配置好的 RedisOperations (RedisTemplate)。
-         * @return StarterARepository 的实例。
-         */
-        @Bean("redisOAuth2AuthorizationGrantAuthorizationRepository")
-        @ConditionalOnBean(RedisOperations.class)
-        public OAuth2AuthorizationGrantAuthorizationRepository oauth2AuthorizationGrantAuthorizationRepository(@Qualifier("oauth2RedisTemplate") RedisTemplate<?, ?> oauth2RedisTemplate) {
-            RedisKeyValueAdapter redisKeyValueAdapter = new RedisKeyValueAdapter(oauth2RedisTemplate);
-            RedisKeyValueTemplate redisKeyValueTemplate = new RedisKeyValueTemplate(redisKeyValueAdapter, new RedisMappingContext());
-            RepositoryFactorySupport factory = new RedisRepositoryFactory(redisKeyValueTemplate);
-            return factory.getRepository(OAuth2AuthorizationGrantAuthorizationRepository.class);
         }
 
 

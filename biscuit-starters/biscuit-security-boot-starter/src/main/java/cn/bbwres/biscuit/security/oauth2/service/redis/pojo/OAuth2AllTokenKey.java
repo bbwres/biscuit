@@ -16,28 +16,41 @@
  *
  */
 
-package cn.bbwres.biscuit.security.oauth2.constants;
+package cn.bbwres.biscuit.security.oauth2.service.redis.pojo;
+
+import lombok.Data;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
- * Oauth2 相关配置常量
+ * clientId 与token的关系
  *
  * @author zhanglinfeng
  */
-public interface Oauth2SystemConstants {
+@Data
+public class OAuth2AllTokenKey implements Serializable {
+
+    public static final String KEY_FORMATE = "oauth2_authorization_all:%s";
+
+
+    @Serial
+    private static final long serialVersionUID = 2354732181431339641L;
 
     /**
-     * 自定义的token claims 的前缀
+     * 客户端id
      */
-    String CUSTOM_CLAIMS_PREFIX = "custom_";
-    /**
-     * scop 参数
-     */
-    String PARAMS_SCOPE = "scope";
+    private String id;
+
 
     /**
-     * 单个用户登录
+     * 获取redis的key
+     *
+     * @return
      */
-    String CLIENT_SETTING_SINGLE_USER_LOGIN = "client.single_user_login";
+    public String getRedisKey() {
+        return String.format(KEY_FORMATE, id);
+    }
 
 
 }

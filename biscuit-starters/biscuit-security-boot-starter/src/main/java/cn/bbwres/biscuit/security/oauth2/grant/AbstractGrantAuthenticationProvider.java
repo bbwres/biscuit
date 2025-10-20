@@ -24,6 +24,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.*;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -35,10 +39,8 @@ import org.springframework.security.oauth2.server.authorization.context.Authoriz
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
-import org.springframework.util.StopWatch;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,10 +51,13 @@ import java.util.Map;
  */
 public abstract class AbstractGrantAuthenticationProvider implements AuthenticationProvider {
 
-
+    private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
     private final OAuth2AuthorizationService authorizationService;
 
     private final OAuth2TokenGenerator<?> tokenGenerator;
+
+    private static final OAuth2TokenType ID_TOKEN_TOKEN_TYPE = new OAuth2TokenType(OidcParameterNames.ID_TOKEN);
+
 
 
     public AbstractGrantAuthenticationProvider(OAuth2AuthorizationService authorizationService,
@@ -114,9 +119,8 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
 
 
         //设置自定义的参数
-        Map<String, Object> additionalParameters = Collections.emptyMap();
+        Map<String, Object> additionalParameters = new HashMap<>(16);
         if (generatedAccessToken instanceof ClaimAccessor claimAccessor) {
-            additionalParameters = new HashMap<>(16);
             Map<String, Object> claims = claimAccessor.getClaims();
 
             for (String key : claims.keySet()) {
@@ -150,7 +154,32 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
             refreshToken = (OAuth2RefreshToken) tokenGenerator.generate(tokenContext);
             authorizationBuilder.refreshToken(refreshToken);
         }
+        // ----- ID token -----
+        OidcIdToken idToken;
+        if (registeredClient.getScopes().contains(OidcScopes.OPENID)) {
+            // @formatter:off
+            tokenContext = tokenContextBuilder
+                    .tokenType(ID_TOKEN_TOKEN_TYPE)
+                    .authorization(authorizationBuilder.build())
+                    .build();
+            // @formatter:on
+            OAuth2Token generatedIdToken = this.tokenGenerator.generate(tokenContext);
+            if (!(generatedIdToken instanceof Jwt)) {
+                OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
+                        "The token generator failed to generate the ID token.", ERROR_URI);
+                throw new OAuth2AuthenticationException(error);
+            }
 
+            idToken = new OidcIdToken(generatedIdToken.getTokenValue(), generatedIdToken.getIssuedAt(),
+                    generatedIdToken.getExpiresAt(), ((Jwt) generatedIdToken).getClaims());
+            authorizationBuilder.token(idToken,
+                    (metadata) -> metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, idToken.getClaims()));
+        } else {
+            idToken = null;
+        }
+        if (idToken != null) {
+            additionalParameters.put(OidcParameterNames.ID_TOKEN, idToken.getTokenValue());
+        }
         OAuth2Authorization authorization = authorizationBuilder.build();
         // Save the OAuth2Authorization
         authorizationService.save(authorization);

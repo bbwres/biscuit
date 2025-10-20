@@ -16,28 +16,32 @@
  *
  */
 
-package cn.bbwres.biscuit.security.oauth2.constants;
+package cn.bbwres.biscuit.security.oauth2.service.redis.pojo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
+import java.util.Map;
 
 /**
- * Oauth2 相关配置常量
+ * oidcId 信息
  *
  * @author zhanglinfeng
  */
-public interface Oauth2SystemConstants {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class OAuth2AuthorizationOidcToken extends BaseOAuth2AuthorizationToken {
+    @Serial
+    private static final long serialVersionUID = 914094183203192957L;
+
 
     /**
-     * 自定义的token claims 的前缀
+     * /**
+     * idTokenClaims
      */
-    String CUSTOM_CLAIMS_PREFIX = "custom_";
-    /**
-     * scop 参数
-     */
-    String PARAMS_SCOPE = "scope";
+    private Map<String, Object> claims;
 
-    /**
-     * 单个用户登录
-     */
-    String CLIENT_SETTING_SINGLE_USER_LOGIN = "client.single_user_login";
 
 
 }

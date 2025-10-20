@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.security.oauth2.grant.username;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -33,6 +34,7 @@ import java.util.Map;
  * @author zhanglinfeng
  */
 @Getter
+@Setter
 public class UsernamePasswordGrantAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
 
     @Serial
@@ -42,7 +44,7 @@ public class UsernamePasswordGrantAuthenticationToken extends OAuth2Authorizatio
 
     private final String username;
 
-    private final String password;
+    private  String password;
 
     /**
      * Sub-class constructor.
@@ -61,4 +63,6 @@ public class UsernamePasswordGrantAuthenticationToken extends OAuth2Authorizatio
     public Object getCredentials() {
         return password;
     }
+
+
 }

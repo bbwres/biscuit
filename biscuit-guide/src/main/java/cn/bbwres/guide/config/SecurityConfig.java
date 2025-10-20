@@ -18,6 +18,7 @@
 
 package cn.bbwres.guide.config;
 
+import cn.bbwres.biscuit.security.oauth2.constants.Oauth2SystemConstants;
 import cn.bbwres.biscuit.security.oauth2.web.JsonAuthenticationEntryPoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,7 +36,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -44,7 +44,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
-import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -124,7 +123,7 @@ public class SecurityConfig {
                 .username("user")
                 .password("zlf")
                 .roles("USER_1")
-               // .passwordEncoder(aa->"{MD5}45fda22435f89f22f2ce6756a3cf32c4")
+                // .passwordEncoder(aa->"{MD5}45fda22435f89f22f2ce6756a3cf32c4")
                 .build();
 
         return new InMemoryUserDetailsManager(userDetails);
@@ -145,18 +144,20 @@ public class SecurityConfig {
                 .authorizationGrantType(new AuthorizationGrantType("password"))
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
                 .postLogoutRedirectUri("http://127.0.0.1:8080/")
-                .scope(OidcScopes.OPENID)
+                //  .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .tokenSettings(TokenSettings.builder()
                         //设置不透明token
-                       // .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                        // .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
                         .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
                         //刷新token只能使用一次
                         .reuseRefreshTokens(false)
                         // .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
                         .accessTokenTimeToLive(Duration.ofSeconds(1800))
                         .refreshTokenTimeToLive(Duration.ofSeconds(3600)).build())
-                .clientSettings(ClientSettings.builder().requireProofKey(true).build())
+                .clientSettings(ClientSettings.builder()
+                        .setting(Oauth2SystemConstants.CLIENT_SETTING_SINGLE_USER_LOGIN, true)
+                        .requireProofKey(true).build())
                 .build();
 
         return new InMemoryRegisteredClientRepository(oidcClient);
