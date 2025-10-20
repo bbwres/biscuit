@@ -18,13 +18,14 @@
 
 package cn.bbwres.biscuit.security.oauth2.service.redis;
 
-import cn.bbwres.biscuit.security.oauth2.service.redis.pojo.OAuth2UserConsent;
-import cn.bbwres.biscuit.security.oauth2.service.redis.repository.OAuth2UserConsentRepository;
-import jakarta.annotation.Nullable;
+import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * The following listing shows the RedisOAuth2AuthorizationConsentService, which uses an OAuth2UserConsentRepository for persisting an OAuth2UserConsent
@@ -34,43 +35,73 @@ import org.springframework.util.ObjectUtils;
  */
 public class RedisOAuth2AuthorizationConsentService implements OAuth2AuthorizationConsentService {
 
-    private final OAuth2UserConsentRepository userConsentRepository;
 
-    public RedisOAuth2AuthorizationConsentService(OAuth2UserConsentRepository userConsentRepository) {
-        Assert.notNull(userConsentRepository, "userConsentRepository cannot be null");
-        this.userConsentRepository = userConsentRepository;
+    private final RedisOperations<Object, Object> redisOperations;
+    private final BiscuitSecurityProperties biscuitSecurityProperties;
+
+    public RedisOAuth2AuthorizationConsentService(RedisOperations<Object, Object> redisOperations,
+                                                  BiscuitSecurityProperties biscuitSecurityProperties) {
+        this.redisOperations = redisOperations;
+        this.biscuitSecurityProperties = biscuitSecurityProperties;
     }
 
+    /**
+     * 保存OAuth2授权同意信息
+     *
+     * @param authorizationConsent 授权同意信息，不能为null
+     * @throws IllegalArgumentException 当authorizationConsent为null时抛出
+     */
     @Override
     public void save(OAuth2AuthorizationConsent authorizationConsent) {
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
-        OAuth2UserConsent oauth2UserConsent = new OAuth2UserConsent();
-        oauth2UserConsent.setId(authorizationConsent.getRegisteredClientId() + authorizationConsent.getPrincipalName());
-        oauth2UserConsent.setRegisteredClientId(authorizationConsent.getRegisteredClientId());
-        oauth2UserConsent.setPrincipalName(authorizationConsent.getPrincipalName());
-        oauth2UserConsent.setAuthorities(authorizationConsent.getAuthorities());
-        this.userConsentRepository.save(oauth2UserConsent);
+        redisOperations.opsForValue().set(buildKey(authorizationConsent), authorizationConsent, biscuitSecurityProperties.getAuthorizationConsentExpireSecond(), TimeUnit.SECONDS);
     }
 
+    /**
+     * 移除OAuth2授权同意信息
+     *
+     * @param authorizationConsent 授权同意信息，不能为null
+     * @throws IllegalArgumentException 当authorizationConsent为null时抛出
+     */
     @Override
     public void remove(OAuth2AuthorizationConsent authorizationConsent) {
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
-        this.userConsentRepository.deleteByRegisteredClientIdAndPrincipalName(
-                authorizationConsent.getRegisteredClientId(), authorizationConsent.getPrincipalName());
+        redisOperations.delete(buildKey(authorizationConsent));
     }
 
-    @Nullable
+    /**
+     * 根据注册客户端ID和主体名称查找OAuth2授权同意信息
+     *
+     * @param registeredClientId 注册客户端ID，不能为空
+     * @param principalName      主体名称，不能为空
+     * @return 查找到的OAuth2授权同意信息，可能为null
+     */
     @Override
     public OAuth2AuthorizationConsent findById(String registeredClientId, String principalName) {
         Assert.hasText(registeredClientId, "registeredClientId cannot be empty");
         Assert.hasText(principalName, "principalName cannot be empty");
-        OAuth2UserConsent oauth2UserConsent = this.userConsentRepository
-                .findByRegisteredClientIdAndPrincipalName(registeredClientId, principalName);
-        if (ObjectUtils.isEmpty(oauth2UserConsent)) {
-            return null;
-        }
-        OAuth2AuthorizationConsent.Builder builder = OAuth2AuthorizationConsent.withId(registeredClientId, principalName);
-        builder.authorities(grantedAuthorities -> grantedAuthorities.addAll(oauth2UserConsent.getAuthorities()));
-        return builder.build();
+        Object result = redisOperations.opsForValue().get(buildKey(registeredClientId, principalName));
+        return ObjectUtils.isEmpty(result) ? null : (OAuth2AuthorizationConsent) result;
+    }
+
+    /**
+     * 构建授权确认信息的key
+     *
+     * @param registeredClientId 注册客户端ID
+     * @param principalName      主体名称
+     * @return 拼接后的key字符串
+     */
+    private static String buildKey(String registeredClientId, String principalName) {
+        return "token:consent:" + registeredClientId + ":" + principalName;
+    }
+
+    /**
+     * 构建授权同意的键值
+     *
+     * @param authorizationConsent 授权同意对象
+     * @return 构建的键值字符串
+     */
+    private static String buildKey(OAuth2AuthorizationConsent authorizationConsent) {
+        return buildKey(authorizationConsent.getRegisteredClientId(), authorizationConsent.getPrincipalName());
     }
 }

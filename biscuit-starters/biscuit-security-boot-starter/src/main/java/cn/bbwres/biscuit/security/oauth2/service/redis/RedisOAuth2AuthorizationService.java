@@ -19,7 +19,10 @@
 package cn.bbwres.biscuit.security.oauth2.service.redis;
 
 import cn.bbwres.biscuit.security.oauth2.constants.Oauth2SystemConstants;
-import cn.bbwres.biscuit.security.oauth2.service.redis.pojo.*;
+import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
+import cn.bbwres.biscuit.security.oauth2.service.redis.pojo.OAuth2AllTokenKey;
+import cn.bbwres.biscuit.security.oauth2.service.redis.pojo.OAuth2AuthorizationTokenKeyInfo;
+import cn.bbwres.biscuit.security.oauth2.service.redis.pojo.OAuth2ClientPrincipalName;
 import jakarta.annotation.Nullable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
@@ -38,13 +41,9 @@ import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -59,10 +58,12 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
     private final RedisOperations<Object, Object> redisOperations;
 
     private final UserDetailsService userDetailsService;
+    private final BiscuitSecurityProperties biscuitSecurityProperties;
 
     public RedisOAuth2AuthorizationService(RegisteredClientRepository registeredClientRepository,
-                                           RedisOperations<Object, Object> redisOperations, UserDetailsService userDetailsService) {
+                                           RedisOperations<Object, Object> redisOperations, UserDetailsService userDetailsService, BiscuitSecurityProperties biscuitSecurityProperties) {
         this.userDetailsService = userDetailsService;
+        this.biscuitSecurityProperties = biscuitSecurityProperties;
         Assert.notNull(registeredClientRepository, "registeredClientRepository cannot be null");
         Assert.notNull(redisOperations,
                 "authorizationGrantAuthorizationRepository cannot be null");
@@ -79,7 +80,7 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
     public void save(OAuth2Authorization authorization) {
         Assert.notNull(authorization, "authorization cannot be null");
         Instant now = Instant.now();
-        long offsetSecond = 50L;
+        long offsetSecond = biscuitSecurityProperties.getTokenExpireOffsetSecond();
         OAuth2AllTokenKey oauth2AllTokenKey = new OAuth2AllTokenKey();
         oauth2AllTokenKey.setId(authorization.getId());
         OAuth2ClientPrincipalName oauth2ClientPrincipalName = new OAuth2ClientPrincipalName()
@@ -88,26 +89,28 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
 
         checkAndDeleteOtherToken(authorization.getRegisteredClientId(), oauth2ClientPrincipalName.getRedisKey());
 
-        List<BaseOAuth2AuthorizationToken> oauth2AuthorizationTokens = buildTokenInfo(authorization);
+        List<OAuth2AuthorizationTokenKeyInfo> oauth2AuthorizationTokens = buildTokenInfo(authorization);
         SessionCallback<Void> sessionCallback = new SessionCallback<>() {
+
+            @org.springframework.lang.Nullable
             @Override
             public Void execute(RedisOperations operations) throws DataAccessException {
                 long maxTimeToLive = -1L;
                 Set<String> tokenKeys = new HashSet<>(16);
-                for (BaseOAuth2AuthorizationToken oauth2AuthorizationToken : oauth2AuthorizationTokens) {
+                for (OAuth2AuthorizationTokenKeyInfo oauth2AuthorizationToken : oauth2AuthorizationTokens) {
                     String redisKey = oauth2AuthorizationToken.getRedisKey();
                     tokenKeys.add(redisKey);
                     long timeToLive = oauth2AuthorizationToken.getExpiresAt().getEpochSecond() - now.getEpochSecond() + offsetSecond;
                     if (maxTimeToLive < timeToLive) {
                         maxTimeToLive = timeToLive;
                     }
-                    operations.opsForValue().set(redisKey, oauth2AuthorizationToken, timeToLive, TimeUnit.SECONDS);
+                    operations.opsForValue().set(redisKey, authorization, timeToLive, TimeUnit.SECONDS);
                 }
                 String allTokenKey = oauth2AllTokenKey.getRedisKey();
-                operations.opsForSet().add(allTokenKey, tokenKeys.toArray());
+                operations.opsForList().rightPushAll(allTokenKey, tokenKeys.toArray());
                 operations.expire(allTokenKey, maxTimeToLive, TimeUnit.SECONDS);
                 String oauth2ClientPrincipalNameKey = oauth2ClientPrincipalName.getRedisKey();
-                operations.opsForSet().add(oauth2ClientPrincipalNameKey, allTokenKey);
+                operations.opsForList().rightPush(oauth2ClientPrincipalNameKey, allTokenKey);
                 operations.expire(oauth2ClientPrincipalNameKey, maxTimeToLive, TimeUnit.SECONDS);
                 return null;
             }
@@ -129,107 +132,70 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
         RegisteredClient registeredClient = buildRegisteredClient(registeredClientId);
         Boolean singleUserLogin = registeredClient.getClientSettings().getSetting(Oauth2SystemConstants.CLIENT_SETTING_SINGLE_USER_LOGIN);
         if (singleUserLogin != null && singleUserLogin) {
-            Set<Object> tokenIds = redisOperations.opsForSet().members(registeredClientIdPrincipalNameKey);
-            if (CollectionUtils.isEmpty(tokenIds)) {
-                return;
-            }
-            Set<Object> tokenKeys = new HashSet<>(16);
-            for (Object tokenId : tokenIds) {
-                tokenKeys.addAll(redisOperations.opsForSet().members(tokenId));
-            }
-
-
-            SessionCallback<Void> sessionCallback = new SessionCallback<>() {
-                @org.springframework.lang.Nullable
-                @Override
-                public Void execute(RedisOperations operations) throws DataAccessException {
-                    operations.delete(registeredClientIdPrincipalNameKey);
-                    operations.delete(tokenIds);
-                    operations.delete(tokenKeys);
-                    return null;
-                }
-            };
-            //先删除数据
-            redisOperations.executePipelined(sessionCallback);
-
+            deleteByRegisteredClientIdPrincipalNameKey(registeredClientIdPrincipalNameKey);
         }
 
     }
 
     /**
-     * 设置token相关参数信息
+     * 删除token信息
      *
-     * @param authorization authorization
+     * @param registeredClientIdPrincipalNameKey
      */
-    private List<BaseOAuth2AuthorizationToken> buildTokenInfo(OAuth2Authorization authorization) {
-        List<BaseOAuth2AuthorizationToken> oauth2AuthorizationTokens = new ArrayList<>(16);
-        OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode = authorization.getToken(OAuth2AuthorizationCode.class);
-        if (authorizationCode != null) {
-            OAuth2AuthorizationAuthorizationCode auth2AuthorizationAuthorizationCode = new OAuth2AuthorizationAuthorizationCode();
-            buildOauth2AuthorizationToken(authorization, authorizationCode, auth2AuthorizationAuthorizationCode);
-            auth2AuthorizationAuthorizationCode.setState(authorization.getAttribute(OAuth2ParameterNames.STATE));
-            oauth2AuthorizationTokens.add(auth2AuthorizationAuthorizationCode);
+    private void deleteByRegisteredClientIdPrincipalNameKey(String registeredClientIdPrincipalNameKey) {
+        Object tokenId = redisOperations.opsForList().leftPop(registeredClientIdPrincipalNameKey);
+        if (Objects.isNull(tokenId)) {
+            return;
         }
-        OAuth2Authorization.Token<OAuth2UserCode> userCode = authorization.getToken(OAuth2UserCode.class);
-        if (userCode != null) {
-            OAuth2AuthorizationUserCode oauth2AuthorizationUserCode = new OAuth2AuthorizationUserCode();
-            buildOauth2AuthorizationToken(authorization, userCode, oauth2AuthorizationUserCode);
-            oauth2AuthorizationTokens.add(oauth2AuthorizationUserCode);
-        }
-
-        OAuth2Authorization.Token<OAuth2DeviceCode> deviceCode = authorization.getToken(OAuth2DeviceCode.class);
-        if (deviceCode != null) {
-            OAuth2AuthorizationDeviceCode oauth2AuthorizationDeviceCode = new OAuth2AuthorizationDeviceCode();
-            buildOauth2AuthorizationToken(authorization, deviceCode, oauth2AuthorizationDeviceCode);
-            oauth2AuthorizationDeviceCode.setState(authorization.getAttribute(OAuth2ParameterNames.STATE));
-            oauth2AuthorizationTokens.add(oauth2AuthorizationDeviceCode);
-        }
-
-
-        OAuth2Authorization.Token<OidcIdToken> oidcIdToken = authorization.getToken(OidcIdToken.class);
-        if (oidcIdToken != null) {
-            OAuth2AuthorizationOidcToken oauth2AuthorizationOidcToken = new OAuth2AuthorizationOidcToken();
-            buildOauth2AuthorizationToken(authorization, oidcIdToken, oauth2AuthorizationOidcToken);
-            oauth2AuthorizationOidcToken.setClaims(oidcIdToken.getClaims());
-            oauth2AuthorizationTokens.add(oauth2AuthorizationOidcToken);
-        }
-
-
-        OAuth2Authorization.Token<OAuth2AccessToken> accessToken = authorization.getToken(OAuth2AccessToken.class);
-
-        if (accessToken != null) {
-            OAuth2AuthorizationAccessToken oauth2AuthorizationAccessToken = new OAuth2AuthorizationAccessToken();
-            buildOauth2AuthorizationToken(authorization, accessToken, oauth2AuthorizationAccessToken);
-            oauth2AuthorizationAccessToken.setTokenType(accessToken.getToken().getTokenType().getValue());
-            oauth2AuthorizationAccessToken.setScopes(accessToken.getToken().getScopes());
-            oauth2AuthorizationTokens.add(oauth2AuthorizationAccessToken);
-        }
-
-
-        OAuth2Authorization.Token<OAuth2RefreshToken> refreshToken = authorization.getToken(OAuth2RefreshToken.class);
-        if (refreshToken != null) {
-            OAuth2AuthorizationRefreshToken oauth2AuthorizationRefreshToken = new OAuth2AuthorizationRefreshToken();
-            buildOauth2AuthorizationToken(authorization, refreshToken, oauth2AuthorizationRefreshToken);
-            oauth2AuthorizationTokens.add(oauth2AuthorizationRefreshToken);
-        }
-        return oauth2AuthorizationTokens;
-
+        Set<Object> tokenKeys = new HashSet<>(16);
+        tokenKeys.addAll(redisOperations.opsForList().range(tokenId, 0, -1));
+        SessionCallback<Void> sessionCallback = new SessionCallback<>() {
+            @org.springframework.lang.Nullable
+            @Override
+            public Void execute(RedisOperations operations) throws DataAccessException {
+                operations.delete(tokenId);
+                operations.delete(tokenKeys);
+                return null;
+            }
+        };
+        //先删除数据
+        redisOperations.executePipelined(sessionCallback);
+        deleteByRegisteredClientIdPrincipalNameKey(registeredClientIdPrincipalNameKey);
     }
 
 
     @Override
     public void remove(OAuth2Authorization authorization) {
         Assert.notNull(authorization, "authorization cannot be null");
-        // this.authorizationGrantAuthorizationRepository.deleteById(authorization.getId());
+        List<String> keys = new ArrayList<>(16);
+        String authorizationKeyId = String.format(OAuth2AllTokenKey.KEY_FORMATE, authorization.getId());
+        keys.add(authorizationKeyId);
+
+        OAuth2ClientPrincipalName oauth2ClientPrincipalName = new OAuth2ClientPrincipalName()
+                .setRegisteredClientId(authorization.getRegisteredClientId())
+                .setPrincipalName(authorization.getPrincipalName());
+        //获取key
+        List<OAuth2AuthorizationTokenKeyInfo> oauth2AuthorizationTokens = buildTokenInfo(authorization);
+        for (OAuth2AuthorizationTokenKeyInfo oauth2AuthorizationToken : oauth2AuthorizationTokens) {
+            keys.add(oauth2AuthorizationToken.getRedisKey());
+        }
+        redisOperations.delete(keys);
+        redisOperations.opsForList().remove(oauth2ClientPrincipalName, 1, authorizationKeyId);
     }
 
+    /**
+     * 根据tokenId查询数据
+     *
+     * @param id the authorization identifier
+     * @return
+     */
     @Nullable
     @Override
     public OAuth2Authorization findById(String id) {
         Assert.hasText(id, "id cannot be empty");
-//        return this.authorizationGrantAuthorizationRepository.findById(id)
-//                .map(this::toOauth2Authorization)
-//                .orElse(null);
+        String authorizationKeyId = String.format(OAuth2AllTokenKey.KEY_FORMATE, id);
+        //  redisOperations.opsForSet().
+
         return null;
     }
 
@@ -237,131 +203,54 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
         Assert.hasText(token, "token cannot be empty");
-//        OAuth2AuthorizationGrantAuthorization authorizationGrantAuthorization = null;
-//        if (tokenType == null) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository
-//                    .findByStateOrAuthorizationCodeTokenValue(token, token);
-//            if (authorizationGrantAuthorization == null) {
-//                authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository
-//                        .findByAccessTokenValueOrRefreshTokenValue(token, token);
-//            }
-//            if (authorizationGrantAuthorization == null) {
-//                authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository
-//                        .findByIdTokenTokenValue(token);
-//            }
-//            if (authorizationGrantAuthorization == null) {
-//                authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository
-//                        .findByStateOrDeviceCodeTokenValueOrUserCodeTokenValue(token, token, token);
-//            }
-//        } else if (OAuth2ParameterNames.STATE.equals(tokenType.getValue())) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository.findByState(token);
-//        } else if (OAuth2ParameterNames.CODE.equals(tokenType.getValue())) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository.findByAuthorizationCodeTokenValue(token);
-//        } else if (OAuth2TokenType.ACCESS_TOKEN.equals(tokenType)) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository.findByAccessTokenValue(token);
-//        } else if (OidcParameterNames.ID_TOKEN.equals(tokenType.getValue())) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository.findByIdTokenTokenValue(token);
-//        } else if (OAuth2TokenType.REFRESH_TOKEN.equals(tokenType)) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository.findByRefreshTokenValue(token);
-//        } else if (OAuth2ParameterNames.USER_CODE.equals(tokenType.getValue())) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository.findByUserCodeTokenValue(token);
-//        } else if (OAuth2ParameterNames.DEVICE_CODE.equals(tokenType.getValue())) {
-//            authorizationGrantAuthorization = this.authorizationGrantAuthorizationRepository.findByDeviceCodeTokenValue(token);
-//        }
-//        return authorizationGrantAuthorization != null ? toOauth2Authorization(authorizationGrantAuthorization) : null;
+        if (tokenType != null) {
+            return findByToken(token, tokenType.getValue());
+        }
+        List<String> tokenTypes = new ArrayList<>(16);
+        tokenTypes.add(OAuth2ParameterNames.CODE);
+        tokenTypes.add(OAuth2ParameterNames.ACCESS_TOKEN);
+        tokenTypes.add(OAuth2ParameterNames.REFRESH_TOKEN);
+        tokenTypes.add(Oauth2SystemConstants.OAUTH2_OIDC_TOKEN);
+        tokenTypes.add(OAuth2ParameterNames.USER_CODE);
+        tokenTypes.add(OAuth2ParameterNames.DEVICE_CODE);
+        for (String type : tokenTypes) {
+            OAuth2Authorization authorization = findByToken(token, type);
+            if (Objects.nonNull(authorization)) {
+                return authorization;
+            }
+        }
         return null;
     }
 
-    /**
-     * 设置数据
-     *
-     * @param authorizationGrantAuthorization authorizationGrantAuthorization
-     * @return OAuth2Authorization
-     */
-//    private OAuth2Authorization toOauth2Authorization(OAuth2AuthorizationGrantAuthorization authorizationGrantAuthorization) {
-//        RegisteredClient registeredClient = buildRegisteredClient(authorizationGrantAuthorization.getRegisteredClientId());
-//        OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient);
-//        builder.id(authorizationGrantAuthorization.getId())
-//                .principalName(authorizationGrantAuthorization.getPrincipalName())
-//                .authorizationGrantType(new AuthorizationGrantType(authorizationGrantAuthorization.getAuthorizationGrantType()))
-//                .authorizedScopes(authorizationGrantAuthorization.getAuthorizedScopes())
-//                .attributes(attributes -> attributes.put(Principal.class.getName(), buildPrincipal(authorizationGrantAuthorization.getPrincipalName())));
-//        if (!ObjectUtils.isEmpty(authorizationGrantAuthorization.getState())) {
-//            builder.attribute(OAuth2ParameterNames.STATE, authorizationGrantAuthorization.getState());
-//        }
-//        if (!ObjectUtils.isEmpty(authorizationGrantAuthorization.getAccessTokenValue())) {
-//            builder.token(new OAuth2AccessToken(new OAuth2AccessToken.TokenType(authorizationGrantAuthorization.getAccessTokenTokenType()),
-//                            authorizationGrantAuthorization.getAccessTokenValue(), authorizationGrantAuthorization.getAccessTokenIssuedAt(),
-//                            authorizationGrantAuthorization.getAccessTokenExpiresAt(), authorizationGrantAuthorization.getAccessTokenScopes()),
-//                    metadata -> {
-//                        metadata.putAll(JsonUtil.jsonString2MapObj(authorizationGrantAuthorization.getAccessTokenMetadata()));
-//                        Map<String, Object> claims = (Map<String, Object>) metadata.get(OAuth2Authorization.Token.CLAIMS_METADATA_NAME);
-//                        claims.put(OAuth2TokenClaimNames.NBF, authorizationGrantAuthorization.getAccessTokenIssuedAt());
-//                    });
-//        }
-//        if (!ObjectUtils.isEmpty(authorizationGrantAuthorization.getRefreshTokenValue())) {
-//            builder.token(new OAuth2RefreshToken(authorizationGrantAuthorization.getRefreshTokenValue(), authorizationGrantAuthorization.getRefreshTokenIssuedAt(),
-//                            authorizationGrantAuthorization.getRefreshTokenExpiresAt()),
-//                    metadata -> metadata.putAll(JsonUtil.jsonString2MapObj(authorizationGrantAuthorization.getRefreshTokenMetadata())));
-//        }
-//        if (!ObjectUtils.isEmpty(authorizationGrantAuthorization.getAuthorizationCodeTokenValue())) {
-//            builder.token(new OAuth2AuthorizationCode(authorizationGrantAuthorization.getAuthorizationCodeTokenValue(), authorizationGrantAuthorization.getAuthorizationCodeIssuedAt(),
-//                            authorizationGrantAuthorization.getAuthorizationCodeExpiresAt()),
-//                    metadata -> metadata.putAll(JsonUtil.jsonString2MapObj(authorizationGrantAuthorization.getAuthorizationCodeMetadata())));
-//        }
-//        if (!ObjectUtils.isEmpty(authorizationGrantAuthorization.getDeviceCodeTokenValue())) {
-//            builder.token(new OAuth2DeviceCode(authorizationGrantAuthorization.getDeviceCodeTokenValue(), authorizationGrantAuthorization.getDeviceCodeIssuedAt(),
-//                            authorizationGrantAuthorization.getDeviceCodeExpiresAt()),
-//                    metadata -> metadata.putAll(JsonUtil.jsonString2MapObj(authorizationGrantAuthorization.getDeviceCodeMetadata())));
-//        }
-//        if (!ObjectUtils.isEmpty(authorizationGrantAuthorization.getUserCodeTokenValue())) {
-//            builder.token(new OAuth2UserCode(authorizationGrantAuthorization.getUserCodeTokenValue(), authorizationGrantAuthorization.getUserCodeIssuedAt(),
-//                            authorizationGrantAuthorization.getUserCodeExpiresAt()),
-//                    metadata -> metadata.putAll(JsonUtil.jsonString2MapObj(authorizationGrantAuthorization.getUserCodeMetadata())));
-//        }
-//
-//        if (!ObjectUtils.isEmpty(authorizationGrantAuthorization.getIdTokenTokenValue())) {
-//            builder.token(new OidcIdToken(authorizationGrantAuthorization.getIdTokenTokenValue(), authorizationGrantAuthorization.getIdTokenIssuedAt(),
-//                            authorizationGrantAuthorization.getIdTokenExpiresAt(), JsonUtil.jsonString2MapObj(authorizationGrantAuthorization.getIdTokenClaims())),
-//                    metadata -> metadata.putAll(JsonUtil.jsonString2MapObj(authorizationGrantAuthorization.getIdTokenMetadata())));
-//        }
-//
-//        return builder.build();
-//    }
-//
 
     /**
-     * 配置token参数信息
+     * 根据token查询信息
      *
-     * @param authorization
      * @param token
-     * @param baseOauth2AuthorizationToken
+     * @param tokenType
      * @return
      */
-    private void buildOauth2AuthorizationToken(OAuth2Authorization authorization,
-                                               OAuth2Authorization.Token<? extends OAuth2Token> token,
-                                               BaseOAuth2AuthorizationToken baseOauth2AuthorizationToken) {
-        baseOauth2AuthorizationToken.setId(authorization.getId());
-        baseOauth2AuthorizationToken.setRegisteredClientId(authorization.getRegisteredClientId());
-        baseOauth2AuthorizationToken.setPrincipalName(authorization.getPrincipalName());
-        baseOauth2AuthorizationToken.setAuthorizationGrantType(authorization.getAuthorizationGrantType().getValue());
-        baseOauth2AuthorizationToken.setAuthorizedScopes(authorization.getAuthorizedScopes());
-        buildTokenValue(token, baseOauth2AuthorizationToken);
+    private OAuth2Authorization findByToken(String token, String tokenType) {
+        String redisKey = String.format(OAuth2AuthorizationTokenKeyInfo.KEY_FORMATE, tokenType, token);
+        Object result = redisOperations.opsForValue().get(redisKey);
+        return Objects.isNull(result) ? null : (OAuth2Authorization) result;
     }
+
 
     /**
      * 设置token的值
      *
-     * @param token
-     * @param authorizationToken
+     * @param token     token
+     * @param tokenType tokenType
      */
-    private void buildTokenValue(OAuth2Authorization.Token<? extends OAuth2Token> token,
-                                 BaseOAuth2AuthorizationToken authorizationToken) {
+    private OAuth2AuthorizationTokenKeyInfo buildTokenValue(OAuth2Authorization.Token<? extends OAuth2Token> token, String tokenType) {
+        OAuth2AuthorizationTokenKeyInfo authorizationToken = new OAuth2AuthorizationTokenKeyInfo();
         OAuth2Token oauth2Token = token.getToken();
         authorizationToken.setTokenValue(oauth2Token.getTokenValue());
         authorizationToken.setIssuedAt(oauth2Token.getIssuedAt());
         authorizationToken.setExpiresAt(oauth2Token.getExpiresAt());
-        authorizationToken.setMetadata(token.getMetadata());
+        authorizationToken.setTokenType(tokenType);
+        return authorizationToken;
     }
 
 
@@ -385,5 +274,41 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
         UserDetails userDetails = userDetailsService.loadUserByUsername(principalName);
         return UsernamePasswordAuthenticationToken.authenticated(userDetails,
                 null, userDetails.getAuthorities());
+    }
+
+
+    /**
+     * 设置token相关参数信息
+     *
+     * @param authorization authorization
+     */
+    private List<OAuth2AuthorizationTokenKeyInfo> buildTokenInfo(OAuth2Authorization authorization) {
+        List<OAuth2AuthorizationTokenKeyInfo> oauth2AuthorizationTokens = new ArrayList<>(16);
+        OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode = authorization.getToken(OAuth2AuthorizationCode.class);
+        if (authorizationCode != null) {
+            oauth2AuthorizationTokens.add(buildTokenValue(authorizationCode, OAuth2ParameterNames.CODE));
+        }
+        OAuth2Authorization.Token<OAuth2UserCode> userCode = authorization.getToken(OAuth2UserCode.class);
+        if (userCode != null) {
+            oauth2AuthorizationTokens.add(buildTokenValue(userCode, OAuth2ParameterNames.USER_CODE));
+        }
+        OAuth2Authorization.Token<OAuth2DeviceCode> deviceCode = authorization.getToken(OAuth2DeviceCode.class);
+        if (deviceCode != null) {
+            oauth2AuthorizationTokens.add(buildTokenValue(deviceCode, OAuth2ParameterNames.DEVICE_CODE));
+        }
+        OAuth2Authorization.Token<OidcIdToken> oidcIdToken = authorization.getToken(OidcIdToken.class);
+        if (oidcIdToken != null) {
+            oauth2AuthorizationTokens.add(buildTokenValue(oidcIdToken, Oauth2SystemConstants.OAUTH2_OIDC_TOKEN));
+        }
+        OAuth2Authorization.Token<OAuth2AccessToken> accessToken = authorization.getToken(OAuth2AccessToken.class);
+        if (accessToken != null) {
+            oauth2AuthorizationTokens.add(buildTokenValue(accessToken, OAuth2ParameterNames.ACCESS_TOKEN));
+        }
+        OAuth2Authorization.Token<OAuth2RefreshToken> refreshToken = authorization.getToken(OAuth2RefreshToken.class);
+        if (refreshToken != null) {
+            oauth2AuthorizationTokens.add(buildTokenValue(refreshToken, OAuth2ParameterNames.REFRESH_TOKEN));
+        }
+        return oauth2AuthorizationTokens;
+
     }
 }

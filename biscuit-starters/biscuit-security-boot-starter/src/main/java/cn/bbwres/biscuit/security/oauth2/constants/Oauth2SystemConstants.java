@@ -40,4 +40,10 @@ public interface Oauth2SystemConstants {
     String CLIENT_SETTING_SINGLE_USER_LOGIN = "client.single_user_login";
 
 
+    /**
+     * oidc token
+     */
+    String OAUTH2_OIDC_TOKEN = "oidc_token";
+
+
 }

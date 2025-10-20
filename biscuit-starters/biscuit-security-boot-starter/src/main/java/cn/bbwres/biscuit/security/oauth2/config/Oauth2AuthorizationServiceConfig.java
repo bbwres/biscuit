@@ -18,28 +18,21 @@
 
 package cn.bbwres.biscuit.security.oauth2.config;
 
+import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
 import cn.bbwres.biscuit.security.oauth2.service.redis.RedisOAuth2AuthorizationConsentService;
 import cn.bbwres.biscuit.security.oauth2.service.redis.RedisOAuth2AuthorizationService;
-import cn.bbwres.biscuit.security.oauth2.service.redis.repository.OAuth2UserConsentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisKeyValueAdapter;
-import org.springframework.data.redis.core.RedisKeyValueTemplate;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.mapping.RedisMappingContext;
-import org.springframework.data.redis.repository.support.RedisRepositoryFactory;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.server.authorization.*;
@@ -96,27 +89,31 @@ public class Oauth2AuthorizationServiceConfig {
         /**
          * 基于redis 认证的 OAuth2AuthorizationService
          *
-         * @param registeredClientRepository                客户端信息
-         * @param redisTemplate 资源信息
+         * @param registeredClientRepository 客户端信息
+         * @param redisTemplate              资源信息
+         * @param biscuitSecurityProperties  配置信息
          * @return OAuth2AuthorizationService
          */
         @Bean
         public OAuth2AuthorizationService authorizationService(RegisteredClientRepository registeredClientRepository,
                                                                @Qualifier("oauth2RedisTemplate") RedisTemplate<Object, Object> redisTemplate,
-                                                               UserDetailsService userDetailsService) {
+                                                               UserDetailsService userDetailsService,
+                                                               BiscuitSecurityProperties biscuitSecurityProperties) {
             return new RedisOAuth2AuthorizationService(registeredClientRepository,
-                    redisTemplate, userDetailsService);
+                    redisTemplate, userDetailsService, biscuitSecurityProperties);
         }
 
         /**
          * 基于redis 认证的 OAuth2AuthorizationService
          *
-         * @param oauth2UserConsentRepository 资源信息
+         * @param biscuitSecurityProperties 配置信息
+         * @param redisTemplate             资源信息
          * @return OAuth2AuthorizationConsentService
          */
         @Bean
-        public OAuth2AuthorizationConsentService authorizationConsentService(@Qualifier("redisOAuth2UserConsentRepository") OAuth2UserConsentRepository oauth2UserConsentRepository) {
-            return new RedisOAuth2AuthorizationConsentService(oauth2UserConsentRepository);
+        public OAuth2AuthorizationConsentService authorizationConsentService(@Qualifier("oauth2RedisTemplate") RedisTemplate<Object, Object> redisTemplate,
+                                                                             BiscuitSecurityProperties biscuitSecurityProperties) {
+            return new RedisOAuth2AuthorizationConsentService(redisTemplate, biscuitSecurityProperties);
         }
 
         @Bean("oauth2RedisTemplate")
@@ -125,22 +122,6 @@ public class Oauth2AuthorizationServiceConfig {
             redisTemplate.setKeySerializer(new StringRedisSerializer());
             redisTemplate.setConnectionFactory(redisConnectionFactory);
             return redisTemplate;
-        }
-
-
-        /**
-         * 手动创建并注册 OAuth2UserConsentRepository 的 Bean。
-         *
-         * @param oauth2RedisTemplate Spring Boot 自动配置好的 RedisOperations (RedisTemplate)。
-         * @return StarterARepository 的实例。
-         */
-        @Bean("redisOAuth2UserConsentRepository")
-        @ConditionalOnBean(RedisOperations.class)
-        public OAuth2UserConsentRepository oauth2UserConsentRepository(@Qualifier("oauth2RedisTemplate") RedisTemplate<?, ?> oauth2RedisTemplate) {
-            RedisKeyValueAdapter redisKeyValueAdapter = new RedisKeyValueAdapter(oauth2RedisTemplate);
-            RedisKeyValueTemplate redisKeyValueTemplate = new RedisKeyValueTemplate(redisKeyValueAdapter, new RedisMappingContext());
-            RepositoryFactorySupport factory = new RedisRepositoryFactory(redisKeyValueTemplate);
-            return factory.getRepository(OAuth2UserConsentRepository.class);
         }
 
 

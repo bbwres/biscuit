@@ -42,6 +42,17 @@ public class BiscuitSecurityProperties {
      */
     private String tokenStoreType = TokenStoreType.redis.name();
 
+    /**
+     * token 过期偏移的秒数
+     */
+    private long tokenExpireOffsetSecond = 3 * 60L;
+
+
+    /**
+     * OAuth2授权同意信息过期时间
+     */
+    private long authorizationConsentExpireSecond = 10 * 60L;
+
 
     /**
      * 是否自动生成jwt密钥

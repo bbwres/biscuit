@@ -19,29 +19,55 @@
 package cn.bbwres.biscuit.security.oauth2.service.redis.pojo;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
-import java.util.Map;
+import java.io.Serializable;
+import java.time.Instant;
 
 /**
- * oidcId 信息
+ * 基础的token信息
  *
  * @author zhanglinfeng
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class OAuth2AuthorizationOidcToken extends BaseOAuth2AuthorizationToken {
+public class OAuth2AuthorizationTokenKeyInfo implements Serializable {
+
     @Serial
-    private static final long serialVersionUID = 914094183203192957L;
+    private static final long serialVersionUID = -5351481023175776312L;
+
+    public static final String KEY_FORMATE = "oauth2_authorization:%s:%s";
 
 
     /**
-     * /**
-     * idTokenClaims
+     * Token的值
      */
-    private Map<String, Object> claims;
+    private String tokenValue;
 
+    /**
+     * token类型
+     */
+    private String tokenType;
+
+    /**
+     * Token的发放时间
+     */
+    private Instant issuedAt;
+    /**
+     * Token的过期时间
+     */
+    private Instant expiresAt;
+
+
+    /**
+     * 获取redis的key
+     *
+     * @return
+     */
+    public String getRedisKey() {
+        return String.format(KEY_FORMATE, tokenType, tokenValue);
+    }
+
+    ;
 
 
 }
