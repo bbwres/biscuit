@@ -42,8 +42,6 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
@@ -94,18 +92,6 @@ public class GatewayAutoConfigure {
     }
 
 
-
-
-    /**
-     * 路径匹配器
-     *
-     * @return a {@link org.springframework.util.PathMatcher} object
-     */
-    @Bean
-    public PathMatcher antPathMatcher() {
-        return new AntPathMatcher();
-    }
-
     /**
      * 空的SessionManager
      *
@@ -146,10 +132,10 @@ public class GatewayAutoConfigure {
         /**
          * 动态路由
          *
-         * @param routeDefinitionLocator
-         * @param routeDefinitionWriter
-         * @param gatewayProperties
-         * @return
+         * @param routeDefinitionLocator routeDefinitionLocator
+         * @param routeDefinitionWriter  routeDefinitionWriter
+         * @param gatewayProperties      gatewayProperties
+         * @return DefaultGatewayRoute
          */
         @Bean
         public DefaultGatewayRoute defaultGatewayRoute(RouteDefinitionLocator routeDefinitionLocator, RouteDefinitionWriter routeDefinitionWriter,
@@ -167,11 +153,11 @@ public class GatewayAutoConfigure {
             /**
              * 动态路由
              *
-             * @param nacosConfigOperation
-             * @param defaultGatewayRoute
-             * @param gatewayProperties
-             * @param environment
-             * @return
+             * @param nacosConfigOperation nacosConfigOperation
+             * @param defaultGatewayRoute  defaultGatewayRoute
+             * @param gatewayProperties    gatewayProperties
+             * @param environment          environment
+             * @return GatewayRouteNacosProcessor
              */
             @Bean
             public GatewayRouteNacosProcessor gatewayRouteNacosProcessor(NacosConfigOperation nacosConfigOperation,

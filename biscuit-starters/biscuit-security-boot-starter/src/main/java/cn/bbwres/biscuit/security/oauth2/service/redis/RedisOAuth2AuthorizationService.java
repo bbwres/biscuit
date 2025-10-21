@@ -27,7 +27,6 @@ import jakarta.annotation.Nullable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -54,12 +53,11 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
 
     private final RedisOperations<Object, Object> redisOperations;
 
-    private final UserDetailsService userDetailsService;
     private final BiscuitSecurityProperties biscuitSecurityProperties;
 
     public RedisOAuth2AuthorizationService(RegisteredClientRepository registeredClientRepository,
-                                           RedisOperations<Object, Object> redisOperations, UserDetailsService userDetailsService, BiscuitSecurityProperties biscuitSecurityProperties) {
-        this.userDetailsService = userDetailsService;
+                                           RedisOperations<Object, Object> redisOperations,
+                                           BiscuitSecurityProperties biscuitSecurityProperties) {
         this.biscuitSecurityProperties = biscuitSecurityProperties;
         Assert.notNull(registeredClientRepository, "registeredClientRepository cannot be null");
         Assert.notNull(redisOperations,
@@ -266,7 +264,7 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
     private RegisteredClient buildRegisteredClient(String registeredClientId) {
         return this.registeredClientRepository.findById(registeredClientId);
     }
-    
+
 
     /**
      * 设置token相关参数信息

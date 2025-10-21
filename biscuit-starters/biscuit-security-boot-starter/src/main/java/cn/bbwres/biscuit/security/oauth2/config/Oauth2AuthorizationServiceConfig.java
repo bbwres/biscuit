@@ -97,10 +97,9 @@ public class Oauth2AuthorizationServiceConfig {
         @Bean
         public OAuth2AuthorizationService authorizationService(RegisteredClientRepository registeredClientRepository,
                                                                @Qualifier("oauth2RedisTemplate") RedisTemplate<Object, Object> redisTemplate,
-                                                               UserDetailsService userDetailsService,
                                                                BiscuitSecurityProperties biscuitSecurityProperties) {
             return new RedisOAuth2AuthorizationService(registeredClientRepository,
-                    redisTemplate, userDetailsService, biscuitSecurityProperties);
+                    redisTemplate, biscuitSecurityProperties);
         }
 
         /**
