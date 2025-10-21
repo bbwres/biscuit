@@ -186,7 +186,7 @@ public class TokenGeneratorConfig {
             log.info("使用配置的jwt密钥信息");
             if (ObjectUtils.isEmpty(properties.getJwtPrivateKey()) || ObjectUtils.isEmpty(properties.getJwtPublicKey())) {
                 log.warn("当前使用配置的jwt密钥时处理失败！未设置私钥或者公钥");
-                throw new SystemRuntimeException(Oauth2ErrorCodeConstants.SYSTEM_CONFIG_ERROR);
+                throw new SystemRuntimeException(Oauth2ErrorCodeConstants.OAUTH2_SYSTEM_CONFIG_ERROR);
             }
             try (ByteArrayInputStream publicKeyStream = new ByteArrayInputStream(properties.getJwtPublicKey().getBytes(StandardCharsets.UTF_8));
                  ByteArrayInputStream privateKeyStream = new ByteArrayInputStream(properties.getJwtPrivateKey().getBytes(StandardCharsets.UTF_8))) {
@@ -194,7 +194,7 @@ public class TokenGeneratorConfig {
                 RSAPrivateKey privateKey = RsaKeyConverters.pkcs8().convert(privateKeyStream);
                 return new KeyPair(publicKey, privateKey);
             } catch (IOException e) {
-                throw new SystemRuntimeException(Oauth2ErrorCodeConstants.SYSTEM_CONFIG_ERROR);
+                throw new SystemRuntimeException(Oauth2ErrorCodeConstants.OAUTH2_SYSTEM_CONFIG_ERROR);
             }
         }
         KeyPair keyPair;

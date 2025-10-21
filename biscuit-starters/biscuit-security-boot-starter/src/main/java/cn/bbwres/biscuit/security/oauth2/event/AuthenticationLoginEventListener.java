@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
+import org.springframework.security.authentication.event.AuthenticationFailureProviderNotFoundEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.AuthenticationException;
 
@@ -63,8 +64,11 @@ public class AuthenticationLoginEventListener {
      */
     @EventListener
     public void failureBadCredentialsEvent(AbstractAuthenticationFailureEvent event) {
+        if(event instanceof AuthenticationFailureProviderNotFoundEvent){
+            return ;
+        }
         if (event.getAuthentication().getDetails() != null) {
-            String username = event.getAuthentication().getPrincipal().toString();
+            String username = event.getAuthentication().getName();
             AuthenticationException errorMessage = event.getException();
             log.info("当前用户:{} 登录失败！失败原因:{}", username, errorMessage.getMessage());
             authenticationLoginService.loginFail(username, errorMessage);

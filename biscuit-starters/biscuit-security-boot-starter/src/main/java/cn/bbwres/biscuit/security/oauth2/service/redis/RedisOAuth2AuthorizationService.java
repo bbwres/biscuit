@@ -27,9 +27,6 @@ import jakarta.annotation.Nullable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -147,20 +144,20 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
         if (Objects.isNull(tokenId)) {
             return;
         }
+        deleteTokenByTokenId(tokenId);
+        deleteByRegisteredClientIdPrincipalNameKey(registeredClientIdPrincipalNameKey);
+    }
+
+    /**
+     * 根据tokenId删除token数据
+     *
+     * @param tokenId
+     */
+    private void deleteTokenByTokenId(Object tokenId) {
         Set<Object> tokenKeys = new HashSet<>(16);
         tokenKeys.addAll(redisOperations.opsForList().range(tokenId, 0, -1));
-        SessionCallback<Void> sessionCallback = new SessionCallback<>() {
-            @org.springframework.lang.Nullable
-            @Override
-            public Void execute(RedisOperations operations) throws DataAccessException {
-                operations.delete(tokenId);
-                operations.delete(tokenKeys);
-                return null;
-            }
-        };
-        //先删除数据
-        redisOperations.executePipelined(sessionCallback);
-        deleteByRegisteredClientIdPrincipalNameKey(registeredClientIdPrincipalNameKey);
+        tokenKeys.add(tokenId);
+        redisOperations.delete(tokenKeys);
     }
 
 
@@ -194,8 +191,14 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
     public OAuth2Authorization findById(String id) {
         Assert.hasText(id, "id cannot be empty");
         String authorizationKeyId = String.format(OAuth2AllTokenKey.KEY_FORMATE, id);
-        //  redisOperations.opsForSet().
-
+        Set<Object> tokenKeys = new HashSet<>(16);
+        tokenKeys.addAll(redisOperations.opsForList().range(authorizationKeyId, 0, -1));
+        for (Object tokenKey : tokenKeys) {
+            Object result = redisOperations.opsForValue().get(tokenKey);
+            if (Objects.nonNull(result)) {
+                return (OAuth2Authorization) result;
+            }
+        }
         return null;
     }
 
@@ -263,19 +266,7 @@ public class RedisOAuth2AuthorizationService implements OAuth2AuthorizationServi
     private RegisteredClient buildRegisteredClient(String registeredClientId) {
         return this.registeredClientRepository.findById(registeredClientId);
     }
-
-    /**
-     * 加载认证的 Principal
-     *
-     * @param principalName Principal
-     * @return Authentication
-     */
-    private Authentication buildPrincipal(String principalName) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(principalName);
-        return UsernamePasswordAuthenticationToken.authenticated(userDetails,
-                null, userDetails.getAuthorities());
-    }
-
+    
 
     /**
      * 设置token相关参数信息

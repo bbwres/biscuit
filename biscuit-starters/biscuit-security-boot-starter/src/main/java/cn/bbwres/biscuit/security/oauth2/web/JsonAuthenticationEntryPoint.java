@@ -29,8 +29,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 认证失败时返回json数据
@@ -65,5 +63,7 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
         error.setData(request.getRequestURI());
         // 转换为 JSON 并写入响应
         JsonUtil.getObjectMapper().writeValue(response.getWriter(), error);
+
+
     }
 }

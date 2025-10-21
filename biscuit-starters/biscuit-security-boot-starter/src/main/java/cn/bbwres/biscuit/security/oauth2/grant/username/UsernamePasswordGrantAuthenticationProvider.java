@@ -27,6 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationGrantAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
+import org.springframework.util.StopWatch;
 
 /**
  * 账号密码登录
@@ -61,7 +62,12 @@ public class UsernamePasswordGrantAuthenticationProvider extends AbstractGrantAu
         // Allow subclasses to set the "details" property
        // authRequest.setDetails(customCodeGrantAuthentication);
         customCodeGrantAuthentication.setPassword(null);
-        return authenticationProvider.authenticate(authRequest);
+        StopWatch stopWatch =new StopWatch();
+        stopWatch.start("密码认证");
+        Authentication authenticate = authenticationProvider.authenticate(authRequest);
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
+        return authenticate;
     }
 
 

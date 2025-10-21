@@ -21,10 +21,12 @@ package cn.bbwres.biscuit.dto;
 import cn.bbwres.biscuit.exception.constants.ErrorCode;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.util.ObjectUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 通用返回对象
@@ -84,6 +86,17 @@ public class Result<T> implements Serializable {
     public Result(String resultCode, String resultMsg) {
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
+    }
+
+    /**
+     * i18n处理
+     *
+     * @param messages  messages
+     * @param errorCode errorCode
+     */
+    public Result(MessageSourceAccessor messages, ErrorCode errorCode) {
+        this.resultCode = errorCode.getCode();
+        this.resultMsg = Objects.isNull(messages) ? errorCode.getMessage() : messages.getMessage(errorCode.getMessage(), errorCode.getMessage());
     }
 
     /**
@@ -194,4 +207,6 @@ public class Result<T> implements Serializable {
     public void setData(T data) {
         this.data = data;
     }
+
+
 }

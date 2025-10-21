@@ -121,9 +121,9 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails userDetails = User.withDefaultPasswordEncoder()
                 .username("user")
-                .password("zlf")
+                //.password("zlf")
                 .roles("USER_1")
-                // .passwordEncoder(aa->"{MD5}45fda22435f89f22f2ce6756a3cf32c4")
+                .passwordEncoder(aa->"{MD5}45fda22435f89f22f2ce6756a3cf32c4")
                 .build();
 
         return new InMemoryUserDetailsManager(userDetails);
@@ -133,7 +133,7 @@ public class SecurityConfig {
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient oidcClient = RegisteredClient.withId("admin")
                 .clientId("admin")
-                .clientSecret("{noop}zlf")
+                .clientSecret("{MD5}45fda22435f89f22f2ce6756a3cf32c4")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 //设置公开的、无需客户端认证的客户端

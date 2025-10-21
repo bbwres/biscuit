@@ -22,6 +22,7 @@ import cn.bbwres.biscuit.exception.constants.ErrorCode;
 
 /**
  * oauth2 相关错误
+ *
  * @author zhanglinfeng
  */
 public interface Oauth2ErrorCodeConstants {
@@ -31,6 +32,28 @@ public interface Oauth2ErrorCodeConstants {
     /**
      * 配置错误
      */
-    ErrorCode SYSTEM_CONFIG_ERROR = new ErrorCode("101001001", "oauth2.system_config_error");
-    ErrorCode INVALID_TOKEN = new ErrorCode("101000101", "oauth2.invalid_token");
+    ErrorCode OAUTH2_SYSTEM_CONFIG_ERROR = new ErrorCode("101001001", "oauth2.system_config_error");
+    /**
+     * 用户名或密码错误
+     */
+    ErrorCode OAUTH2_USERNAME_PASSWORD_ERROR = new ErrorCode("101001002", "oauth2.username_password_error");
+
+    /**
+     * 用户被锁定
+     */
+    ErrorCode OAUTH2_USER_LOCKED = new ErrorCode("101001003", "oauth2.user_locked");
+
+    /**
+     * 用户被禁用
+     */
+    ErrorCode OAUTH2_USER_DISABLE = new ErrorCode("101001003", "oauth2.user_disable");
+
+    /**
+     * 用户已经过期
+     */
+    ErrorCode OAUTH2_USER_EXPIRED = new ErrorCode("101001004", "oauth2.user_expired");
+    /**
+     * 处理失败
+     */
+    ErrorCode OAUTH2_ERROR = new ErrorCode("101001999", "oauth2.error");
 }

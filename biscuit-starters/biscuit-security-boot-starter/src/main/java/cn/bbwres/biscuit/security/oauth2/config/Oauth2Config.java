@@ -28,6 +28,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
@@ -68,13 +69,15 @@ public class Oauth2Config {
     /**
      * 认证失败登录页面配置
      *
-     * @param biscuitSecurityProperties 配置信息
+     * @param biscuitSecurityProperties           配置信息
+     * @param messageSourceAccessorObjectProvider i18n 信息
      * @return CustomLoginUrlAuthenticationEntryPoint
      */
     @Bean
     public CustomLoginUrlAuthenticationEntryPoint customLoginUrlAuthenticationEntryPoint(BiscuitSecurityProperties biscuitSecurityProperties,
-                                                                                         AuthorizationServerSettings authorizationServerSettings) {
-        return new CustomLoginUrlAuthenticationEntryPoint(biscuitSecurityProperties.getLoginUrl(), authorizationServerSettings);
+                                                                                         AuthorizationServerSettings authorizationServerSettings,
+                                                                                         ObjectProvider<MessageSourceAccessor> messageSourceAccessorObjectProvider) {
+        return new CustomLoginUrlAuthenticationEntryPoint(biscuitSecurityProperties.getLoginUrl(), authorizationServerSettings, messageSourceAccessorObjectProvider);
     }
 
 

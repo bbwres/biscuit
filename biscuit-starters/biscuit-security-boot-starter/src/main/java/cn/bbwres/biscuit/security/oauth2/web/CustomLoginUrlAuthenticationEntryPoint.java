@@ -19,13 +19,18 @@
 package cn.bbwres.biscuit.security.oauth2.web;
 
 import cn.bbwres.biscuit.dto.Result;
-import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
+import cn.bbwres.biscuit.security.oauth2.constants.Oauth2ErrorCodeConstants;
 import cn.bbwres.biscuit.utils.JsonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
@@ -43,14 +48,19 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
 
     private final AuthorizationServerSettings authorizationServerSettings;
 
+    private final MessageSourceAccessor messages;
+
     /**
      * @param loginFormUrl URL where the login page can be found. Should either be
      *                     relative to the web-app context path (include a leading {@code /}) or an absolute
      *                     URL.
      */
-    public CustomLoginUrlAuthenticationEntryPoint(String loginFormUrl, AuthorizationServerSettings authorizationServerSettings) {
+    public CustomLoginUrlAuthenticationEntryPoint(String loginFormUrl,
+                                                  AuthorizationServerSettings authorizationServerSettings,
+                                                  ObjectProvider<MessageSourceAccessor> messageSourceAccessorObjectProvider) {
         super(loginFormUrl);
         this.authorizationServerSettings = authorizationServerSettings;
+        this.messages = messageSourceAccessorObjectProvider.getIfAvailable();
     }
 
     /**
@@ -59,11 +69,38 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         if (!request.getRequestURI().equals(authorizationServerSettings.getAuthorizationEndpoint())) {
-            log.info("当前请求失败！", authException);
-            Result<Void> error = Result.error(GlobalErrorCodeConstants.INVALID_TOKEN);
+            Result<Void> error = oauth2AuthenticationException(authException);
             response.getWriter().write(JsonUtil.toJson(error));
             return;
         }
         super.commence(request, response, authException);
     }
+
+    /**
+     * 登录异常转换为oauth2异常
+     *
+     * @param authenticationException 身份验证异常
+     * @return {@link OAuth2AuthenticationException}
+     */
+    private Result<Void> oauth2AuthenticationException(AuthenticationException authenticationException) {
+
+        if (authenticationException instanceof BadCredentialsException ||
+                authenticationException instanceof UsernameNotFoundException) {
+
+            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USERNAME_PASSWORD_ERROR);
+        }
+        if (authenticationException instanceof LockedException) {
+            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_LOCKED);
+        }
+        if (authenticationException instanceof DisabledException) {
+            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_DISABLE);
+        }
+        if (authenticationException instanceof AccountExpiredException
+                || authenticationException instanceof CredentialsExpiredException) {
+            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_EXPIRED);
+        }
+
+        return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_ERROR);
+    }
+
 }

@@ -59,7 +59,6 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
     private static final OAuth2TokenType ID_TOKEN_TOKEN_TYPE = new OAuth2TokenType(OidcParameterNames.ID_TOKEN);
 
 
-
     public AbstractGrantAuthenticationProvider(OAuth2AuthorizationService authorizationService,
                                                OAuth2TokenGenerator<?> tokenGenerator) {
         this.authorizationService = authorizationService;
@@ -92,7 +91,14 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
         }
 
-        Authentication userAuthenticate = authenticateHandler(oauth2AuthorizationGrantAuthentication);
+        Authentication userAuthenticate;
+        try {
+            userAuthenticate = authenticateHandler(oauth2AuthorizationGrantAuthentication);
+        } catch (AuthenticationException e) {
+            // throw oauth2AuthenticationException(e);
+            throw e;
+        }
+
         // Generate the access token
         DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
                 .registeredClient(registeredClient)
@@ -214,4 +220,5 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
         throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
     }
 
+    
 }
