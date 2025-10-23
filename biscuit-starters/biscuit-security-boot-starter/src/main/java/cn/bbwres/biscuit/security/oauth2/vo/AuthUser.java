@@ -54,15 +54,10 @@ public class AuthUser extends User {
 
 
     /**
-     * 不存在用户信息，true则说明不存在用户信息，刷新token时，不会获取用户信息
-     */
-    private Boolean noUserInfo = false;
-
-    /**
      * Calls the more complex constructor with all boolean arguments set to.
      *
-     * @param username
-     * @param authorities
+     * @param username    username
+     * @param authorities authorities
      */
     public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);

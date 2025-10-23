@@ -25,10 +25,7 @@ package cn.bbwres.biscuit.gateway.constants;
  * @version $Id: $Id
  */
 public class GatewayConstant {
-    /**
-     * 用户token
-     */
-    public static final String USER_TOKEN = "USER_TOKEN";
+
 
     /**
      * 用户信息

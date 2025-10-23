@@ -18,7 +18,8 @@
 
 package cn.bbwres.biscuit.gateway.authorization;
 
-import cn.bbwres.biscuit.constants.SystemAuthConstant;
+import cn.bbwres.biscuit.entity.UserBaseInfo;
+import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,10 +27,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serial;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,6 +37,7 @@ import java.util.stream.Collectors;
  * @author zhanglinfeng
  * @version $Id: $Id
  */
+@Getter
 public class MapAuthentication implements Authentication {
 
     @Serial
@@ -50,11 +49,34 @@ public class MapAuthentication implements Authentication {
      */
     private Collection<GrantedAuthority> authorities;
 
+    /**
+     * 用户id
+     */
+    private String userId;
 
-    private Object details;
+    /**
+     * 用户中文名称
+     */
+    private String zhName;
+
+    /**
+     * 用户名称
+     */
+    private String username;
+
+
+    /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
+     * 客户端id
+     */
+    private String clientId;
 
     private Object principal;
-    private String name;
+
 
     /**
      * Indicates a successful or unsuccessful authentication.
@@ -64,27 +86,30 @@ public class MapAuthentication implements Authentication {
     /**
      * <p>Constructor for MapAuthentication.</p>
      *
-     * @param params a {@link java.util.Map} object
+     * @param userBaseInfo a {@link UserBaseInfo} object
      */
-    public MapAuthentication(Map<String, Object> params) {
-        if (CollectionUtils.isEmpty(params)) {
+    public MapAuthentication(UserBaseInfo<?> userBaseInfo) {
+        if (ObjectUtils.isEmpty(userBaseInfo)) {
             this.authenticated = false;
             return;
         }
-        this.name = ObjectUtils.getIfNull(params.get(SystemAuthConstant.ZH_NAME), "").toString();
-        this.principal = ObjectUtils.getIfNull(params.get(SystemAuthConstant.USER_ID), "").toString();
-        this.details = params;
+        this.username = userBaseInfo.getUsername();
+        this.zhName = userBaseInfo.getZhName();
+        this.clientId = userBaseInfo.getClientId();
+        this.principal = userBaseInfo.getUserInfo();
+        this.userId = userBaseInfo.getUserId();
+        this.tenantId = userBaseInfo.getTenantId();
         this.authenticated = true;
-
-        authorities = ((List<String>) ObjectUtils.getIfNull(params.get(SystemAuthConstant.AUTHORITIES), new ArrayList<>(16)))
-                .stream()
-                .map((Function<String, GrantedAuthority>) SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(userBaseInfo.getAuthorities())) {
+            authorities = userBaseInfo.getAuthorities().stream()
+                    .map((Function<String, GrantedAuthority>) SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Set by an <code>AuthenticationManager</code> to indicate the authorities that the
      * principal has been granted. Note that classes should not rely on this value as
      * being valid unless it has been set by a trusted <code>AuthenticationManager</code>.
@@ -101,7 +126,7 @@ public class MapAuthentication implements Authentication {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * The credentials that prove the principal is correct. This is usually a password,
      * but could be anything relevant to the <code>AuthenticationManager</code>. Callers
      * are expected to populate the credentials.
@@ -113,18 +138,18 @@ public class MapAuthentication implements Authentication {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Stores additional details about the authentication request. These might be an IP
      * address, certificate serial number etc.
      */
     @Override
     public Object getDetails() {
-        return details;
+        return null;
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * The identity of the principal being authenticated. In the case of an authentication
      * request with username and password, this would be the username. Callers are
      * expected to populate the principal for an authentication request.
@@ -141,7 +166,7 @@ public class MapAuthentication implements Authentication {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Used to indicate to {@code AbstractSecurityInterceptor} whether it should present
      * the authentication token to the <code>AuthenticationManager</code>. Typically an
      * <code>AuthenticationManager</code> (or, more often, one of its
@@ -163,7 +188,7 @@ public class MapAuthentication implements Authentication {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * See {@link #isAuthenticated()} for a full description.
      * <p>
      * Implementations should <b>always</b> allow this method to be called with a
@@ -180,11 +205,20 @@ public class MapAuthentication implements Authentication {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Returns the name of this principal.
      */
     @Override
     public String getName() {
-        return name;
+        return username;
+    }
+
+
+    public void setAuthorities(Collection<GrantedAuthority> authorities) {
+        this.authorities = authorities;
+    }
+
+    public void setPrincipal(Object principal) {
+        this.principal = principal;
     }
 }

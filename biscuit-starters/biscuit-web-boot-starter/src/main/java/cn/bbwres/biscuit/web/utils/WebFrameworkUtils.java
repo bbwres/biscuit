@@ -69,7 +69,7 @@ public class WebFrameworkUtils {
         if (Objects.isNull(userInfoStr)) {
             return null;
         }
-        return JsonUtil.toObjectByBase64Json(userInfoStr, UserBaseInfo.class);
+        return JsonUtil.toObjectByBase64Json(userInfoStr, UserBaseInfo.class,true);
     }
 
 

@@ -46,7 +46,7 @@ public class BiscuitWebProperties {
     /**
      * 用户信息的header名称
      */
-    private String userInfoHeaderName = "X-User-Info";
+    private String userInfoHeaderName = "x-user-info";
 
     /**
      * 参数校验是否开启快速失败

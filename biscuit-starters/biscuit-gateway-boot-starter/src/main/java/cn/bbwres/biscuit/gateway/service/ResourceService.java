@@ -18,6 +18,8 @@
 
 package cn.bbwres.biscuit.gateway.service;
 
+import cn.bbwres.biscuit.entity.UserBaseInfo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public interface ResourceService {
      * @param token a {@link java.lang.String} object
      * @return a {@link java.util.Map} object
      */
-    Map<String, Object> checkToken(String token);
+    UserBaseInfo<?> checkToken(String token);
 
 
     /**

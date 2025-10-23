@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.entity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 用户基础信息对象
@@ -37,6 +38,11 @@ public class UserBaseInfo<T> implements Serializable {
     private String userId;
 
     /**
+     * 用户中文名称
+     */
+    private String zhName;
+
+    /**
      * 用户名称
      */
     private String username;
@@ -48,9 +54,19 @@ public class UserBaseInfo<T> implements Serializable {
     private String tenantId;
 
     /**
+     * 客户端id
+     */
+    private String clientId;
+
+    /**
      * 用户信息
      */
     private T userInfo;
+
+    /**
+     * 用户权限信息
+     */
+    private List<String> authorities;
 
 
     /**
@@ -123,5 +139,29 @@ public class UserBaseInfo<T> implements Serializable {
      */
     public void setUserInfo(T userInfo) {
         this.userInfo = userInfo;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getZhName() {
+        return zhName;
+    }
+
+    public void setZhName(String zhName) {
+        this.zhName = zhName;
+    }
+
+    public List<String> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(List<String> authorities) {
+        this.authorities = authorities;
     }
 }

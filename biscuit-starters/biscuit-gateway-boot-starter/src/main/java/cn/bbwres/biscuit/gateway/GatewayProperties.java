@@ -47,10 +47,6 @@ public class GatewayProperties {
      * /auth/oauth/token
      */
     private String[] noAuthUris;
-    /**
-     * 固定登录鉴权的url
-     */
-    private String[] loginAuthUris;
 
     /**
      * 无权访问返回的错误码
@@ -70,13 +66,9 @@ public class GatewayProperties {
 
 
     /**
-     * 认证通过后 后续的用户token 放入请求头的名字
+     * 认证通过后 后续的用户信息放入请求头的名字
      */
-    private String userTokenHeader = "X-User-Token";
-    /**
-     * 用户信息
-     */
-    private String userInfoHeader = "X-User-Info";
+    private String userInfoHeader = "x-user-info";
 
     /**
      * 是否使用xss过滤器

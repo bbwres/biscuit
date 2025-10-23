@@ -81,7 +81,8 @@ public class WebAutoConfiguration {
 
 
         ObjectMapper objectMapper = new ObjectMapper()
-                .setDateFormat(new SimpleDateFormat(properties.getDateTimeFormat())).registerModule(new JavaTimeModule());
+                .setDateFormat(new SimpleDateFormat(properties.getDateTimeFormat()))
+                .registerModule(javaTimeModule);
         //设置不序列化为空的字段
         objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         //反序列化未知字段不报错

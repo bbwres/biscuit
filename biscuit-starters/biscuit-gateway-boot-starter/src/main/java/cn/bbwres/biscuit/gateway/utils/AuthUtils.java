@@ -24,6 +24,7 @@ import org.springframework.util.PathMatcher;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 认证工具类
@@ -43,7 +44,7 @@ public class AuthUtils {
      * @param pathMatcher a {@link org.springframework.util.PathMatcher} object
      * @return a boolean
      */
-    public static boolean checkAuth(List<String> noAuthResource, String path, PathMatcher pathMatcher) {
+    public static boolean checkAuth(Set<String> noAuthResource, String path, PathMatcher pathMatcher) {
         //获取出认证请求地址
         if (!CollectionUtils.isEmpty(noAuthResource)) {
             return noAuthResource.stream()
@@ -52,7 +53,7 @@ public class AuthUtils {
                     .anyMatch(resource -> {
                         boolean match = pathMatcher.match(resource, path);
                         if (match) {
-                            log.info("当前请求路径:[{}]与地址:[{}]匹配成功", path, resource);
+                            log.debug("当前请求路径:[{}]与地址:[{}]匹配成功", path, resource);
                         }
                         return match;
                     });

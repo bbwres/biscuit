@@ -20,6 +20,8 @@ package cn.bbwres.biscuit.caches.redis;
 
 import cn.bbwres.biscuit.caches.redis.manager.BiscuitRedisCacheManager;
 import cn.bbwres.biscuit.utils.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -82,7 +84,13 @@ public class RedisAutoConfigure {
     @Bean
     @ConditionalOnProperty(prefix = "biscuit.redis", name = "enable-json-serializer-value", havingValue = "true", matchIfMissing = true)
     public Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer() {
-        return new Jackson2JsonRedisSerializer<>(JsonUtil.getObjectMapper(), Object.class);
+        ObjectMapper objectMapper = JsonUtil.getObjectMapper().copy();
+        // 对非 final 类启用类型信息
+        objectMapper.activateDefaultTyping(
+                LaissezFaireSubTypeValidator.instance,
+                ObjectMapper.DefaultTyping.NON_FINAL
+        );
+        return new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
     }
 
     /**

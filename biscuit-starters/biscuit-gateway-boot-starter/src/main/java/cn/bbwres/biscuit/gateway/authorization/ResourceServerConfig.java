@@ -45,7 +45,6 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.web.server.authentication.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
@@ -137,13 +136,12 @@ public class ResourceServerConfig {
     /**
      * 安全处理类
      *
-     * @param http                                 a {@link org.springframework.security.config.web.server.ServerHttpSecurity} object
-     * @param gatewayProperties                    a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param authorizationManager                 a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
-     * @param customServerAccessDeniedHandler      a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
-     * @param customServerAuthenticationEntryPoint a {@link org.springframework.security.web.server.ServerAuthenticationEntryPoint} object
-     * @param jwtReactiveAuthenticationManager     a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
-     * @param reactiveOpaqueTokenIntrospector      a {@link org.springframework.beans.factory.ObjectProvider} object
+     * @param http                                       a {@link org.springframework.security.config.web.server.ServerHttpSecurity} object
+     * @param gatewayProperties                          a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @param authorizationManager                       a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
+     * @param customServerAccessDeniedHandler            a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
+     * @param customServerAuthenticationEntryPoint       a {@link org.springframework.security.web.server.ServerAuthenticationEntryPoint} object
+     * @param reactiveAuthenticationManager           a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
      * @return a {@link org.springframework.security.web.server.SecurityWebFilterChain} object
      */
     @Bean
@@ -152,28 +150,17 @@ public class ResourceServerConfig {
                                                             AuthorizationManager authorizationManager,
                                                             ServerAccessDeniedHandler customServerAccessDeniedHandler,
                                                             ServerAuthenticationEntryPoint customServerAuthenticationEntryPoint,
-                                                            ObjectProvider<ReactiveAuthenticationManager> jwtReactiveAuthenticationManager,
-                                                            ObjectProvider<ReactiveOpaqueTokenIntrospector> reactiveOpaqueTokenIntrospector) {
+                                                            ObjectProvider<ReactiveAuthenticationManager> reactiveAuthenticationManager) {
         //设置认证信息
         http.oauth2ResourceServer(oauth2ResourceServer -> {
-            if (gatewayProperties.getUseJwtToken()) {
-                ReactiveAuthenticationManager reactiveAuthenticationManager = jwtReactiveAuthenticationManager.getIfAvailable();
-                Assert.notNull(reactiveAuthenticationManager, "使用jwtToken时，未初始化jwtReactiveAuthenticationManager处理类");
-                oauth2ResourceServer.jwt(jwt -> jwt.authenticationManager(reactiveAuthenticationManager));
-            } else {
-                ReactiveOpaqueTokenIntrospector introspector = reactiveOpaqueTokenIntrospector.getIfAvailable();
-                Assert.notNull(introspector, "不使用jwtToken时，未初始化ReactiveOpaqueTokenIntrospector处理类");
-                oauth2ResourceServer.opaqueToken(opaqueToken -> opaqueToken.introspector(introspector));
-            }
+            ReactiveAuthenticationManager authenticationManager = reactiveAuthenticationManager.getIfAvailable();
+            Assert.notNull(authenticationManager, "使用jwtToken时，未初始化ReactiveAuthenticationManager处理类");
+            oauth2ResourceServer.jwt(jwt -> jwt.authenticationManager(authenticationManager));
         });
         http.authorizeExchange(authorizeExchange -> {
             if (ArrayUtils.isNotEmpty(gatewayProperties.getNoAuthUris())) {
                 //无需登录鉴权
                 authorizeExchange.pathMatchers(gatewayProperties.getNoAuthUris()).permitAll();
-            }
-            if (ArrayUtils.isNotEmpty(gatewayProperties.getLoginAuthUris())) {
-                //登录鉴权
-                authorizeExchange.pathMatchers(gatewayProperties.getLoginAuthUris()).authenticated();
             }
             authorizeExchange.pathMatchers(HttpMethod.OPTIONS).permitAll()
                     .anyExchange().access(authorizationManager);

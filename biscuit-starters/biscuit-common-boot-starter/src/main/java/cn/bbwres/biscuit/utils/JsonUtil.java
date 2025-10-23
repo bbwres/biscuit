@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -112,6 +112,21 @@ public class JsonUtil {
         return null;
     }
 
+    /**
+     * 对象转json
+     *
+     * @param t
+     * @param <T>
+     * @return
+     */
+    public static <T> byte[] toJsonBytes(T t) {
+        try {
+            return OBJECT_MAPPER.writeValueAsBytes(t);
+        } catch (JsonProcessingException e) {
+            LOG.info("toJson error!,{}", e.getMessage());
+        }
+        return null;
+    }
 
 
     /**
@@ -133,33 +148,59 @@ public class JsonUtil {
 
 
     /**
+     * json  转对象
+     *
+     * @param json
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T toObjectByBytes(byte[] json, Class<T> clazz) {
+        try {
+            return OBJECT_MAPPER.readValue(json, clazz);
+        } catch (IOException e) {
+            LOG.info("json  to Object error, {}", e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * 将base64的json字符串转换为对象
      *
      * @param base64Json base64字符串
      * @param clazz      对象类型
+     * @param isURL      是否url
      * @param <T>        类型
      * @return
      */
-    public static <T> T toObjectByBase64Json(String base64Json, Class<T> clazz) {
-        String json = new String(Base64.getDecoder().decode(base64Json), StandardCharsets.UTF_8);
-        return toObject(json, clazz);
+    public static <T> T toObjectByBase64Json(String base64Json, Class<T> clazz, boolean isURL) {
+        byte[] decode;
+        if (isURL) {
+            decode = Base64.getUrlDecoder().decode(base64Json);
+        } else {
+            decode = Base64.getDecoder().decode(base64Json);
+        }
+        return toObjectByBytes(decode, clazz);
     }
 
     /**
      * 对象转换json之后转换base64
      *
      * @param t
+     * @param isURL 是否url
      * @param <T>
      * @return
      */
-    public static <T> String toJsonBase64(T t) {
-        String json = toJson(t);
-        if (ObjectUtils.isEmpty(json)) {
+    public static <T> String toJsonBase64(T t, boolean isURL) {
+        byte[] jsonByte = toJsonBytes(t);
+        if (ObjectUtils.isEmpty(jsonByte)) {
             return null;
         }
-        return Base64.getEncoder().encodeToString(json.getBytes());
+        if (isURL) {
+            return Base64.getUrlEncoder().encodeToString(jsonByte);
+        }
+        return Base64.getEncoder().encodeToString(jsonByte);
     }
-
 
 
     /**

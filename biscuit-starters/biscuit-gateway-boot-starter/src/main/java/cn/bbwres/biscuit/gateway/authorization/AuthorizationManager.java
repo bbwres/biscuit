@@ -33,7 +33,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.PathMatcher;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * 认证配置信息
@@ -72,18 +75,20 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
             if (!CollectionUtils.isEmpty(noAuthResource)) {
                 resources.addAll(noAuthResource);
             }
-            //设置用户的信息
-            authorizationContext.getExchange().getAttributes().put(GatewayConstant.USER_INFO, authentication.getPrincipal());
-
             //获取用户角色信息
             authentication.getAuthorities().stream()
                     .map(authority -> resourceCacheService.getResourceByRole(authority.getAuthority()))
                     .filter(Objects::nonNull).forEach(resources::addAll);
+            if (authentication instanceof MapAuthentication mapAuthentication) {
+                mapAuthentication.setAuthorities(null);
+            }
+            //设置用户的信息
+            authorizationContext.getExchange().getAttributes().put(GatewayConstant.USER_INFO, authentication);
 
             return resources;
         });
 
-        return resourceMono.map(resources -> AuthUtils.checkAuth(new ArrayList<>(resources), path, pathMatcher))
+        return resourceMono.map(resources -> AuthUtils.checkAuth(resources, path, pathMatcher))
                 .map(AuthorizationDecision::new)
                 .defaultIfEmpty(new AuthorizationDecision(false));
     }

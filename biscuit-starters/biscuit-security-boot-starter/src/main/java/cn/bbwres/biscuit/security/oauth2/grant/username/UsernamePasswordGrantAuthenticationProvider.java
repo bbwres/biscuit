@@ -60,14 +60,8 @@ public class UsernamePasswordGrantAuthenticationProvider extends AbstractGrantAu
         UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(customCodeGrantAuthentication.getUsername(),
                 customCodeGrantAuthentication.getPassword());
         // Allow subclasses to set the "details" property
-       // authRequest.setDetails(customCodeGrantAuthentication);
         customCodeGrantAuthentication.setPassword(null);
-        StopWatch stopWatch =new StopWatch();
-        stopWatch.start("密码认证");
-        Authentication authenticate = authenticationProvider.authenticate(authRequest);
-        stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
-        return authenticate;
+        return authenticationProvider.authenticate(authRequest);
     }
 
 

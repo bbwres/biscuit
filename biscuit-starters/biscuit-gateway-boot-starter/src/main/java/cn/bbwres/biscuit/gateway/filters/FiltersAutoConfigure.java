@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.gateway.filters;
 
 import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.filters.xss.XssUriRegexGatewayFilterFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,7 @@ import org.springframework.http.codec.ServerCodecConfigurer;
  * @author zhanglinfeng
  * @version $Id: $Id
  */
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(GatewayProperties.class)
 public class FiltersAutoConfigure {
 
