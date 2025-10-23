@@ -23,9 +23,11 @@ import cn.bbwres.biscuit.utils.JsonUtil;
 import cn.bbwres.biscuit.utils.NetworkUtil;
 import cn.bbwres.biscuit.utils.SpringContextUtil;
 import cn.bbwres.biscuit.web.BiscuitWebProperties;
+import cn.bbwres.biscuit.web.context.UserInfoContext;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -64,12 +66,16 @@ public class WebFrameworkUtils {
      * @return
      */
     public static UserBaseInfo<?> getRequestUser() {
+        UserBaseInfo<?> userBaseInfo = UserInfoContext.getCurrentContext();
+        if (!ObjectUtils.isEmpty(userBaseInfo)) {
+            return userBaseInfo;
+        }
         String userInfoHeaderName = getBiscuitWebProperties().getUserInfoHeaderName();
         String userInfoStr = getHeader(userInfoHeaderName);
         if (Objects.isNull(userInfoStr)) {
             return null;
         }
-        return JsonUtil.toObjectByBase64Json(userInfoStr, UserBaseInfo.class,true);
+        return JsonUtil.toObjectByBase64Json(userInfoStr, UserBaseInfo.class, true);
     }
 
 

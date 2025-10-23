@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.web;
 
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.web.config.WebAppMvcConfigurer;
+import cn.bbwres.biscuit.web.filter.UserInfoFilter;
 import cn.bbwres.biscuit.web.handler.BiscuitHandlerExceptionResolver;
 import cn.bbwres.biscuit.web.handler.WebExceptionConvertErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -163,6 +164,18 @@ public class WebAutoConfiguration {
         return new WebExceptionConvertErrorCode();
     }
 
+
+
+
+    /**
+     * 用户信息获取过滤器
+     *
+     * @return userInfoFilter
+     */
+    @Bean
+    public UserInfoFilter userInfoFilter() {
+        return new UserInfoFilter();
+    }
 
     /**
      * 默认解析器 其中locale表示默认语言
