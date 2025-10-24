@@ -51,7 +51,7 @@ public class ReadConfig {
     public Properties readProperties(String fileName, Log log) {
         Properties prop = new Properties();
         String filePathname = baseDir + File.separator + fileName;
-        log.info("读取配置文件路径为:{}" + filePathname);
+        log.info("读取配置文件路径为:" + filePathname);
         try (InputStream input = new FileInputStream(filePathname)) {
             //加载properties文件
             prop.load(input);
