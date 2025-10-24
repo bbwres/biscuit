@@ -32,6 +32,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * 获取请求的用户信息
@@ -76,6 +77,21 @@ public class WebFrameworkUtils {
             return null;
         }
         return JsonUtil.toObjectByBase64Json(userInfoStr, UserBaseInfo.class, true);
+    }
+
+
+    /**
+     * 获取用户信息
+     *
+     * @param function
+     * @return
+     */
+    public static String getUserInfo(Function<UserBaseInfo, String> function) {
+        UserBaseInfo userBaseInfo = getRequestUser();
+        if (Objects.isNull(userBaseInfo)) {
+            return null;
+        }
+        return function.apply(userBaseInfo);
     }
 
 

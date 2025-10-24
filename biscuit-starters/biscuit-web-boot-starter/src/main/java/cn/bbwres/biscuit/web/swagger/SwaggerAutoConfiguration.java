@@ -19,11 +19,13 @@
 package cn.bbwres.biscuit.web.swagger;
 
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.tags.Tag;
 import org.springdoc.core.customizers.OpenApiBuilderCustomizer;
 import org.springdoc.core.customizers.ServerBaseUrlCustomizer;
 import org.springdoc.core.properties.SpringDocConfigProperties;
@@ -69,6 +71,7 @@ public class SwaggerAutoConfiguration {
         OpenAPI openApi = new OpenAPI()
                 // 接口信息
                 .info(buildInfo(properties))
+                .externalDocs(new ExternalDocumentation())
                 // 接口安全配置
                 .components(new Components().securitySchemes(securitySchemas));
         securitySchemas.keySet().forEach(key -> openApi.addSecurityItem(new SecurityRequirement().addList(key)));
