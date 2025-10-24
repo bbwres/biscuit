@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import ${pkg};
 #end
 import java.io.Serializable;
+import java.io.Serial;
 
 /**
 * <p>
@@ -36,6 +37,9 @@ import java.io.Serializable;
     #end
 #end
 public class ${tableClassName}RespVO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
 #foreach($field in ${table.fields})
     #if("$!field.comment" != "")

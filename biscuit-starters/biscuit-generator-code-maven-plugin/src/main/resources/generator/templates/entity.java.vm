@@ -14,6 +14,11 @@ import lombok.experimental.Accessors;
     #end
 #end
 
+
+#if(${entitySerialVersionUID})
+import java.io.Serial;
+#end
+
 /**
 *
 * $!{table.comment}
@@ -44,6 +49,7 @@ public class ${entity}  {
 #end
 
 #if(${entitySerialVersionUID})
+    @Serial
     private static final long serialVersionUID = 1L;
 #end
 ## ----------  BEGIN 字段循环遍历  ----------
