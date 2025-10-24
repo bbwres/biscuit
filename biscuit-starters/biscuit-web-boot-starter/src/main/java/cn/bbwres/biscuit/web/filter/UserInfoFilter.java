@@ -35,7 +35,7 @@ public class UserInfoFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        UserBaseInfo<?> requestUser = WebFrameworkUtils.getRequestUser();
+        UserBaseInfo requestUser = WebFrameworkUtils.getRequestUser();
         LOGGER.debug("当前请求放入线程上下文的参数为:[{}]", requestUser);
         UserInfoContext.setCurrentContext(requestUser);
         try {

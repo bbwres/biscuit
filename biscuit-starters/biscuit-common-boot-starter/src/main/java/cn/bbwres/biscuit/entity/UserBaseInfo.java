@@ -28,7 +28,7 @@ import java.util.List;
  * @author zhanglinfeng
  * @version $Id: $Id
  */
-public class UserBaseInfo<T> implements Serializable {
+public class UserBaseInfo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 2330611822113249402L;
@@ -61,7 +61,7 @@ public class UserBaseInfo<T> implements Serializable {
     /**
      * 用户信息
      */
-    private T userInfo;
+    private Object userInfo;
 
     /**
      * 用户权限信息
@@ -128,7 +128,7 @@ public class UserBaseInfo<T> implements Serializable {
      *
      * @return a T object
      */
-    public T getUserInfo() {
+    public Object getUserInfo() {
         return userInfo;
     }
 
@@ -137,7 +137,7 @@ public class UserBaseInfo<T> implements Serializable {
      *
      * @param userInfo a T object
      */
-    public void setUserInfo(T userInfo) {
+    public void setUserInfo(Object userInfo) {
         this.userInfo = userInfo;
     }
 

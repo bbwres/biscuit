@@ -22,6 +22,8 @@ package cn.bbwres.biscuit.security.oauth2.config;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.security.oauth2.constants.Oauth2ErrorCodeConstants;
 import cn.bbwres.biscuit.security.oauth2.constants.Oauth2SystemConstants;
+import cn.bbwres.biscuit.security.oauth2.endpoint.ResourceService;
+import cn.bbwres.biscuit.security.oauth2.endpoint.UserInfoEndpoint;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
 import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -40,6 +42,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.token.*;
@@ -62,8 +65,18 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @AutoConfiguration
-public class TokenGeneratorConfig {
+public class TokenConfig {
 
+    /**
+     * token信息
+     *
+     * @return
+     */
+    @Bean
+    public UserInfoEndpoint userInfoEndpoint(OAuth2AuthorizationService oauth2AuthorizationService,
+                                             ResourceService resourceService) {
+        return new UserInfoEndpoint(oauth2AuthorizationService, resourceService);
+    }
 
     /**
      * OAuth2TokenGenerator 配置
@@ -132,17 +145,17 @@ public class TokenGeneratorConfig {
         Map<String, Object> claims = new HashMap<>(16);
         Authentication principal = context.getPrincipal();
         if (principal.getPrincipal() instanceof AuthUser user) {
-            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "zh_name", user.getZhName());
-            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "user_id", user.getUserId());
-            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "tenant_id", user.getTenantId());
+            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX_ZH_NAME, user.getZhName());
+            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX_USER_ID, user.getUserId());
+            claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX_TENANT_ID, user.getTenantId());
         }
         Set<String> roles = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities())
                 .stream()
                 .map(c -> c.replaceFirst("^ROLE_", ""))
                 .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
 
-        claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "roles", roles);
-        claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX + "grant_type", context.getAuthorizationGrantType().getValue());
+        claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX_ROLES, roles);
+        claims.put(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX_GRANT_TYPE, context.getAuthorizationGrantType().getValue());
         return claims;
     }
 

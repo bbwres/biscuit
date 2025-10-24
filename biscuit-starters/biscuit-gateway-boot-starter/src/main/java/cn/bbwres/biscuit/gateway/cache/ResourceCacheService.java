@@ -20,11 +20,13 @@ package cn.bbwres.biscuit.gateway.cache;
 
 import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.service.ResourceService;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import jakarta.annotation.PostConstruct;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,9 +42,9 @@ public class ResourceCacheService {
      */
     public static final String LOGIN_AUTH_RESOURCE = "LOGIN_AUTH_RESOURCE";
 
-    private LoadingCache<String, List<String>> resourceNoUserCache;
+    private Cache<String, Mono<List<String>>> resourceNoUserCache;
 
-    private LoadingCache<String, List<String>> resourceRoleCache;
+    private Cache<String, Mono<List<String>>> resourceRoleCache;
 
     private final GatewayProperties gatewayProperties;
 
@@ -52,7 +54,7 @@ public class ResourceCacheService {
      * <p>Constructor for ResourceCacheService.</p>
      *
      * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param resourceService a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
+     * @param resourceService   a {@link cn.bbwres.biscuit.gateway.service.ResourceService} object
      */
     public ResourceCacheService(GatewayProperties gatewayProperties, ResourceService resourceService) {
         this.gatewayProperties = gatewayProperties;
@@ -68,11 +70,12 @@ public class ResourceCacheService {
             resourceNoUserCache = Caffeine.newBuilder()
                     .expireAfterWrite(gatewayProperties.getLocalCacheResourceTime(), TimeUnit.SECONDS)
                     .maximumSize(10)
-                    .build(key -> resourceService.getLoginAuthResource());
+                    .build();
+
             resourceRoleCache = Caffeine.newBuilder()
                     .expireAfterWrite(gatewayProperties.getLocalCacheResourceTime(), TimeUnit.SECONDS)
                     .maximumSize(2000)
-                    .build(resourceService::getResourceByRole);
+                    .build();
         }
     }
 
@@ -82,9 +85,15 @@ public class ResourceCacheService {
      *
      * @return a {@link java.util.List} object
      */
-    public List<String> getLoginAuthResource() {
+    public Mono<List<String>> getLoginAuthResource() {
         if (gatewayProperties.getCacheResource()) {
-            return resourceNoUserCache.get(LOGIN_AUTH_RESOURCE);
+            Mono<List<String>> loginAuthResourceMono = resourceNoUserCache.getIfPresent(LOGIN_AUTH_RESOURCE);
+            if (loginAuthResourceMono != null) {
+                return loginAuthResourceMono;
+            }
+            loginAuthResourceMono = resourceService.getLoginAuthResource().cache();
+            resourceNoUserCache.put(LOGIN_AUTH_RESOURCE, loginAuthResourceMono);
+            return loginAuthResourceMono;
         }
         return resourceService.getLoginAuthResource();
     }
@@ -93,14 +102,22 @@ public class ResourceCacheService {
     /**
      * 根据角色信息获取出当前角色拥有的资源信息
      *
-     * @param roleId 角色id
+     * @param roleIds 角色id
      * @return a {@link java.util.List} object
      */
-    public List<String> getResourceByRole(String roleId) {
+    public Mono<List<String>> getResourceByRole(Set<String> roleIds) {
+
         if (gatewayProperties.getCacheResource()) {
-            return resourceRoleCache.get(roleId);
+            String jsonKey = String.join("-", roleIds);
+            Mono<List<String>> resourceByRoleMono = resourceRoleCache.getIfPresent(jsonKey);
+            if (resourceByRoleMono != null) {
+                return resourceByRoleMono;
+            }
+            resourceByRoleMono = resourceService.getResourceByRole(roleIds).cache();
+            resourceRoleCache.put(jsonKey, resourceByRoleMono);
+            return resourceByRoleMono;
         }
-        return resourceService.getResourceByRole(roleId);
+        return resourceService.getResourceByRole(roleIds);
     }
 
 
@@ -110,7 +127,7 @@ public class ResourceCacheService {
      * @param state a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    public String getLoginUrlBuildState(String state) {
+    public Mono<String> getLoginUrlBuildState(String state) {
         return resourceService.getLoginUrlBuildState(state);
     }
 

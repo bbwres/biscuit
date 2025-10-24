@@ -64,7 +64,7 @@ public class RpcSecurityProperties {
      * 匹配的rpc路径
      * 默认拦截所有请求
      */
-    private String[] pathPatterns = new String[]{"/api"};
+    private String[] pathPatterns = new String[]{"/api/**"};
 
 
 }

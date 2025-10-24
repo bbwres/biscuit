@@ -16,30 +16,17 @@
  *
  */
 
-package cn.bbwres.biscuit.gateway.service;
-
-import cn.bbwres.biscuit.entity.UserBaseInfo;
-import reactor.core.publisher.Mono;
+package cn.bbwres.biscuit.security.oauth2.endpoint;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
- * 获取认证的url资源
+ * 获取资源信息
  *
  * @author zhanglinfeng
- * @version $Id: $Id
  */
 public interface ResourceService {
-
-    /**
-     * 检查并解析token
-     *
-     * @param token a {@link java.lang.String} object
-     * @return a {@link java.util.Map} object
-     */
-    Mono<UserBaseInfo> checkToken(String token);
 
 
     /**
@@ -47,7 +34,7 @@ public interface ResourceService {
      *
      * @return a {@link java.util.List} object
      */
-    Mono<List<String>> getLoginAuthResource();
+    List<String> getLoginAuthResource();
 
 
     /**
@@ -56,27 +43,6 @@ public interface ResourceService {
      * @param roleIds 角色id
      * @return a {@link java.util.List} object
      */
-    Mono<List<String>> getResourceByRole(Set<String> roleIds);
-
-
-    /**
-     * 获取登陆地址
-     *
-     * @return a {@link java.lang.String} object
-     */
-    default Mono<String> getLoginUrl() {
-        return null;
-    }
-
-    /**
-     * 获取登陆地址
-     *
-     * @param state a {@link java.lang.String} object
-     * @return a {@link java.lang.String} object
-     */
-    default Mono<String> getLoginUrlBuildState(String state) {
-        return getLoginUrl();
-    }
-
+    List<String> getResourceByRole(Set<String> roleIds);
 
 }

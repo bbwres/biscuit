@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.dto;
 
+import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.ErrorCode;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -197,6 +198,18 @@ public class Result<T> implements Serializable {
      */
     public T getData() {
         return data;
+    }
+
+    /**
+     * 检查并获取数据
+     *
+     * @return
+     */
+    public T buildDataAndCheck() {
+        if (checkSuccess()) {
+            return data;
+        }
+        throw new SystemRuntimeException(this.resultCode, this.resultMsg);
     }
 
     /**

@@ -29,14 +29,14 @@ import java.util.function.Supplier;
  *
  * @author zhanglinfeng
  */
-public class UserInfoSupplier implements Supplier<UserBaseInfo<?>> {
+public class UserInfoSupplier implements Supplier<UserBaseInfo> {
     /**
      * Gets a result.
      *
      * @return a result
      */
     @Override
-    public UserBaseInfo<?> get() {
+    public UserBaseInfo get() {
         return WebFrameworkUtils.getRequestUser(true);
     }
 }

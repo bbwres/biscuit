@@ -18,35 +18,23 @@
 
 package cn.bbwres.biscuit.gateway.authorization;
 
-import cn.bbwres.biscuit.constants.SystemAuthConstant;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
+import cn.bbwres.biscuit.exception.SystemRuntimeException;
+import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
+import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.service.ResourceService;
+import cn.bbwres.biscuit.gateway.service.ResourceServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames;
 import org.springframework.security.oauth2.jwt.BadJwtException;
-import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionException;
-import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * token配置
@@ -59,6 +47,26 @@ import java.util.stream.Collectors;
 public class TokenConfig {
 
 
+    @Bean
+    @ConditionalOnMissingBean
+    public ResourceService resourceService(WebClient webClient, GatewayProperties gatewayProperties) {
+        return new ResourceServiceImpl(webClient, gatewayProperties);
+    }
+
+
+    /**
+     * webclient
+     *
+     * @param builder                                   WebClient.Builder
+     * @param reactorLoadBalancerExchangeFilterFunction 负载均衡
+     * @return
+     */
+    @Bean
+    public WebClient webClient(WebClient.Builder builder,
+                               ReactorLoadBalancerExchangeFilterFunction reactorLoadBalancerExchangeFilterFunction) {
+
+        return builder.filter(reactorLoadBalancerExchangeFilterFunction).build();
+    }
 
     /**
      * 处理jwt token
@@ -78,7 +86,7 @@ public class TokenConfig {
                         .flatMap(this::makeRequest)
                         .flatMap(this::parseToken)
                         .cast(Authentication.class)
-                        .onErrorMap(JwtException.class, this::onError);
+                        .onErrorMap(Exception.class, this::onError);
             }
 
             /**
@@ -86,8 +94,8 @@ public class TokenConfig {
              * @param token
              * @return
              */
-            private Mono<UserBaseInfo<?>> makeRequest(String token) {
-                return Mono.justOrEmpty(resourceService.checkToken(token));
+            private Mono<UserBaseInfo> makeRequest(String token) {
+                return resourceService.checkToken(token);
             }
 
             /**
@@ -95,7 +103,7 @@ public class TokenConfig {
              * @param userBaseInfo
              * @return
              */
-            private Mono<MapAuthentication> parseToken(UserBaseInfo<?> userBaseInfo) {
+            private Mono<MapAuthentication> parseToken(UserBaseInfo userBaseInfo) {
                 return Mono.justOrEmpty(new MapAuthentication(userBaseInfo));
             }
 
@@ -104,11 +112,15 @@ public class TokenConfig {
              * @param ex
              * @return
              */
-            private AuthenticationException onError(JwtException ex) {
-                if (ex instanceof BadJwtException) {
-                    return new InvalidBearerTokenException(ex.getMessage(), ex);
+            private SystemRuntimeException onError(Exception ex) {
+                log.info("当前token请求处理失败!{}", ex.getMessage());
+                if (ex instanceof SystemRuntimeException e) {
+                    throw e;
                 }
-                return new AuthenticationServiceException(ex.getMessage(), ex);
+                if (ex instanceof BadJwtException) {
+                    return new SystemRuntimeException(GlobalErrorCodeConstants.INVALID_TOKEN);
+                }
+                return new SystemRuntimeException(ex.getMessage());
             }
         };
     }

@@ -19,14 +19,14 @@ public class UserInfoContext {
     private static final ThreadLocal<UserInfoContext> THREAD_LOCAL = TransmittableThreadLocal.withInitial(UserInfoContext::new);
 
 
-    private UserBaseInfo<?> userBaseInfo;
+    private UserBaseInfo userBaseInfo;
 
     /**
      * 获取上下文
      *
      * @return
      */
-    public static UserBaseInfo<?> getCurrentContext() {
+    public static UserBaseInfo getCurrentContext() {
         return THREAD_LOCAL.get().getUserBaseInfo();
     }
 
@@ -35,7 +35,7 @@ public class UserInfoContext {
      *
      * @param userBaseInfo userBaseInfo
      */
-    public static void setCurrentContext(UserBaseInfo<?> userBaseInfo) {
+    public static void setCurrentContext(UserBaseInfo userBaseInfo) {
         THREAD_LOCAL.get().setUserBaseInfo(userBaseInfo);
     }
 
@@ -47,11 +47,11 @@ public class UserInfoContext {
         THREAD_LOCAL.remove();
     }
 
-    private UserBaseInfo<?> getUserBaseInfo() {
+    private UserBaseInfo getUserBaseInfo() {
         return userBaseInfo;
     }
 
-    private void setUserBaseInfo(UserBaseInfo<?> userBaseInfo) {
+    private void setUserBaseInfo(UserBaseInfo userBaseInfo) {
         this.userBaseInfo = userBaseInfo;
     }
 }

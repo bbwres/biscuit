@@ -30,6 +30,26 @@ public interface Oauth2SystemConstants {
      */
     String CUSTOM_CLAIMS_PREFIX = "custom_";
     /**
+     * 中文名称
+     */
+    String CUSTOM_CLAIMS_PREFIX_ZH_NAME = CUSTOM_CLAIMS_PREFIX + "zh_name";
+    /**
+     * 用户id
+     */
+    String CUSTOM_CLAIMS_PREFIX_USER_ID = CUSTOM_CLAIMS_PREFIX + "user_id";
+    /**
+     * 租户id
+     */
+    String CUSTOM_CLAIMS_PREFIX_TENANT_ID = CUSTOM_CLAIMS_PREFIX + "tenant_id";
+    /**
+     * 角色
+     */
+    String CUSTOM_CLAIMS_PREFIX_ROLES = CUSTOM_CLAIMS_PREFIX + "roles";
+    /**
+     * grant_type
+     */
+    String CUSTOM_CLAIMS_PREFIX_GRANT_TYPE = CUSTOM_CLAIMS_PREFIX + "grant_type";
+    /**
      * scop 参数
      */
     String PARAMS_SCOPE = "scope";

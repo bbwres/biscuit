@@ -35,6 +35,23 @@ import java.util.Map;
 @ConfigurationProperties("biscuit.gateway")
 public class GatewayProperties {
 
+    /**
+     * 认证服务的服务地址
+     */
+    private String authorizationServerName = "lb://auth";
+    /**
+     * 检查token的请求path
+     */
+    private String authorizationServerCheckTokenPath = "/api/auth/check_token";
+    /**
+     * 获取登录授权的请求path
+     */
+    private String authorizationServerLoginAuthResource = "/api/auth/login_auth_resource";
+    /**
+     * 根据角色获取资源的请求path
+     */
+    private String authorizationServerResourceByRole = "/api/auth/resource_by_role";
+
 
     /**
      * 固定无需鉴权的uri

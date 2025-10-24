@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.rpc;
 
 import cn.bbwres.biscuit.rpc.filter.GatewayRpcAuthorizationFilter;
+import cn.bbwres.biscuit.rpc.filter.RpcLoadBalancerClientRequestTransformer;
 import cn.bbwres.biscuit.rpc.filter.RpcLoadBalancerRequestTransformer;
 import cn.bbwres.biscuit.rpc.metadata.RegistrationBeanPostProcessor;
 import cn.bbwres.biscuit.rpc.properties.RpcProperties;
@@ -130,6 +131,20 @@ public class RpcAutoConfigure {
         public GatewayRpcAuthorizationFilter gatewayRpcAuthorizationFilter(RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
             return new GatewayRpcAuthorizationFilter(rpcSecurityAlgorithmContainer);
         }
+
+        /**
+         * RpcLoadBalancerRequestTransformer 负载均衡参数增强
+         *
+         * @return RpcLoadBalancerRequestTransformer
+         */
+        @Bean
+        @ConditionalOnBean(LoadBalancerClientFactory.class)
+        public RpcLoadBalancerClientRequestTransformer rpcLoadBalancerClientRequestTransformer(RpcSecurityProperties rpcSecurityProperties,
+                                                                                               RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
+            return new RpcLoadBalancerClientRequestTransformer(rpcSecurityProperties, rpcSecurityAlgorithmContainer);
+        }
+
+
     }
 
     /**

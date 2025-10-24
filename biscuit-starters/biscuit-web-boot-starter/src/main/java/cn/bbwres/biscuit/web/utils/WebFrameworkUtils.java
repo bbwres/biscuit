@@ -65,8 +65,8 @@ public class WebFrameworkUtils {
      *
      * @return
      */
-    public static UserBaseInfo<?> getRequestUser() {
-        UserBaseInfo<?> userBaseInfo = UserInfoContext.getCurrentContext();
+    public static UserBaseInfo getRequestUser() {
+        UserBaseInfo userBaseInfo = UserInfoContext.getCurrentContext();
         if (!ObjectUtils.isEmpty(userBaseInfo)) {
             return userBaseInfo;
         }
@@ -85,8 +85,8 @@ public class WebFrameworkUtils {
      * @param checkNull 检查是否为空
      * @return
      */
-    public static UserBaseInfo<?> getRequestUser(boolean checkNull) {
-        UserBaseInfo<?> userBaseInfo = getRequestUser();
+    public static UserBaseInfo getRequestUser(boolean checkNull) {
+        UserBaseInfo userBaseInfo = getRequestUser();
         if (checkNull) {
             Assert.notNull(userBaseInfo, "user not null");
         }

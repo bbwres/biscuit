@@ -59,7 +59,7 @@ public class EnhanceOperationLogUserServiceImpl implements EnhanceOperationLogSe
         if (operateLog.isAccessRequest()) {
             el = operationLogProperties.getGetAccessEl();
         }
-        UserBaseInfo<?> userBaseInfo = getUser(el);
+        UserBaseInfo userBaseInfo = getUser(el);
         if (Objects.nonNull(userBaseInfo)) {
             loggerMsg.setOperationUser(userBaseInfo.getUserId());
             loggerMsg.setOperationUserName(userBaseInfo.getUsername());
@@ -74,12 +74,12 @@ public class EnhanceOperationLogUserServiceImpl implements EnhanceOperationLogSe
      * @param el
      * @return
      */
-    protected UserBaseInfo<?> getUser(String el) {
+    protected UserBaseInfo getUser(String el) {
         try {
             String[] classInfos = el.split(OperationLogConstant.EL_3);
             Class<?> clazz = Class.forName(classInfos[0]);
             Method method = clazz.getMethod(classInfos[1]);
-            return (UserBaseInfo<?>) method.invoke(null);
+            return (UserBaseInfo) method.invoke(null);
         } catch (Exception e) {
             log.warn("记录业务日志时，获取用户信息失败!:[{}]", e.getMessage());
         }

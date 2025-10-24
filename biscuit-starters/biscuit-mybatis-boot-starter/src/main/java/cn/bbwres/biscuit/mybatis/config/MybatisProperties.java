@@ -42,7 +42,7 @@ public class MybatisProperties implements Serializable {
     /**
      * 获取用户信息
      */
-    private Class<Supplier<UserBaseInfo<?>>> userInfo;
+    private Class<Supplier<UserBaseInfo>> userInfo;
 
     /**
      * mappers 扫描包配置
@@ -61,13 +61,13 @@ public class MybatisProperties implements Serializable {
     private Boolean enableCustomize = true;
 
 
-    private Supplier<UserBaseInfo<?>> userInfoSupplier;
+    private Supplier<UserBaseInfo> userInfoSupplier;
 
-    public Class<Supplier<UserBaseInfo<?>>> getUserInfo() {
+    public Class<Supplier<UserBaseInfo>> getUserInfo() {
         return userInfo;
     }
 
-    public void setUserInfo(Class<Supplier<UserBaseInfo<?>>> userInfo) {
+    public void setUserInfo(Class<Supplier<UserBaseInfo>> userInfo) {
         this.userInfo = userInfo;
         if (ObjectUtils.isEmpty(userInfo)) {
             userInfoSupplier = null;
@@ -80,7 +80,7 @@ public class MybatisProperties implements Serializable {
         }
     }
 
-    public Supplier<UserBaseInfo<?>> getUserInfoSupplier() {
+    public Supplier<UserBaseInfo> getUserInfoSupplier() {
         return userInfoSupplier;
     }
 
@@ -98,11 +98,11 @@ public class MybatisProperties implements Serializable {
      *
      * @return
      */
-    public String obtainUserInfo(Function<UserBaseInfo<?>, String> function) {
+    public String obtainUserInfo(Function<UserBaseInfo, String> function) {
         if (ObjectUtils.isEmpty(userInfoSupplier)) {
             return null;
         }
-        UserBaseInfo<?> userBaseInfo = userInfoSupplier.get();
+        UserBaseInfo userBaseInfo = userInfoSupplier.get();
         if (Objects.isNull(userBaseInfo)) {
             return null;
         }

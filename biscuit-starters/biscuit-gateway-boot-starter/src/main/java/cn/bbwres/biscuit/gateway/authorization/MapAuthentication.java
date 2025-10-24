@@ -88,7 +88,7 @@ public class MapAuthentication implements Authentication {
      *
      * @param userBaseInfo a {@link UserBaseInfo} object
      */
-    public MapAuthentication(UserBaseInfo<?> userBaseInfo) {
+    public MapAuthentication(UserBaseInfo userBaseInfo) {
         if (ObjectUtils.isEmpty(userBaseInfo)) {
             this.authenticated = false;
             return;
