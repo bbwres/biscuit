@@ -26,6 +26,11 @@ package cn.bbwres.biscuit.security.oauth2.constants;
 public interface Oauth2SystemConstants {
 
     /**
+     * 租户id
+     */
+    String OAUTH2_PARAMETER_NAME_TENANT_ID = "tenant_id";
+
+    /**
      * 自定义的token claims 的前缀
      */
     String CUSTOM_CLAIMS_PREFIX = "custom_";
@@ -40,7 +45,7 @@ public interface Oauth2SystemConstants {
     /**
      * 租户id
      */
-    String CUSTOM_CLAIMS_PREFIX_TENANT_ID = CUSTOM_CLAIMS_PREFIX + "tenant_id";
+    String CUSTOM_CLAIMS_PREFIX_TENANT_ID = CUSTOM_CLAIMS_PREFIX + OAUTH2_PARAMETER_NAME_TENANT_ID;
     /**
      * 角色
      */

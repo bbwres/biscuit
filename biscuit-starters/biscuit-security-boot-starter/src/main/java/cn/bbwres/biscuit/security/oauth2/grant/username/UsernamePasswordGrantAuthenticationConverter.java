@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.security.oauth2.grant.username;
 
+import cn.bbwres.biscuit.security.oauth2.constants.Oauth2SystemConstants;
 import cn.bbwres.biscuit.security.oauth2.utils.ParamsUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
@@ -69,6 +70,7 @@ public class UsernamePasswordGrantAuthenticationConverter implements Authenticat
                 parameters.get(OAuth2ParameterNames.PASSWORD).size() != 1) {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_REQUEST);
         }
+        String tenantId = parameters.getFirst(Oauth2SystemConstants.OAUTH2_PARAMETER_NAME_TENANT_ID);
 
         Map<String, Object> additionalParameters = new HashMap<>(8);
         parameters.forEach((key, value) -> {
@@ -79,7 +81,8 @@ public class UsernamePasswordGrantAuthenticationConverter implements Authenticat
             }
         });
 
-        return new UsernamePasswordGrantAuthenticationToken(clientPrincipal, additionalParameters, username, password);
+        return new UsernamePasswordGrantAuthenticationToken(clientPrincipal, additionalParameters,
+                username, password, tenantId);
     }
 
 }

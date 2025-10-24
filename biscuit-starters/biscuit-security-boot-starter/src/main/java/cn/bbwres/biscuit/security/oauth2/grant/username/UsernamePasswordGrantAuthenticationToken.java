@@ -44,18 +44,23 @@ public class UsernamePasswordGrantAuthenticationToken extends OAuth2Authorizatio
 
     private final String username;
 
-    private  String password;
+    private String password;
+
+    private String tenantId;
 
     /**
      * Sub-class constructor.
      *
-     * @param clientPrincipal        the authenticated client principal
-     * @param additionalParameters   the additional parameters
+     * @param clientPrincipal      the authenticated client principal
+     * @param additionalParameters the additional parameters
      */
-    protected UsernamePasswordGrantAuthenticationToken( Authentication clientPrincipal, @Nullable Map<String, Object> additionalParameters, String username, String password) {
+    protected UsernamePasswordGrantAuthenticationToken(Authentication clientPrincipal,
+                                                       @Nullable Map<String, Object> additionalParameters,
+                                                       String username, String password, String tenantId) {
         super(PASSWORD, clientPrincipal, additionalParameters);
         this.username = username;
         this.password = password;
+        this.tenantId = tenantId;
     }
 
 

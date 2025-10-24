@@ -19,7 +19,7 @@
 package cn.bbwres.biscuit.security.oauth2.grant.username;
 
 import cn.bbwres.biscuit.security.oauth2.grant.AbstractGrantAuthenticationProvider;
-import org.springframework.security.authentication.AuthenticationManager;
+import cn.bbwres.biscuit.utils.StringUtils;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,7 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationGrantAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
-import org.springframework.util.StopWatch;
+import org.springframework.util.ObjectUtils;
 
 /**
  * 账号密码登录
@@ -57,7 +57,11 @@ public class UsernamePasswordGrantAuthenticationProvider extends AbstractGrantAu
     @Override
     protected Authentication authenticateHandler(OAuth2AuthorizationGrantAuthenticationToken oauth2AuthorizationGrantAuthentication) throws AuthenticationException {
         UsernamePasswordGrantAuthenticationToken customCodeGrantAuthentication = (UsernamePasswordGrantAuthenticationToken) oauth2AuthorizationGrantAuthentication;
-        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(customCodeGrantAuthentication.getUsername(),
+        String username = customCodeGrantAuthentication.getUsername();
+        if (!ObjectUtils.isEmpty(customCodeGrantAuthentication.getTenantId())) {
+            username = String.join(StringUtils.ARRAY_SPLIT, customCodeGrantAuthentication.getTenantId(), username);
+        }
+        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
                 customCodeGrantAuthentication.getPassword());
         // Allow subclasses to set the "details" property
         customCodeGrantAuthentication.setPassword(null);
