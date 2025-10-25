@@ -16,27 +16,11 @@
  *
  */
 
-package cn.bbwres.biscuit.web.supplier;
-
-import cn.bbwres.biscuit.entity.UserBaseInfo;
-import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
-
-import java.util.function.Supplier;
+package cn.bbwres.biscuit.validate;
 
 /**
- * 获取当前登录用户的 Supplier
- * 主要用于数据库的自动填充
- *
+ * 数据校验-修改数据状态
  * @author zhanglinfeng
  */
-public class UserInfoSupplier implements Supplier<UserBaseInfo> {
-    /**
-     * Gets a result.
-     *
-     * @return a result
-     */
-    @Override
-    public UserBaseInfo get() {
-        return WebFrameworkUtils.getRequestUser(false);
-    }
+public interface ValidateEditStatusGroup {
 }

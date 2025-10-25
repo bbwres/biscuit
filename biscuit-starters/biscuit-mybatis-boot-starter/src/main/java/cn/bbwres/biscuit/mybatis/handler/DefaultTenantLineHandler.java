@@ -22,6 +22,7 @@ import cn.bbwres.biscuit.mybatis.config.MybatisProperties;
 import cn.bbwres.biscuit.mybatis.config.MybatisTenantProperties;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.NullValue;
 import net.sf.jsqlparser.expression.StringValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,9 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         String tenantId = mybatisProperties.obtainUserInfo(userBaseInfo -> ObjectUtils.isEmpty(userBaseInfo.getTenantId()) ?
                 mybatisTenantProperties.getDefaultTenant() : userBaseInfo.getTenantId());
         log.debug("obtain tenantId:{}", tenantId);
+        if (ObjectUtils.isEmpty(tenantId)) {
+            return new NullValue();
+        }
 
         return new StringValue(tenantId);
     }

@@ -24,6 +24,7 @@ import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import jakarta.validation.ValidationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,7 +77,11 @@ public class WebExceptionConvertErrorCode implements ExceptionConvertErrorCode {
             StringBuilder sb = new StringBuilder();
             BindingResult bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
             for (ObjectError error : bindingResult.getAllErrors()) {
-                sb.append('[').append(error.getDefaultMessage()).append("] ");
+                sb.append('[');
+                if (error instanceof FieldError fieldError) {
+                    sb.append(fieldError.getField());
+                }
+                sb.append(error.getDefaultMessage()).append("] ");
             }
             errorMessageInfo.setMessage(sb.toString());
             errorMessageInfo.setI18nHandler(false);

@@ -35,7 +35,7 @@ public class Oauth2ExceptionConvertErrorCode implements ExceptionConvertErrorCod
      */
     @Override
     public String exceptionConvertErrorCode(Exception ex) {
-        return ex.getMessage();
+        return null;
     }
 
     /**
@@ -47,6 +47,6 @@ public class Oauth2ExceptionConvertErrorCode implements ExceptionConvertErrorCod
     @Override
     public ErrorMessageInfo exceptionConvertErrorMessage(Exception ex) {
 
-        return new ErrorMessageInfo(ex.getMessage(), false);
+        return null;
     }
 }
