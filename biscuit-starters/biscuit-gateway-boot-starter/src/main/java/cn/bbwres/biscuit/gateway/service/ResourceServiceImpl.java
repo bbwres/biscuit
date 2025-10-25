@@ -63,7 +63,7 @@ public class ResourceServiceImpl implements ResourceService {
                 .bodyValue(token)
                 .retrieve()
                 .bodyToMono(USER_BASE_INFO_TYPE_REFERENCE)
-                .map(Result::buildDataAndCheck);
+                .map(Result::checkAndGetData);
     }
 
     /**
@@ -77,7 +77,7 @@ public class ResourceServiceImpl implements ResourceService {
                 .uri(gatewayProperties.getAuthorizationServerName() + gatewayProperties.getAuthorizationServerLoginAuthResource())
                 .retrieve()
                 .bodyToMono(STRING_TYPE_REFERENCE)
-                .map(Result::buildDataAndCheck);
+                .map(Result::checkAndGetData);
     }
 
     /**
@@ -93,6 +93,6 @@ public class ResourceServiceImpl implements ResourceService {
                 .bodyValue(roleIds)
                 .retrieve()
                 .bodyToMono(STRING_TYPE_REFERENCE)
-                .map(Result::buildDataAndCheck);
+                .map(Result::checkAndGetData);
     }
 }

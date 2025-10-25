@@ -205,7 +205,7 @@ public class Result<T> implements Serializable {
      *
      * @return
      */
-    public T buildDataAndCheck() {
+    public T checkAndGetData() {
         if (checkSuccess()) {
             return data;
         }
