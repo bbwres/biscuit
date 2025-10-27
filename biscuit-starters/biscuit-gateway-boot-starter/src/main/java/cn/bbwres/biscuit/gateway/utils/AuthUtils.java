@@ -18,11 +18,11 @@
 
 package cn.bbwres.biscuit.gateway.utils;
 
+import cn.bbwres.biscuit.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.PathMatcher;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -40,18 +40,19 @@ public class AuthUtils {
      * 鉴权检查
      *
      * @param noAuthResource a {@link java.util.List} object
-     * @param path a {@link java.lang.String} object
-     * @param pathMatcher a {@link org.springframework.util.PathMatcher} object
+     * @param requestMethod  a {@link java.lang.String} object
+     * @param path           a {@link java.lang.String} object
+     * @param pathMatcher    a {@link org.springframework.util.PathMatcher} object
      * @return a boolean
      */
-    public static boolean checkAuth(Set<String> noAuthResource, String path, PathMatcher pathMatcher) {
+    public static boolean checkAuth(Set<String> noAuthResource, String requestMethod, String path, PathMatcher pathMatcher) {
         //获取出认证请求地址
         if (!CollectionUtils.isEmpty(noAuthResource)) {
             return noAuthResource.stream()
                     .filter(Objects::nonNull)
                     //根据前缀先过滤一遍
                     .anyMatch(resource -> {
-                        boolean match = pathMatcher.match(resource, path);
+                        boolean match = pathMatcher.match(resource, requestMethod + StringUtils.DATA_STRING_SPLIT + path);
                         if (match) {
                             log.debug("当前请求路径:[{}]与地址:[{}]匹配成功", path, resource);
                         }

@@ -26,8 +26,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationGrantAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.util.ObjectUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * 账号密码登录
@@ -50,16 +54,21 @@ public class UsernamePasswordGrantAuthenticationProvider extends AbstractGrantAu
     /**
      * 认证处理
      *
+     * @param registeredClient                       client 信息
      * @param oauth2AuthorizationGrantAuthentication 请求参数
      * @return Authentication 认证数据
      * @throws AuthenticationException
      */
     @Override
-    protected Authentication authenticateHandler(OAuth2AuthorizationGrantAuthenticationToken oauth2AuthorizationGrantAuthentication) throws AuthenticationException {
+    protected Authentication authenticateHandler(RegisteredClient registeredClient, OAuth2AuthorizationGrantAuthenticationToken oauth2AuthorizationGrantAuthentication) throws AuthenticationException {
         UsernamePasswordGrantAuthenticationToken customCodeGrantAuthentication = (UsernamePasswordGrantAuthenticationToken) oauth2AuthorizationGrantAuthentication;
         String username = customCodeGrantAuthentication.getUsername();
+        username = String.join(StringUtils.ARRAY_SPLIT,
+                Base64.getEncoder().encodeToString(username.getBytes(StandardCharsets.UTF_8)),
+                registeredClient.getClientId());
         if (!ObjectUtils.isEmpty(customCodeGrantAuthentication.getTenantId())) {
-            username = String.join(StringUtils.ARRAY_SPLIT, customCodeGrantAuthentication.getTenantId(), username);
+            username = String.join(StringUtils.ARRAY_SPLIT,
+                    username, customCodeGrantAuthentication.getTenantId());
         }
         UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
                 customCodeGrantAuthentication.getPassword());

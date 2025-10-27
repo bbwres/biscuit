@@ -36,6 +36,10 @@ public class StringUtils {
      * 数组分隔符
      */
     public static final String ARRAY_SPLIT = ",";
+    /**
+     * 数据分隔符
+     */
+    public static final String DATA_STRING_SPLIT = ":";
 
 
     /**

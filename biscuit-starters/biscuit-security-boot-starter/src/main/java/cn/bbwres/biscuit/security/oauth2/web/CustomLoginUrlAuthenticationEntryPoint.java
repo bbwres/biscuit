@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.security.oauth2.web;
 
 import cn.bbwres.biscuit.dto.Result;
+import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.security.oauth2.constants.Oauth2ErrorCodeConstants;
 import cn.bbwres.biscuit.utils.JsonUtil;
 import jakarta.servlet.ServletException;
@@ -98,6 +99,10 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
         if (authenticationException instanceof AccountExpiredException
                 || authenticationException instanceof CredentialsExpiredException) {
             return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_EXPIRED);
+        }
+        Throwable cause = authenticationException.getCause();
+        if(cause instanceof SystemRuntimeException systemRuntimeException){
+            return new Result<>(systemRuntimeException.getErrorCode(),systemRuntimeException.getMessage());
         }
 
         return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_ERROR);

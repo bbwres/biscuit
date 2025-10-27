@@ -68,6 +68,7 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
     public Mono<AuthorizationDecision> check(Mono<Authentication> mono, AuthorizationContext authorizationContext) {
         ServerHttpRequest request = authorizationContext.getExchange().getRequest();
         String path = request.getURI().getPath();
+        String requestMethod = request.getMethod().toString();
         //是否是已经认证
         //获取当前用户的角色和拥有的资源
         Mono<Set<String>> resourceMono = mono.filter(Authentication::isAuthenticated)
@@ -102,7 +103,7 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
                             });
                 });
 
-        return resourceMono.map(resources -> AuthUtils.checkAuth(resources, path, pathMatcher))
+        return resourceMono.map(resources -> AuthUtils.checkAuth(resources, requestMethod, path, pathMatcher))
                 .map(AuthorizationDecision::new)
                 .defaultIfEmpty(new AuthorizationDecision(false));
     }

@@ -93,7 +93,7 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
 
         Authentication userAuthenticate;
         try {
-            userAuthenticate = authenticateHandler(oauth2AuthorizationGrantAuthentication);
+            userAuthenticate = authenticateHandler(registeredClient, oauth2AuthorizationGrantAuthentication);
         } catch (AuthenticationException e) {
             // throw oauth2AuthenticationException(e);
             throw e;
@@ -197,11 +197,12 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
     /**
      * 认证处理
      *
+     * @param registeredClient                       client 信息
      * @param oauth2AuthorizationGrantAuthentication 请求参数
      * @return Authentication 认证数据
      * @throws AuthenticationException
      */
-    protected abstract Authentication authenticateHandler(OAuth2AuthorizationGrantAuthenticationToken oauth2AuthorizationGrantAuthentication) throws AuthenticationException;
+    protected abstract Authentication authenticateHandler(RegisteredClient registeredClient, OAuth2AuthorizationGrantAuthenticationToken oauth2AuthorizationGrantAuthentication) throws AuthenticationException;
 
     /**
      * 检查获取client
@@ -220,5 +221,5 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
         throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
     }
 
-    
+
 }
