@@ -22,7 +22,7 @@
 
     <groupId>cn.bbwres</groupId>
     <artifactId>biscuit</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <url>https://github.com/bbwres/biscuit</url>
     <description>biscuit</description>
