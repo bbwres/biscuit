@@ -52,6 +52,14 @@ public interface Oauth2ErrorCodeConstants {
      * 用户已经过期
      */
     ErrorCode OAUTH2_USER_EXPIRED = new ErrorCode("101001004", "oauth2.user_expired");
+
+
+    ErrorCode OAUTH2_INVALID_CLIENT = new ErrorCode("101001005", "oauth2.invalid_client");
+    ErrorCode OAUTH2_INVALID_GRANT = new ErrorCode("101001006", "oauth2.invalid_grant");
+    ErrorCode OAUTH2_INVALID_TOKEN = new ErrorCode("101001007", "oauth2.invalid_token");
+    ErrorCode OAUTH2_ACCESS_DENIED = new ErrorCode("101001008", "oauth2.access_denied");
+
+
     /**
      * 处理失败
      */

@@ -47,7 +47,8 @@ public class I18nAutoConfigure {
      */
     @Bean("systemMessageSource")
     public SystemMessageSource systemMessageSource(I18nProperties i18nProperties) {
-        return new SystemMessageSource(i18nProperties);
+        return new SystemMessageSource(i18nProperties.getMessageSourceCacheSeconds(),
+                i18nProperties.getSystemMessageBasename());
     }
 
 

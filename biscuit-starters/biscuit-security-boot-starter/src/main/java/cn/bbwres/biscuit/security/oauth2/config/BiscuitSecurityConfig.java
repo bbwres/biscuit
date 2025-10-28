@@ -17,17 +17,17 @@
  */
 package cn.bbwres.biscuit.security.oauth2.config;
 
+import cn.bbwres.biscuit.i18n.I18nProperties;
+import cn.bbwres.biscuit.i18n.support.SystemMessageSource;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginEventListener;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginService;
 import cn.bbwres.biscuit.security.oauth2.event.DefaultAuthenticationLoginServiceImpl;
-import cn.bbwres.biscuit.security.oauth2.handler.Oauth2ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -40,6 +40,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableConfigurationProperties(BiscuitSecurityProperties.class)
 public class BiscuitSecurityConfig {
+
+    /**
+     * 系统默认的messageSource
+     *
+     * @return
+     */
+    @Bean("securityMessageBasename")
+    public SystemMessageSource systemMessageSource(I18nProperties i18nProperties) {
+        return new SystemMessageSource(i18nProperties.getMessageSourceCacheSeconds(),
+                i18nProperties.getSecurityMessageBasename());
+    }
 
 
     /**
@@ -67,22 +78,12 @@ public class BiscuitSecurityConfig {
 
 
     /**
-     * oauth2 的异常
-     *
-     * @return Oauth2ExceptionConvertErrorCode
-     */
-    @Bean("oauth2ExceptionConvertErrorCode")
-    public Oauth2ExceptionConvertErrorCode oauth2ExceptionConvertErrorCode() {
-        return new Oauth2ExceptionConvertErrorCode();
-    }
-
-
-    /**
      * 密码配置
+     *
      * @return PasswordEncoder
      */
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }

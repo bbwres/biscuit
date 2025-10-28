@@ -36,4 +36,18 @@ public class I18nProperties {
     private Integer messageSourceCacheSeconds = 360;
 
 
+    /**
+     * 系统信息的basename
+     */
+    private String systemMessageBasename = "cn.bbwres.biscuit.i18n.system_messages";
+    /**
+     * 安全信息的basename
+     */
+    private String securityMessageBasename = "cn.bbwres.biscuit.i18n.security_messages";
+    /**
+     * 业务i18n 配置
+     */
+    private String businessMessageBasename;
+
+
 }

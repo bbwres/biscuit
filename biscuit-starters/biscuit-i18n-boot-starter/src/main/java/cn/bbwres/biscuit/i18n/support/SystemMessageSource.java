@@ -30,10 +30,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class SystemMessageSource extends ResourceBundleMessageSource {
 
-    public SystemMessageSource(I18nProperties i18nProperties) {
-        setBasename("cn.bbwres.biscuit.i18n.system_messages");
+    public SystemMessageSource(int cacheSeconds,String basename) {
+        setBasename(basename);
         // 缓存时长
-        setCacheSeconds(i18nProperties.getMessageSourceCacheSeconds());
+        setCacheSeconds(cacheSeconds);
         setDefaultEncoding(StandardCharsets.UTF_8.name());
     }
 }

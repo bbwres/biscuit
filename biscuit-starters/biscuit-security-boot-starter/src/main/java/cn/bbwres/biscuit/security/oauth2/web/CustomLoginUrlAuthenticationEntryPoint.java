@@ -71,6 +71,7 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         if (!request.getRequestURI().equals(authorizationServerSettings.getAuthorizationEndpoint())) {
             Result<Void> error = oauth2AuthenticationException(authException);
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(JsonUtil.toJson(error));
             return;
         }
