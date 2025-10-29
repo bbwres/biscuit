@@ -35,7 +35,7 @@
         <spring.version>6.2.11</spring.version>
         <spring.boot.version>3.5.5</spring.boot.version>
         <spring.cloud.version>2025.0.0</spring.cloud.version>
-        <spring.cloud.alibaba.version>2023.0.3.3</spring.cloud.alibaba.version>
+        <spring.cloud.alibaba.version>2025.0.0.0</spring.cloud.alibaba.version>
         <spring-security.version>6.5.5</spring-security.version>
         <spring.cloud.gateway.version>4.3.1</spring.cloud.gateway.version>
         <!--        <tomcat-embed.version>2023.0.3.3</tomcat-embed.version>-->
