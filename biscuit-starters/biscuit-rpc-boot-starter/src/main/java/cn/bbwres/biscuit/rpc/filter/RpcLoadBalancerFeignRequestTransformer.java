@@ -74,7 +74,7 @@ public class RpcLoadBalancerFeignRequestTransformer implements LoadBalancerFeign
         if (rpcProperties.isTransmitUserInfo()) {
             //透传用户信息
             UserBaseInfo userBaseInfo = UserInfoContext.getCurrentContext();
-            if (!ObjectUtils.isEmpty(userBaseInfo)) {
+            if ((!ObjectUtils.isEmpty(userBaseInfo)) && !request.headers().containsKey(rpcProperties.getUserInfoHeaderName())) {
                 RequestTemplate requestTemplate = request.requestTemplate();
                 requestTemplate.header(rpcProperties.getUserInfoHeaderName(), JsonUtil.toJsonBase64(userBaseInfo, true));
                 request = Request.create(request.httpMethod(), request.url(), requestTemplate.headers(), request.body(),

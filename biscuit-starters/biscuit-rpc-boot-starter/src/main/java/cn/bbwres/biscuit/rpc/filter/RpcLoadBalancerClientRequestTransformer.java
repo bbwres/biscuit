@@ -66,7 +66,7 @@ public class RpcLoadBalancerClientRequestTransformer implements LoadBalancerClie
         if (rpcProperties.isTransmitUserInfo()) {
             //透传用户信息
             UserBaseInfo userBaseInfo = UserInfoContext.getCurrentContext();
-            if (!ObjectUtils.isEmpty(userBaseInfo)) {
+            if ((!ObjectUtils.isEmpty(userBaseInfo))&&!request.headers().containsKey(rpcProperties.getUserInfoHeaderName())) {
                 ClientRequest.Builder clientRequestBuilder = ClientRequest.from(request);
                 clientRequestBuilder.header(rpcProperties.getUserInfoHeaderName(), JsonUtil.toJsonBase64(userBaseInfo, true));
                 request = clientRequestBuilder.build();

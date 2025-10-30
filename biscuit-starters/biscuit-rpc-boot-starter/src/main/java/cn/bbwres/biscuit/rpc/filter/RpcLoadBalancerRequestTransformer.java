@@ -68,7 +68,7 @@ public class RpcLoadBalancerRequestTransformer implements LoadBalancerRequestTra
         if (rpcProperties.isTransmitUserInfo()) {
             //透传用户信息
             UserBaseInfo userBaseInfo = UserInfoContext.getCurrentContext();
-            if (!ObjectUtils.isEmpty(userBaseInfo)) {
+            if ((!ObjectUtils.isEmpty(userBaseInfo)) && !request.getHeaders().containsKey(rpcProperties.getUserInfoHeaderName())) {
                 request.getHeaders().add(rpcProperties.getUserInfoHeaderName(), JsonUtil.toJsonBase64(userBaseInfo, true));
             }
         }
