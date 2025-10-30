@@ -18,12 +18,12 @@
 
 package cn.bbwres.biscuit.web.utils;
 
+import cn.bbwres.biscuit.context.UserInfoContext;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.utils.JsonUtil;
 import cn.bbwres.biscuit.utils.NetworkUtil;
 import cn.bbwres.biscuit.utils.SpringContextUtil;
 import cn.bbwres.biscuit.web.BiscuitWebProperties;
-import cn.bbwres.biscuit.web.context.UserInfoContext;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.Assert;

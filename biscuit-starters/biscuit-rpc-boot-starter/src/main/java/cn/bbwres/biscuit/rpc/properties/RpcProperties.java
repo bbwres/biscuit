@@ -31,5 +31,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("biscuit.rpc")
 public class RpcProperties {
 
+    /**
+     * 是否透传用户信息
+     */
+    private boolean transmitUserInfo = true;
+
+    /**
+     * 透传的用户请求头名称
+     */
+    private String userInfoHeaderName = "x-user-info";
+
 
 }

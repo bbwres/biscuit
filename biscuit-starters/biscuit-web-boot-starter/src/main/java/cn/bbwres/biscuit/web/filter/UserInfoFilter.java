@@ -1,7 +1,7 @@
 package cn.bbwres.biscuit.web.filter;
 
+import cn.bbwres.biscuit.context.UserInfoContext;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
-import cn.bbwres.biscuit.web.context.UserInfoContext;
 import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

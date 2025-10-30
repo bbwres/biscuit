@@ -20,6 +20,7 @@ package cn.bbwres.biscuit.rpc;
 
 import cn.bbwres.biscuit.rpc.filter.GatewayRpcAuthorizationFilter;
 import cn.bbwres.biscuit.rpc.filter.RpcLoadBalancerClientRequestTransformer;
+import cn.bbwres.biscuit.rpc.filter.RpcLoadBalancerFeignRequestTransformer;
 import cn.bbwres.biscuit.rpc.filter.RpcLoadBalancerRequestTransformer;
 import cn.bbwres.biscuit.rpc.metadata.RegistrationBeanPostProcessor;
 import cn.bbwres.biscuit.rpc.properties.RpcProperties;
@@ -35,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.annotation.Bean;
@@ -134,14 +136,16 @@ public class RpcAutoConfigure {
 
         /**
          * RpcLoadBalancerRequestTransformer 负载均衡参数增强
+         * webclient 支持
          *
          * @return RpcLoadBalancerRequestTransformer
          */
         @Bean
         @ConditionalOnBean(LoadBalancerClientFactory.class)
         public RpcLoadBalancerClientRequestTransformer rpcLoadBalancerClientRequestTransformer(RpcSecurityProperties rpcSecurityProperties,
+                                                                                               RpcProperties rpcProperties,
                                                                                                RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
-            return new RpcLoadBalancerClientRequestTransformer(rpcSecurityProperties, rpcSecurityAlgorithmContainer);
+            return new RpcLoadBalancerClientRequestTransformer(rpcSecurityProperties, rpcProperties, rpcSecurityAlgorithmContainer);
         }
 
 
@@ -153,10 +157,24 @@ public class RpcAutoConfigure {
      * @return RpcLoadBalancerRequestTransformer
      */
     @Bean
-    @ConditionalOnBean(LoadBalancerClientFactory.class)
     public RpcLoadBalancerRequestTransformer rpcLoadBalancerRequestTransformer(RpcSecurityProperties rpcSecurityProperties,
+                                                                               RpcProperties rpcProperties,
                                                                                RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
-        return new RpcLoadBalancerRequestTransformer(rpcSecurityProperties, rpcSecurityAlgorithmContainer);
+        return new RpcLoadBalancerRequestTransformer(rpcSecurityProperties, rpcProperties, rpcSecurityAlgorithmContainer);
+    }
+
+    /**
+     * RpcLoadBalancerFeignRequestTransformer 负载均衡参数增强
+     * feign支持
+     *
+     * @return RpcLoadBalancerFeignRequestTransformer
+     */
+    @Bean
+//    @ConditionalOnBean(LoadBalancerClient.class)
+    public RpcLoadBalancerFeignRequestTransformer rpcLoadBalancerFeignRequestTransformer(RpcSecurityProperties rpcSecurityProperties,
+                                                                                         RpcProperties rpcProperties,
+                                                                                         RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
+        return new RpcLoadBalancerFeignRequestTransformer(rpcSecurityProperties, rpcProperties, rpcSecurityAlgorithmContainer);
     }
 
 

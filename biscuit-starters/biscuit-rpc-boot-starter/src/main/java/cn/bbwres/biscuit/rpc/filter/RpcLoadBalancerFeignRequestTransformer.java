@@ -26,10 +26,11 @@ import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
 import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmContainer;
 import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
 import cn.bbwres.biscuit.utils.JsonUtil;
+import feign.Request;
+import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer;
-import org.springframework.http.HttpRequest;
+import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -41,19 +42,19 @@ import java.util.Objects;
  * 负载均衡请求参数增强
  *
  * @author zhanglinfeng
- * @version $Id: $Id
  */
 @Slf4j
-public class RpcLoadBalancerRequestTransformer implements LoadBalancerRequestTransformer {
+public class RpcLoadBalancerFeignRequestTransformer implements LoadBalancerFeignRequestTransformer {
 
     private final RpcSecurityProperties rpcSecurityProperties;
+
     private final RpcProperties rpcProperties;
 
 
     private final RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer;
 
-    public RpcLoadBalancerRequestTransformer(RpcSecurityProperties rpcSecurityProperties, RpcProperties rpcProperties,
-                                             RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
+    public RpcLoadBalancerFeignRequestTransformer(RpcSecurityProperties rpcSecurityProperties, RpcProperties rpcProperties,
+                                                  RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
         this.rpcSecurityProperties = rpcSecurityProperties;
         this.rpcProperties = rpcProperties;
         this.rpcSecurityAlgorithmContainer = rpcSecurityAlgorithmContainer;
@@ -61,15 +62,23 @@ public class RpcLoadBalancerRequestTransformer implements LoadBalancerRequestTra
 
 
     /**
-     * {@inheritDoc}
+     * Allows transforming load-balanced requests based on the provided
+     * {@link ServiceInstance}.
+     *
+     * @param request  Original request.
+     * @param instance ServiceInstance returned from LoadBalancer.
+     * @return New request or original request
      */
     @Override
-    public HttpRequest transformRequest(HttpRequest request, ServiceInstance instance) {
+    public Request transformRequest(Request request, ServiceInstance instance) {
         if (rpcProperties.isTransmitUserInfo()) {
             //透传用户信息
             UserBaseInfo userBaseInfo = UserInfoContext.getCurrentContext();
             if (!ObjectUtils.isEmpty(userBaseInfo)) {
-                request.getHeaders().add(rpcProperties.getUserInfoHeaderName(), JsonUtil.toJsonBase64(userBaseInfo, true));
+                RequestTemplate requestTemplate = request.requestTemplate();
+                requestTemplate.header(rpcProperties.getUserInfoHeaderName(), JsonUtil.toJsonBase64(userBaseInfo, true));
+                request = Request.create(request.httpMethod(), request.url(), requestTemplate.headers(), request.body(),
+                        request.charset(), requestTemplate);
             }
         }
         if (Objects.isNull(instance)) {
@@ -82,12 +91,20 @@ public class RpcLoadBalancerRequestTransformer implements LoadBalancerRequestTra
         }
         RpcSecurityAlgorithmSupport rpcSecurityAlgorithmSupport = rpcSecurityAlgorithmContainer.getRpcSecurityAlgorithmSupport(securityAlgorithm, true);
 
-        Map<String, List<String>> stringListMap = rpcSecurityAlgorithmSupport.putHeaderAuthorizationInfo(instance, request.getURI().getPath());
+        RequestTemplate requestTemplate = request.requestTemplate();
+
+        String path = requestTemplate.path();
+        String targetPath = requestTemplate.feignTarget().url();
+
+        Map<String, List<String>> stringListMap = rpcSecurityAlgorithmSupport.putHeaderAuthorizationInfo(instance, path.replaceFirst(targetPath,""));
         if (!CollectionUtils.isEmpty(stringListMap)) {
             for (String headerName : stringListMap.keySet()) {
-                request.getHeaders().put(headerName, stringListMap.get(headerName));
+                request.header(headerName, stringListMap.get(headerName));
+                requestTemplate.header(headerName, stringListMap.get(headerName));
             }
         }
-        return request;
+        return Request.create(request.httpMethod(), request.url(), requestTemplate.headers(), request.body(),
+                request.charset(), requestTemplate);
+
     }
 }

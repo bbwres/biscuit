@@ -18,10 +18,14 @@
 
 package cn.bbwres.biscuit.rpc.filter;
 
+import cn.bbwres.biscuit.context.UserInfoContext;
+import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.rpc.constants.RpcConstants;
+import cn.bbwres.biscuit.rpc.properties.RpcProperties;
 import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
 import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmContainer;
 import cn.bbwres.biscuit.rpc.security.RpcSecurityAlgorithmSupport;
+import cn.bbwres.biscuit.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerClientRequestTransformer;
@@ -44,18 +48,31 @@ public class RpcLoadBalancerClientRequestTransformer implements LoadBalancerClie
 
     private final RpcSecurityProperties rpcSecurityProperties;
 
+    private final RpcProperties rpcProperties;
+
 
     private final RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer;
 
-    public RpcLoadBalancerClientRequestTransformer(RpcSecurityProperties rpcSecurityProperties,
+    public RpcLoadBalancerClientRequestTransformer(RpcSecurityProperties rpcSecurityProperties, RpcProperties rpcProperties,
                                                    RpcSecurityAlgorithmContainer rpcSecurityAlgorithmContainer) {
         this.rpcSecurityProperties = rpcSecurityProperties;
+        this.rpcProperties = rpcProperties;
         this.rpcSecurityAlgorithmContainer = rpcSecurityAlgorithmContainer;
     }
 
 
     @Override
     public ClientRequest transformRequest(ClientRequest request, ServiceInstance instance) {
+        if (rpcProperties.isTransmitUserInfo()) {
+            //透传用户信息
+            UserBaseInfo userBaseInfo = UserInfoContext.getCurrentContext();
+            if (!ObjectUtils.isEmpty(userBaseInfo)) {
+                ClientRequest.Builder clientRequestBuilder = ClientRequest.from(request);
+                clientRequestBuilder.header(rpcProperties.getUserInfoHeaderName(), JsonUtil.toJsonBase64(userBaseInfo, true));
+                request = clientRequestBuilder.build();
+            }
+        }
+
         if (Objects.isNull(instance)) {
             return request;
         }
@@ -69,7 +86,7 @@ public class RpcLoadBalancerClientRequestTransformer implements LoadBalancerClie
         ClientRequest.Builder clientRequestBuilder = ClientRequest.from(request);
         if (!CollectionUtils.isEmpty(stringListMap)) {
             for (String headerName : stringListMap.keySet()) {
-                clientRequestBuilder.headers(header->header.addAll(headerName,stringListMap.get(headerName)));
+                clientRequestBuilder.headers(header -> header.addAll(headerName, stringListMap.get(headerName)));
             }
         }
 

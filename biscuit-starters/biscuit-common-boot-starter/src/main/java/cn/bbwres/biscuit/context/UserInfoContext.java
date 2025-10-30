@@ -1,4 +1,4 @@
-package cn.bbwres.biscuit.web.context;
+package cn.bbwres.biscuit.context;
 
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import com.alibaba.ttl.TransmittableThreadLocal;
