@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.gateway.adapter;
 
+import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
@@ -46,8 +47,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ExtensionErrorAttributes extends DefaultErrorAttributes {
 
-    private static final String RESULT_CODE = "resultCode";
-    private static final String RESULT_MSG = "resultMsg";
 
     private final GatewayProperties gatewayProperties;
 
@@ -68,7 +67,7 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
 
         //异常时清除mdc
         MDC.clear();
-        errorAttributes.put(RESULT_CODE, errorCode);
+        errorAttributes.put(Result.RESULT_CODE_FIELD_NAME, errorCode);
         if (!ObjectUtils.isEmpty(messages)) {
             String language = request.headers().firstHeader("Accept-Language");
             Locale locale = LocaleContextHolder.getLocale();
@@ -77,7 +76,7 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
             }
             message = messages.getMessage(errorCode, message, locale);
         }
-        errorAttributes.put(RESULT_MSG, message);
+        errorAttributes.put(Result.RESULT_MSG_FIELD_NAME, message);
         return errorAttributes;
     }
 

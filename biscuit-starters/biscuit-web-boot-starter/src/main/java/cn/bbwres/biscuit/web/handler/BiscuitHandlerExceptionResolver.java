@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.web.handler;
 
+import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.exception.ErrorMessageInfo;
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
@@ -121,8 +122,8 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
             message.setMessage(messages.getMessage(message.getMessage(), null, message.getMessage()));
         }
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView(objectMapper));
-        modelAndView.addObject("resultCode", errorCode);
-        modelAndView.addObject("resultMsg", message.getMessage());
+        modelAndView.addObject(Result.RESULT_CODE_FIELD_NAME, errorCode);
+        modelAndView.addObject(Result.RESULT_MSG_FIELD_NAME, message.getMessage());
         return modelAndView;
     }
 

@@ -39,6 +39,19 @@ import java.util.Objects;
 public class Result<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = -6435479828255665882L;
+    /**
+     * code 的字段名称
+     */
+    public static final String RESULT_CODE_FIELD_NAME = "resultCode";
+
+    /**
+     * msg的字段名称
+     */
+    public static final String RESULT_MSG_FIELD_NAME = "resultMsg";
+    /**
+     * data 的字段名称
+     */
+    public static final String DATA_FIELD_NAME = "data";
 
     /**
      * 响应码
