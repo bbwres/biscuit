@@ -23,10 +23,16 @@ import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginEventListener;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginService;
 import cn.bbwres.biscuit.security.oauth2.event.DefaultAuthenticationLoginServiceImpl;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
+import cn.bbwres.biscuit.security.oauth2.service.redis.RedisCheckUserLockService;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,8 +66,23 @@ public class BiscuitSecurityConfig {
      */
     @Bean
     @ConditionalOnMissingBean
-    public AuthenticationLoginService authenticationLoginService() {
-        return new DefaultAuthenticationLoginServiceImpl();
+    public AuthenticationLoginService authenticationLoginService(ObjectProvider<RedisCheckUserLockService> redisCheckUserLockServiceObjectProvider) {
+        return new DefaultAuthenticationLoginServiceImpl(redisCheckUserLockServiceObjectProvider);
+    }
+
+
+    /**
+     * 用户锁定处理
+     *
+     * @param redisTemplate
+     * @param biscuitSecurityProperties
+     * @return
+     */
+    @Bean
+    @ConditionalOnClass(RedisOperations.class)
+    public RedisCheckUserLockService redisCheckUserLockService(@Qualifier("oauth2RedisTemplate") RedisTemplate<Object, Object> redisTemplate,
+                                                               BiscuitSecurityProperties biscuitSecurityProperties) {
+        return new RedisCheckUserLockService(redisTemplate, biscuitSecurityProperties);
     }
 
     /**

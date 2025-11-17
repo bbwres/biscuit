@@ -31,13 +31,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class BiscuitSecurityProperties {
 
     /**
-     * 是否只允许单个客户端登录
-     * true -是
-     * false -否 不限制
-     * 默认为false
-     */
-    private Boolean singleClientToken = false;
-    /**
      * token 存储的位置
      */
     private String tokenStoreType = TokenStoreType.redis.name();
@@ -53,6 +46,16 @@ public class BiscuitSecurityProperties {
      */
     private long authorizationConsentExpireSecond = 10 * 60L;
 
+
+    /**
+     * 当用户连续失败次数达到该值时，触发账户锁定
+     */
+    private int loginFailureLockThreshold = 5;
+
+    /**
+     * 登录账户锁定时间
+     */
+    private long accountLockExpireSecond = 24 * 60 * 60L;
 
     /**
      * 是否自动生成jwt密钥

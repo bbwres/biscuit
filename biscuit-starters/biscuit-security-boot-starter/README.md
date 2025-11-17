@@ -12,9 +12,10 @@
 </dependency>
 ```
 
-### 2. 实现类 org.springframework.security.oauth2.provider.ClientDetailsService
+### 2. 实现类 org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
 
 ### 3. 实现类 org.springframework.security.core.userdetails.UserDetailsService
+1. 当实现 抽象类 cn.bbwres.biscuit.security.oauth2.service.AbstractCustomUserDetailsService时，可以获得登录失败多次锁定登录账户的功能
 
 ### 4. oauth2 接口认证文档
 
