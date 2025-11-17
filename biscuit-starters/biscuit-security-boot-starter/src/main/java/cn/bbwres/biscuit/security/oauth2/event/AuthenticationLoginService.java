@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.security.oauth2.event;
 
 import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -39,8 +40,8 @@ public interface AuthenticationLoginService {
     /**
      * 登录失败处理
      *
-     * @param username 用户名称
+     * @param user 用户名称
      * @param errorMessage 错误描述
      */
-    void loginFail(String username, AuthenticationException errorMessage);
+    void loginFail(Authentication user, AuthenticationException errorMessage);
 }

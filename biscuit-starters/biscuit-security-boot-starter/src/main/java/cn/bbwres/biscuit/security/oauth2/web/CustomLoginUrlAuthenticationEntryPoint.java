@@ -86,26 +86,31 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
      */
     private Result<Void> oauth2AuthenticationException(AuthenticationException authenticationException) {
 
+        Throwable cause = authenticationException.getCause();
         if (authenticationException instanceof BadCredentialsException ||
+                cause instanceof BadCredentialsException ||
+                cause instanceof UsernameNotFoundException ||
                 authenticationException instanceof UsernameNotFoundException) {
-
             return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USERNAME_PASSWORD_ERROR);
         }
-        if (authenticationException instanceof LockedException) {
+        if (authenticationException instanceof LockedException
+                || cause instanceof LockedException) {
             return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_LOCKED);
         }
-        if (authenticationException instanceof DisabledException) {
+        if (authenticationException instanceof DisabledException
+                || cause instanceof DisabledException) {
             return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_DISABLE);
         }
         if (authenticationException instanceof AccountExpiredException
-                || authenticationException instanceof CredentialsExpiredException) {
+                || cause instanceof AccountExpiredException
+                || authenticationException instanceof CredentialsExpiredException
+                || cause instanceof CredentialsExpiredException) {
             return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_EXPIRED);
         }
-        Throwable cause = authenticationException.getCause();
-        if(cause instanceof SystemRuntimeException systemRuntimeException){
-            return new Result<>(systemRuntimeException.getErrorCode(),systemRuntimeException.getMessage());
-        }
 
+        if (cause instanceof SystemRuntimeException systemRuntimeException) {
+            return new Result<>(systemRuntimeException.getErrorCode(), systemRuntimeException.getMessage());
+        }
         return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_ERROR);
     }
 
