@@ -101,6 +101,16 @@ public class Result<T> implements Serializable {
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
     }
+    /**
+     * i18n处理
+     *
+     * @param errorCode errorCode
+     */
+    public Result(ErrorCode errorCode) {
+        this.resultCode = errorCode.getCode();
+        this.resultMsg = errorCode.getMessage();
+    }
+
 
     /**
      * i18n处理

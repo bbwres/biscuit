@@ -36,6 +36,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * 自定义的CustomLoginUrlAuthenticationEntryPoint
@@ -86,32 +87,35 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
      */
     private Result<Void> oauth2AuthenticationException(AuthenticationException authenticationException) {
 
+        Result<Void> result = new Result<>(Oauth2ErrorCodeConstants.OAUTH2_ERROR);
         Throwable cause = authenticationException.getCause();
         if (authenticationException instanceof BadCredentialsException ||
                 cause instanceof BadCredentialsException ||
                 cause instanceof UsernameNotFoundException ||
                 authenticationException instanceof UsernameNotFoundException) {
-            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USERNAME_PASSWORD_ERROR);
+            result = new Result<>(Oauth2ErrorCodeConstants.OAUTH2_USERNAME_PASSWORD_ERROR);
         }
         if (authenticationException instanceof LockedException
                 || cause instanceof LockedException) {
-            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_LOCKED);
+            result = new Result<>(Oauth2ErrorCodeConstants.OAUTH2_USER_LOCKED);
         }
         if (authenticationException instanceof DisabledException
                 || cause instanceof DisabledException) {
-            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_DISABLE);
+            result = new Result<>(Oauth2ErrorCodeConstants.OAUTH2_USER_DISABLE);
         }
         if (authenticationException instanceof AccountExpiredException
                 || cause instanceof AccountExpiredException
                 || authenticationException instanceof CredentialsExpiredException
                 || cause instanceof CredentialsExpiredException) {
-            return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_USER_EXPIRED);
+            result = new Result<>(Oauth2ErrorCodeConstants.OAUTH2_USER_EXPIRED);
         }
 
         if (cause instanceof SystemRuntimeException systemRuntimeException) {
-            return new Result<>(systemRuntimeException.getErrorCode(), systemRuntimeException.getMessage());
+            result = new Result<>(systemRuntimeException.getErrorCode(), systemRuntimeException.getMessage());
         }
-        return new Result<>(messages, Oauth2ErrorCodeConstants.OAUTH2_ERROR);
+        String resultMsg = Objects.isNull(messages) ? result.getResultMsg() : messages.getMessage(result.getResultMsg(), result.getResultMsg());
+        result.setResultMsg(resultMsg);
+        return result;
     }
 
 }
