@@ -42,8 +42,9 @@ captcha:
 # 配置验证码的背景资源
 biscuit:
   captcha:
-    SLIDER:
-      - bgimages/slider
+    captcha-resource:
+      SLIDER:
+        - bgimages/slider
 ```
 
 2. 扩展的参数配置

@@ -20,8 +20,10 @@ package cn.bbwres.biscuit.web;
 
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.web.config.WebAppMvcConfigurer;
+import cn.bbwres.biscuit.web.filter.GlobalExceptionFilter;
 import cn.bbwres.biscuit.web.filter.UserInfoFilter;
 import cn.bbwres.biscuit.web.handler.BiscuitHandlerExceptionResolver;
+import cn.bbwres.biscuit.web.handler.ExceptionMessageHandler;
 import cn.bbwres.biscuit.web.handler.WebExceptionConvertErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -115,11 +117,45 @@ public class WebAutoConfiguration {
      */
     @Bean
     public BiscuitHandlerExceptionResolver biscuitHandlerExceptionResolver(ObjectMapper objectMapper,
-                                                                           ObjectProvider<MessageSourceAccessor> messagesProvider,
-                                                                           List<ExceptionConvertErrorCode> exceptionConvertErrorCodes) {
-        return new BiscuitHandlerExceptionResolver(objectMapper, messagesProvider, exceptionConvertErrorCodes);
+                                                                           ExceptionMessageHandler exceptionMessageHandler) {
+        return new BiscuitHandlerExceptionResolver(objectMapper, exceptionMessageHandler);
     }
 
+
+    /**
+     * 异常处理类
+     *
+     * @param messagesProvider
+     * @param exceptionConvertErrorCodes
+     * @return
+     */
+    @Bean
+    public ExceptionMessageHandler exceptionMessageHandler(
+            ObjectProvider<MessageSourceAccessor> messagesProvider,
+            List<ExceptionConvertErrorCode> exceptionConvertErrorCodes) {
+        return new ExceptionMessageHandler(exceptionConvertErrorCodes, messagesProvider);
+    }
+
+    /**
+     * 全局异常过滤器 用于处理过滤器上的异常信息
+     *
+     * @return globalExceptionFilter
+     */
+    @Bean
+    public GlobalExceptionFilter globalExceptionFilter( ExceptionMessageHandler exceptionMessageHandler) {
+        return new GlobalExceptionFilter(exceptionMessageHandler);
+    }
+
+
+    /**
+     * web 常用的异常处理
+     *
+     * @return WebExceptionConvertErrorCode
+     */
+    @Bean("webExceptionConvertErrorCode")
+    public WebExceptionConvertErrorCode webExceptionConvertErrorCode() {
+        return new WebExceptionConvertErrorCode();
+    }
 
     /**
      * mvc 异常处理类
@@ -154,18 +190,6 @@ public class WebAutoConfiguration {
         return localValidatorFactoryBean;
     }
 
-    /**
-     * web 常用的异常处理
-     *
-     * @return WebExceptionConvertErrorCode
-     */
-    @Bean("webExceptionConvertErrorCode")
-    public WebExceptionConvertErrorCode webExceptionConvertErrorCode() {
-        return new WebExceptionConvertErrorCode();
-    }
-
-
-
 
     /**
      * 用户信息获取过滤器
@@ -176,6 +200,7 @@ public class WebAutoConfiguration {
     public UserInfoFilter userInfoFilter() {
         return new UserInfoFilter();
     }
+
 
     /**
      * 默认解析器 其中locale表示默认语言

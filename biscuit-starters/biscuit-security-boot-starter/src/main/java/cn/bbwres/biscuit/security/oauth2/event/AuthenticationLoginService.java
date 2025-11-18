@@ -21,6 +21,7 @@ package cn.bbwres.biscuit.security.oauth2.event;
 import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 
 /**
  * 登录之后的事件服务
@@ -33,9 +34,9 @@ public interface AuthenticationLoginService {
     /**
      * 登录成功
      *
-     * @param authUser 登录成功的用户
+     * @param oauth2AccessTokenAuthenticationToken 登录成功的用户
      */
-    void loginSuccess(AuthUser authUser);
+    void loginSuccess(OAuth2AccessTokenAuthenticationToken oauth2AccessTokenAuthenticationToken);
 
     /**
      * 登录失败处理

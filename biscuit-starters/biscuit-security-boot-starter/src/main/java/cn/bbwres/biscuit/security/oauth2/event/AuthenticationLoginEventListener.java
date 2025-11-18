@@ -18,7 +18,6 @@
 package cn.bbwres.biscuit.security.oauth2.event;
 
 
-import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -27,6 +26,7 @@ import org.springframework.security.authentication.event.AuthenticationFailurePr
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 
 /**
  * 增加登录日志
@@ -50,11 +50,11 @@ public class AuthenticationLoginEventListener {
      */
     @EventListener
     public void successEvent(AuthenticationSuccessEvent event) {
-        if (event.getAuthentication().getDetails() != null) {
-            if (event.getAuthentication().getPrincipal() instanceof AuthUser authUser) {
-                log.info("当前用户:{} 登录成功的！", authUser);
-                authenticationLoginService.loginSuccess(authUser);
-            }
+        if (event.getAuthentication() instanceof OAuth2AccessTokenAuthenticationToken auth2AccessTokenAuthenticationToken
+                && auth2AccessTokenAuthenticationToken.isAuthenticated()) {
+            String userName = auth2AccessTokenAuthenticationToken.getName();
+            log.info("当前用户:{} 登录成功的！", userName);
+            authenticationLoginService.loginSuccess(auth2AccessTokenAuthenticationToken);
         }
     }
 
@@ -65,8 +65,8 @@ public class AuthenticationLoginEventListener {
      */
     @EventListener
     public void failureBadCredentialsEvent(AbstractAuthenticationFailureEvent event) {
-        if(event instanceof AuthenticationFailureProviderNotFoundEvent){
-            return ;
+        if (event instanceof AuthenticationFailureProviderNotFoundEvent) {
+            return;
         }
         if (event.getAuthentication().getDetails() != null) {
             Authentication username = event.getException().getAuthenticationRequest();

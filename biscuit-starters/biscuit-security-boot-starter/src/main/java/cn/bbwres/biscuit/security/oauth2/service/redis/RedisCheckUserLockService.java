@@ -19,7 +19,9 @@
 package cn.bbwres.biscuit.security.oauth2.service.redis;
 
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.util.ObjectUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,17 +30,9 @@ import java.util.concurrent.TimeUnit;
  *
  * @author zhanglinfeng
  */
-public class RedisCheckUserLockService {
-    private final RedisOperations<Object, Object> redisOperations;
-    private final BiscuitSecurityProperties biscuitSecurityProperties;
-
+public record RedisCheckUserLockService(RedisOperations<String, String> redisOperations,
+                                        BiscuitSecurityProperties biscuitSecurityProperties) {
     private final static String REDIS_CHECK_USER_LOCK_KEY = "redis_check_user_lock_key:%s:%s";
-
-    public RedisCheckUserLockService(RedisOperations<Object, Object> redisOperations,
-                                     BiscuitSecurityProperties biscuitSecurityProperties) {
-        this.redisOperations = redisOperations;
-        this.biscuitSecurityProperties = biscuitSecurityProperties;
-    }
 
 
     /**
@@ -62,10 +56,12 @@ public class RedisCheckUserLockService {
      */
     public boolean checkLoginFailNum(String tenantId, String user, int checkNum) {
         String key = String.format(REDIS_CHECK_USER_LOCK_KEY, tenantId, user);
-        Object result = redisOperations.opsForValue().get(key);
-        if (result instanceof Integer num) {
+        String result = redisOperations.opsForValue().get(key);
+        if (!ObjectUtils.isEmpty(result)) {
+            int num = Integer.parseInt(result);
             return num >= checkNum;
         }
+
         return false;
     }
 
@@ -78,8 +74,9 @@ public class RedisCheckUserLockService {
      */
     public boolean checkLoginFailLock(String tenantId, String user) {
         String key = String.format(REDIS_CHECK_USER_LOCK_KEY, tenantId, user);
-        Object result = redisOperations.opsForValue().get(key);
-        if (result instanceof Integer num) {
+        String result = redisOperations.opsForValue().get(key);
+        if (!ObjectUtils.isEmpty(result)) {
+            int num = Integer.parseInt(result);
             return num >= biscuitSecurityProperties.getLoginFailureLockThreshold();
         }
         return false;

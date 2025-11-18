@@ -190,7 +190,9 @@ public abstract class AbstractGrantAuthenticationProvider implements Authenticat
         // Save the OAuth2Authorization
         authorizationService.save(authorization);
 
-        return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, additionalParameters);
+        OAuth2AccessTokenAuthenticationToken oauth2AccessTokenAuthenticationToken = new OAuth2AccessTokenAuthenticationToken(registeredClient, userAuthenticate, accessToken, refreshToken, additionalParameters);
+        oauth2AccessTokenAuthenticationToken.setAuthenticated(true);
+        return oauth2AccessTokenAuthenticationToken;
     }
 
 

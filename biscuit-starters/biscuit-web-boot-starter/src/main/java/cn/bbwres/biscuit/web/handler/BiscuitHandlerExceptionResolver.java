@@ -19,24 +19,15 @@
 package cn.bbwres.biscuit.web.handler;
 
 import cn.bbwres.biscuit.dto.Result;
-import cn.bbwres.biscuit.exception.ErrorMessageInfo;
-import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
-import cn.bbwres.biscuit.exception.SystemRuntimeException;
-import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-
-import java.util.List;
 
 /**
  * web 异常处理类
@@ -47,15 +38,13 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
 
     private static final Logger LOG = LoggerFactory.getLogger(BiscuitHandlerExceptionResolver.class);
 
-    protected MessageSourceAccessor messages;
     private final ObjectMapper objectMapper;
+    private final ExceptionMessageHandler exceptionMessageHandler;
 
-    private final List<ExceptionConvertErrorCode> exceptionConvertErrorCodes;
-
-    public BiscuitHandlerExceptionResolver(ObjectMapper objectMapper, ObjectProvider<MessageSourceAccessor> messagesProvider, List<ExceptionConvertErrorCode> exceptionConvertErrorCodes) {
-        this.messages = messagesProvider.getIfAvailable();
+    public BiscuitHandlerExceptionResolver(ObjectMapper objectMapper,
+                                           ExceptionMessageHandler exceptionMessageHandler) {
         this.objectMapper = objectMapper;
-        this.exceptionConvertErrorCodes = exceptionConvertErrorCodes;
+        this.exceptionMessageHandler = exceptionMessageHandler;
     }
 
     /**
@@ -74,56 +63,14 @@ public class BiscuitHandlerExceptionResolver extends AbstractHandlerMethodExcept
      * @return a corresponding ModelAndView to forward to, or {@code null} for default processing
      */
     @Override
-    protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
+    protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response,
+                                                           HandlerMethod handlerMethod, Exception ex) {
 
         LOG.warn("request:[{}],exception:[{}]", request.getRequestURI(), ex.getMessage());
-        ErrorMessageInfo message = new ErrorMessageInfo();
-        message.setI18nHandler(true);
-        String errorCode = null;
-
-        if (ex instanceof SystemRuntimeException systemRuntimeException) {
-            message.setMessage(ObjectUtils.isEmpty(ex.getMessage()) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage() : ex.getMessage());
-            errorCode = systemRuntimeException.getErrorCode();
-            return resultModelAndView(errorCode, message);
-        }
-
-        for (ExceptionConvertErrorCode exceptionConvertErrorCode : exceptionConvertErrorCodes) {
-            errorCode = exceptionConvertErrorCode.exceptionConvertErrorCode(ex);
-            if (!ObjectUtils.isEmpty(errorCode)) {
-                break;
-            }
-        }
-        ErrorMessageInfo convert = null;
-        for (ExceptionConvertErrorCode exceptionConvertErrorCode : exceptionConvertErrorCodes) {
-            convert = exceptionConvertErrorCode.exceptionConvertErrorMessage(ex);
-            if (!ObjectUtils.isEmpty(convert)) {
-                break;
-            }
-        }
-        message.setMessage(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage());
-        message = ObjectUtils.isEmpty(convert) ? message : convert;
-        errorCode = ObjectUtils.isEmpty(errorCode) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode() : errorCode;
-        return resultModelAndView(errorCode, message);
-    }
-
-
-    /**
-     * 设置返回结果
-     *
-     * @param errorCode 错误码
-     * @param message   错误描述
-     * @return 返回结果
-     */
-    private ModelAndView resultModelAndView(String errorCode, ErrorMessageInfo message) {
-        if (!ObjectUtils.isEmpty(messages)
-                && !ObjectUtils.isEmpty(message.getI18nHandler())
-                && message.getI18nHandler()) {
-            // 国际化处理
-            message.setMessage(messages.getMessage(message.getMessage(), null, message.getMessage()));
-        }
+        Result<?> result = exceptionMessageHandler.exceptionHandler(ex);
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView(objectMapper));
-        modelAndView.addObject(Result.RESULT_CODE_FIELD_NAME, errorCode);
-        modelAndView.addObject(Result.RESULT_MSG_FIELD_NAME, message.getMessage());
+        modelAndView.addObject(Result.RESULT_CODE_FIELD_NAME, result.getResultCode());
+        modelAndView.addObject(Result.RESULT_MSG_FIELD_NAME, result.getResultMsg());
         return modelAndView;
     }
 

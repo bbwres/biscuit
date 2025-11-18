@@ -58,7 +58,7 @@ public class RpcSecurityProperties {
     /**
      * 白名单配置信息
      */
-    private String[] whiteListUri = new String[]{"/v3/api-docs/**","/actuator/**",};
+    private String[] whiteListUri = new String[]{"/v3/api-docs/**","/actuator/**","/error"};
 
     /**
      * 匹配的rpc路径

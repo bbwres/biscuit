@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -59,6 +60,7 @@ public class RedisAutoConfigure {
      * @param jackson2JsonRedisSerializer json序列化
      * @return RedisTemplate
      */
+    @Primary
     @Bean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory,
                                                        ObjectProvider<Jackson2JsonRedisSerializer<Object>> jackson2JsonRedisSerializer) {

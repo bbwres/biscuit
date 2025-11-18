@@ -18,14 +18,15 @@
 
 package cn.bbwres.biscuit.security.oauth2.event;
 
+import cn.bbwres.biscuit.security.oauth2.constants.Oauth2SystemConstants;
 import cn.bbwres.biscuit.security.oauth2.grant.username.UsernamePasswordGrantAuthenticationToken;
 import cn.bbwres.biscuit.security.oauth2.service.redis.RedisCheckUserLockService;
-import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -47,13 +48,15 @@ public class DefaultAuthenticationLoginServiceImpl implements AuthenticationLogi
     /**
      * 登录成功
      *
-     * @param authUser 登录成功的用户
+     * @param oauth2AccessTokenAuthenticationToke 登录成功的用户
      */
     @Override
-    public void loginSuccess(AuthUser authUser) {
-        log.info("当前用户:{},登录成功", authUser.getUsername());
+    public void loginSuccess(OAuth2AccessTokenAuthenticationToken oauth2AccessTokenAuthenticationToke) {
+        String userName = oauth2AccessTokenAuthenticationToke.getName();
+        Object tenantId = oauth2AccessTokenAuthenticationToke.getAdditionalParameters().get(Oauth2SystemConstants.CUSTOM_CLAIMS_PREFIX_TENANT_ID);
         //登录成功，删除所有统计失败的次数
-        redisCheckUserLockService.deleteLoginFailLock(authUser.getTenantId(), authUser.getUsername());
+        log.info("当前用户:[{}]租户:[{}]登录成功，清除失败信息", userName, tenantId);
+        redisCheckUserLockService.deleteLoginFailLock(tenantId + "", userName);
     }
 
     /**

@@ -97,7 +97,7 @@ public class CaptchaCodeFilter extends BaseSecuriteHttpFilter {
         String requestUrl = request.getServletPath();
 
         // 不是登录URL 请求直接跳过
-        if (!requestUrl.equals(authorizationServerSettings.getAuthorizationEndpoint())) {
+        if (!requestUrl.equals(authorizationServerSettings.getTokenEndpoint())) {
             filterChain.doFilter(request, response);
             return;
         }

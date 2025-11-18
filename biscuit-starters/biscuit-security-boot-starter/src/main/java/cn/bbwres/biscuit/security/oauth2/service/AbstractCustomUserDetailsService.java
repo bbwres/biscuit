@@ -68,10 +68,10 @@ public abstract class AbstractCustomUserDetailsService implements UserDetailsSer
             clientId = split[1];
             tenantId = split[2];
         }
-        boolean checkLoginFailLock = redisCheckUserLockService.checkLoginFailLock(tenantId, username);
+        boolean checkLoginFailLock = redisCheckUserLockService.checkLoginFailLock(tenantId, user);
         if (checkLoginFailLock) {
-            log.info("当前用户:[{}]因失败次数过多已经被锁定", username);
-            throw new LockedException(username);
+            log.info("当前用户:[{}]因失败次数过多已经被锁定", user);
+            throw new LockedException(user);
         }
         return loadUserByUsername(user, tenantId, clientId);
     }
