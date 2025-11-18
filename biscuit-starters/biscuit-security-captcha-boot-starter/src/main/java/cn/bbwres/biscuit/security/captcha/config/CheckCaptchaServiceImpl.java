@@ -16,19 +16,18 @@
  *
  */
 
-package cn.bbwres.biscuit.security.captcha.oauth2;
+package cn.bbwres.biscuit.security.captcha.config;
 
-import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
+import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
 import org.springframework.util.ObjectUtils;
 
-public class CheckCaptchaServiceImpl implements CheckCaptchaService {
-
-    private final ImageCaptchaApplication imageCaptchaApplication;
-
-    public CheckCaptchaServiceImpl(ImageCaptchaApplication imageCaptchaApplication) {
-        this.imageCaptchaApplication = imageCaptchaApplication;
-    }
+/**
+ * 检查验证码信息
+ *
+ * @author zhanglinfeng
+ */
+public record CheckCaptchaServiceImpl(ImageCaptchaApplication imageCaptchaApplication) implements CheckCaptchaService {
 
     /**
      * 校验验证码

@@ -53,7 +53,7 @@ public class ParamsUtil {
     }
 
     /**
-     * 获取所有请求参数¬
+     * 获取所有请求参数
      *
      * @param request
      * @return

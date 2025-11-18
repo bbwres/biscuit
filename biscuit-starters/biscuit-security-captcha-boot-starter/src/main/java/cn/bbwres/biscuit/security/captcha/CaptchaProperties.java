@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.security.captcha;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Map;
@@ -27,22 +28,30 @@ import java.util.Map;
  *
  * @author zhanglinfeng
  */
+@Data
 @ConfigurationProperties("biscuit.captcha")
 public class CaptchaProperties {
 
+    /**
+     * 验证码值的请求参数名称
+     */
+    private String captchaCodeValueName = "captcha_verification";
+    /**
+     * 验证码key的请求参数名称
+     */
+    private String captchaCodeKeyName = "captcha_code_key";
+
+    /**
+     * 当用户连续失败次数达到该值时，触发验证码校验
+     */
+    private int loginFailureCaptchaThreshold = 2;
 
     /**
      * 验证码资源目录
      * key 为验证码的类型
+     * value 为验证码的资源目录
      */
     private Map<String, String[]> captchaResource;
 
 
-    public Map<String, String[]> getCaptchaResource() {
-        return captchaResource;
-    }
-
-    public void setCaptchaResource(Map<String, String[]> captchaResource) {
-        this.captchaResource = captchaResource;
-    }
 }

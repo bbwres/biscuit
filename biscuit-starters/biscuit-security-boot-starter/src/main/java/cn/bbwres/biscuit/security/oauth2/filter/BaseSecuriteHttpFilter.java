@@ -15,28 +15,31 @@
  *  * limitations under the License.
  *
  */
-package cn.bbwres.biscuit.security.captcha.oauth2;
 
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+package cn.bbwres.biscuit.security.oauth2.filter;
+
+import jakarta.servlet.Filter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * 无效的验证码
+ * 安全请求配置的过滤器
  *
  * @author zhanglinfeng
  */
-public class InvalidCaptchaException extends OAuth2Exception {
-    private static final long serialVersionUID = 1932118196169742922L;
+public abstract class BaseSecuriteHttpFilter extends OncePerRequestFilter {
 
-    public InvalidCaptchaException(String msg, Throwable t) {
-        super(msg, t);
-    }
+    /**
+     * 在返回的过滤器之前
+     *
+     * @return class
+     */
+    public abstract Class<? extends Filter> beforeFilter();
 
-    public InvalidCaptchaException(String msg) {
-        super(msg);
-    }
+    /**
+     * 在返回的过滤器之后
+     *
+     * @return class
+     */
+    public abstract Class<? extends Filter> afterFilter();
 
-    @Override
-    public String getOAuth2ErrorCode() {
-        return "invalid_captcha";
-    }
 }

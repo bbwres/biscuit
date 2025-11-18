@@ -52,6 +52,8 @@ public class DefaultAuthenticationLoginServiceImpl implements AuthenticationLogi
     @Override
     public void loginSuccess(AuthUser authUser) {
         log.info("当前用户:{},登录成功", authUser.getUsername());
+        //登录成功，删除所有统计失败的次数
+        redisCheckUserLockService.deleteLoginFailLock(authUser.getTenantId(), authUser.getUsername());
     }
 
     /**

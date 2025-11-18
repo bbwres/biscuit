@@ -15,7 +15,7 @@
  *  * limitations under the License.
  *
  */
-package cn.bbwres.biscuit.security.captcha.oauth2;
+package cn.bbwres.biscuit.security.captcha.config;
 
 /**
  * 检查验证码

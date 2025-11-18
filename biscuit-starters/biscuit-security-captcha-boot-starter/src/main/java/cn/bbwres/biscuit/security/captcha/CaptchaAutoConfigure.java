@@ -18,20 +18,20 @@
 
 package cn.bbwres.biscuit.security.captcha;
 
+import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.resource.ResourceStore;
-import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.autoconfiguration.ImageCaptchaAutoConfiguration;
-import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
+import cn.bbwres.biscuit.security.captcha.config.CaptchaResourceStore;
+import cn.bbwres.biscuit.security.captcha.config.CheckCaptchaService;
+import cn.bbwres.biscuit.security.captcha.config.CheckCaptchaServiceImpl;
 import cn.bbwres.biscuit.security.captcha.endpoint.CaptchaEndpoint;
-import cn.bbwres.biscuit.security.captcha.oauth2.CaptchaResourceStore;
-import cn.bbwres.biscuit.security.captcha.oauth2.CaptchaTokenGranter;
-import cn.bbwres.biscuit.security.captcha.oauth2.CheckCaptchaService;
-import cn.bbwres.biscuit.security.captcha.oauth2.CheckCaptchaServiceImpl;
-import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
+import cn.bbwres.biscuit.security.captcha.filter.CaptchaCodeFilter;
+import cn.bbwres.biscuit.security.oauth2.service.redis.RedisCheckUserLockService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 
 /**
  * 验证码配置类
@@ -48,11 +48,23 @@ public class CaptchaAutoConfigure {
      * 验证码端点
      *
      * @param imageCaptchaApplication 验证码上下文
-     * @return
+     * @return CaptchaEndpoint
      */
     @Bean
     public CaptchaEndpoint captchaEndpoint(ImageCaptchaApplication imageCaptchaApplication) {
         return new CaptchaEndpoint(imageCaptchaApplication);
+    }
+
+
+    /**
+     * 资源文件加载信息
+     *
+     * @param captchaProperties 资源配置信息
+     * @return ResourceStore
+     */
+    @Bean
+    public ResourceStore resourceStore(CaptchaProperties captchaProperties) {
+        return new CaptchaResourceStore(captchaProperties);
     }
 
     /**
@@ -66,19 +78,22 @@ public class CaptchaAutoConfigure {
         return new CheckCaptchaServiceImpl(imageCaptchaApplication);
     }
 
-    @Bean("captchaTokenGranter")
-    public CaptchaTokenGranter captchaTokenGranter(CheckCaptchaService checkCaptchaService,
-                                                   BiscuitSecurityProperties biscuitSecurityProperties) {
-        return new CaptchaTokenGranter(checkCaptchaService, biscuitSecurityProperties);
-    }
 
     /**
-     * 验证码资源信息
+     * 验证码校验过滤器
      *
+     * @param authorizationServerSettings
+     * @param checkCaptchaService
+     * @param captchaProperties
+     * @param redisCheckUserLockService
      * @return
      */
-    @Bean
-    public ResourceStore captchaResourceStore(CaptchaProperties captchaProperties) {
-        return new CaptchaResourceStore(captchaProperties);
+    @Bean("captchaCodeFilter")
+    public CaptchaCodeFilter captchaCodeFilter(AuthorizationServerSettings authorizationServerSettings,
+                                               CheckCaptchaService checkCaptchaService,
+                                               CaptchaProperties captchaProperties,
+                                               RedisCheckUserLockService redisCheckUserLockService) {
+        return new CaptchaCodeFilter(authorizationServerSettings, checkCaptchaService, captchaProperties, redisCheckUserLockService);
     }
+
 }

@@ -29,6 +29,7 @@ import java.util.Map;
 
 /**
  * 自定义的oauth2的accessToken响应参数
+ * ---无用---
  *
  * @author zhanglinfeng
  */

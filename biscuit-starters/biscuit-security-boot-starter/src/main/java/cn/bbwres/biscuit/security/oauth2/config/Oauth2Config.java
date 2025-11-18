@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.security.oauth2.config;
 
+import cn.bbwres.biscuit.security.oauth2.filter.BaseSecuriteHttpFilter;
 import cn.bbwres.biscuit.security.oauth2.grant.CustomAuthenticationGrant;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
 import cn.bbwres.biscuit.security.oauth2.web.CustomLoginUrlAuthenticationEntryPoint;
@@ -39,6 +40,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.util.ObjectUtils;
 
@@ -112,6 +114,7 @@ public class Oauth2Config {
     @Bean
     @Order(-10)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
+                                                                      ObjectProvider<List<BaseSecuriteHttpFilter>> securiteHttpFilters,
                                                                       ObjectProvider<List<CustomAuthenticationGrant>> customAuthenticationGrants,
                                                                       CustomLoginUrlAuthenticationEntryPoint customLoginUrlAuthenticationEntryPoint) throws Exception {
 
@@ -142,6 +145,22 @@ public class Oauth2Config {
                 .exceptionHandling((exceptions) -> exceptions
                         .defaultAuthenticationEntryPointFor(customLoginUrlAuthenticationEntryPoint, new MediaTypeRequestMatcher(MediaType.TEXT_HTML))
                 );
+        List<BaseSecuriteHttpFilter> securiteHttpFilterList = securiteHttpFilters.getIfAvailable();
+        if (!ObjectUtils.isEmpty(securiteHttpFilterList)) {
+            securiteHttpFilterList.forEach(securiteHttpFilter -> {
+                if (securiteHttpFilter.beforeFilter() != null) {
+                    http.addFilterBefore(securiteHttpFilter, securiteHttpFilter.beforeFilter());
+                    return;
+                }
+                if (securiteHttpFilter.afterFilter() != null) {
+                    http.addFilterAfter(securiteHttpFilter, securiteHttpFilter.afterFilter());
+                    return;
+                }
+                //默认在账号密码验证之前
+                http.addFilterBefore(securiteHttpFilter, UsernamePasswordAuthenticationFilter.class);
+            });
+        }
+
 
         return http.build();
     }

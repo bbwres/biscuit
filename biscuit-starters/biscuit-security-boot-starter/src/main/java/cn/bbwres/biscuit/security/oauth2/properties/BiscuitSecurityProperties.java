@@ -75,14 +75,6 @@ public class BiscuitSecurityProperties {
      */
     private String jwtPublicKey;
 
-    /**
-     * 验证码值的请求参数名称
-     */
-    private String captchaCodeValueName = "captcha_verification";
-    /**
-     * 验证码key的请求参数名称
-     */
-    private String captchaCodeKeyName = "captcha_code_key";
 
     /**
      * 登录的页面地址

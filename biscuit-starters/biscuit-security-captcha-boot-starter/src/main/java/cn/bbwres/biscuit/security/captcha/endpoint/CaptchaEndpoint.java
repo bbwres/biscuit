@@ -18,13 +18,11 @@
 
 package cn.bbwres.biscuit.security.captcha.endpoint;
 
+import cloud.tianai.captcha.application.ImageCaptchaApplication;
+import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.response.ApiResponse;
-import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
-import cloud.tianai.captcha.spring.vo.CaptchaResponse;
-import cloud.tianai.captcha.spring.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
-import cn.bbwres.biscuit.dto.Result;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +34,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/captcha")
 public class CaptchaEndpoint {
 
-    private ImageCaptchaApplication imageCaptchaApplication;
+    private final ImageCaptchaApplication imageCaptchaApplication;
 
     public CaptchaEndpoint(ImageCaptchaApplication imageCaptchaApplication) {
         this.imageCaptchaApplication = imageCaptchaApplication;
@@ -49,12 +47,11 @@ public class CaptchaEndpoint {
      */
     @GetMapping("/create")
     @ResponseBody
-    public Result<?> createCaptcha(@RequestParam(value = "type", required = false) String type) {
+    public ApiResponse<ImageCaptchaVO> createCaptcha(@RequestParam(value = "type", required = false) String type) {
         if (ObjectUtils.isEmpty(type)) {
             type = CaptchaTypeConstant.SLIDER;
         }
-        CaptchaResponse<ImageCaptchaVO> res1 = imageCaptchaApplication.generateCaptcha(type);
-        return Result.success(res1);
+        return imageCaptchaApplication.generateCaptcha(type);
     }
 
     /**
@@ -66,9 +63,8 @@ public class CaptchaEndpoint {
      */
     @PostMapping("/checkCaptcha/{captchaId}")
     @ResponseBody
-    public Result<Boolean> checkCaptcha(@PathVariable("captchaId") String captchaId, @RequestBody ImageCaptchaTrack sliderCaptchaTrack) {
-        ApiResponse<?> check = imageCaptchaApplication.matching(captchaId, sliderCaptchaTrack);
-        return Result.success(check.isSuccess());
+    public ApiResponse<?> checkCaptcha(@PathVariable("captchaId") String captchaId, @RequestBody ImageCaptchaTrack sliderCaptchaTrack) {
+        return imageCaptchaApplication.matching(captchaId, sliderCaptchaTrack);
     }
 
 

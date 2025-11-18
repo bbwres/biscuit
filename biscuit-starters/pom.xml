@@ -43,7 +43,7 @@
         <module>biscuit-scheduler-boot-starter</module>
         <module>biscuit-web-boot-starter</module>
         <module>biscuit-security-boot-starter</module>
-        <!--        <module>biscuit-security-captcha-boot-starter</module>-->
+        <module>biscuit-security-captcha-boot-starter</module>
 
         <module>biscuit-operation-log-starter</module>
         <module>biscuit-generator-code-maven-plugin</module>

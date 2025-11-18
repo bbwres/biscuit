@@ -58,6 +58,7 @@ public interface Oauth2ErrorCodeConstants {
     ErrorCode OAUTH2_INVALID_GRANT = new ErrorCode("101001006", "oauth2.invalid_grant");
     ErrorCode OAUTH2_INVALID_TOKEN = new ErrorCode("101001007", "oauth2.invalid_token");
     ErrorCode OAUTH2_ACCESS_DENIED = new ErrorCode("101001008", "oauth2.access_denied");
+    ErrorCode OAUTH2_INVALID_CAPTCHA = new ErrorCode("101001009", "oauth2.invalid_captcha");
 
 
     /**

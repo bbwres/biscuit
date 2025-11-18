@@ -54,6 +54,22 @@ public class RedisCheckUserLockService {
     }
 
     /**
+     * 检查失败次数是不是大于指定次数
+     *
+     * @param tenantId
+     * @param user
+     * @return true-大于，false-小于
+     */
+    public boolean checkLoginFailNum(String tenantId, String user, int checkNum) {
+        String key = String.format(REDIS_CHECK_USER_LOCK_KEY, tenantId, user);
+        Object result = redisOperations.opsForValue().get(key);
+        if (result instanceof Integer num) {
+            return num >= checkNum;
+        }
+        return false;
+    }
+
+    /**
      * 检查用户是否被锁定
      *
      * @param tenantId
