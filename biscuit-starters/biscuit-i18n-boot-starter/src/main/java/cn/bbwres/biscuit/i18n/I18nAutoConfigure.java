@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.i18n;
 
+import cn.bbwres.biscuit.i18n.filter.I18nFilter;
 import cn.bbwres.biscuit.i18n.support.SupportMessageSource;
 import cn.bbwres.biscuit.i18n.support.SystemMessageSource;
 import lombok.extern.slf4j.Slf4j;
@@ -72,6 +73,16 @@ public class I18nAutoConfigure {
     @Bean
     public MessageSourceAccessor messageSourceAccessor(SupportMessageSource supportMessageSource) {
         return new MessageSourceAccessor(supportMessageSource);
+    }
+
+    /**
+     * i18n 过滤器
+     *
+     * @return
+     */
+    @Bean
+    public I18nFilter i18nFilter() {
+        return new   I18nFilter();
     }
 
 

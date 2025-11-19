@@ -56,6 +56,15 @@
 | -- tenantId       | 否    | 租户编码                     |
 | -- clientId       | 否    | 客户端id                    |
 
+### 退出接口
+
+----
+
+* 请求路径 /oauth2/revoke
+* 请求方式 POST
+* 请求头 application/x-www-form-urlencoded
+
+
 ### 请求流程
 
 ----

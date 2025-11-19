@@ -36,11 +36,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -125,15 +123,13 @@ public class WebAutoConfiguration {
     /**
      * 异常处理类
      *
-     * @param messagesProvider
      * @param exceptionConvertErrorCodes
      * @return
      */
     @Bean
     public ExceptionMessageHandler exceptionMessageHandler(
-            ObjectProvider<MessageSourceAccessor> messagesProvider,
             List<ExceptionConvertErrorCode> exceptionConvertErrorCodes) {
-        return new ExceptionMessageHandler(exceptionConvertErrorCodes, messagesProvider);
+        return new ExceptionMessageHandler(exceptionConvertErrorCodes);
     }
 
     /**
@@ -142,7 +138,7 @@ public class WebAutoConfiguration {
      * @return globalExceptionFilter
      */
     @Bean
-    public GlobalExceptionFilter globalExceptionFilter( ExceptionMessageHandler exceptionMessageHandler) {
+    public GlobalExceptionFilter globalExceptionFilter(ExceptionMessageHandler exceptionMessageHandler) {
         return new GlobalExceptionFilter(exceptionMessageHandler);
     }
 

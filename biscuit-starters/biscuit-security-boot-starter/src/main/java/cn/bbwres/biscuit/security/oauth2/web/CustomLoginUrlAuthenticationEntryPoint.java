@@ -26,8 +26,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,7 +34,6 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * 自定义的CustomLoginUrlAuthenticationEntryPoint
@@ -50,7 +47,6 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
 
     private final AuthorizationServerSettings authorizationServerSettings;
 
-    private final MessageSourceAccessor messages;
 
     /**
      * @param loginFormUrl URL where the login page can be found. Should either be
@@ -58,11 +54,9 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
      *                     URL.
      */
     public CustomLoginUrlAuthenticationEntryPoint(String loginFormUrl,
-                                                  AuthorizationServerSettings authorizationServerSettings,
-                                                  ObjectProvider<MessageSourceAccessor> messageSourceAccessorObjectProvider) {
+                                                  AuthorizationServerSettings authorizationServerSettings) {
         super(loginFormUrl);
         this.authorizationServerSettings = authorizationServerSettings;
-        this.messages = messageSourceAccessorObjectProvider.getIfAvailable();
     }
 
     /**
@@ -113,8 +107,6 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
         if (cause instanceof SystemRuntimeException systemRuntimeException) {
             result = new Result<>(systemRuntimeException.getErrorCode(), systemRuntimeException.getMessage());
         }
-        String resultMsg = Objects.isNull(messages) ? result.getResultMsg() : messages.getMessage(result.getResultMsg(), result.getResultMsg());
-        result.setResultMsg(resultMsg);
         return result;
     }
 

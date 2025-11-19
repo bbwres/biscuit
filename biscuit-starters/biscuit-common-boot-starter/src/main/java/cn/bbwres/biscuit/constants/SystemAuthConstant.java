@@ -61,4 +61,9 @@ public interface SystemAuthConstant {
      * 权限信息
      */
     String AUTHORITIES = "authorities";
+
+    /**
+     * 语言请求头
+     */
+    String ACCEPT_LANGUAGE_HEADER = "Accept-Language";
 }

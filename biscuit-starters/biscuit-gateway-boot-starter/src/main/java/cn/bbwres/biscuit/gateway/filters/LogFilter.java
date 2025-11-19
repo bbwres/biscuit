@@ -48,7 +48,8 @@ public class LogFilter implements GlobalFilter, Ordered {
 
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
-        log.info("当前请求的路径为:[{}]，请求头为:{}", path, request.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
+        log.info("当前请求method:[{}]，请求的路径为:[{}]，请求头Content-Type为:{}",request.getMethod().toString(),
+                path, request.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
         return chain.filter(exchange);
     }
 

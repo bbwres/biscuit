@@ -65,13 +65,11 @@ public class GatewayAutoConfigure {
      * gateway 统一错误处理
      *
      * @param gatewayProperties a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param messagesProvider  a {@link org.springframework.beans.factory.ObjectProvider} object
      * @return a {@link cn.bbwres.biscuit.gateway.adapter.ExtensionErrorAttributes} object
      */
     @Bean
-    public ExtensionErrorAttributes errorAttributes(GatewayProperties gatewayProperties,
-                                                    ObjectProvider<MessageSourceAccessor> messagesProvider) {
-        return new ExtensionErrorAttributes(gatewayProperties, messagesProvider.getIfAvailable());
+    public ExtensionErrorAttributes errorAttributes(GatewayProperties gatewayProperties) {
+        return new ExtensionErrorAttributes(gatewayProperties);
     }
 
     /**

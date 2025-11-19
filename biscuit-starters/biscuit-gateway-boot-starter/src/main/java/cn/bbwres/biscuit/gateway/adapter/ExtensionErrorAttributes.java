@@ -50,10 +50,6 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
 
     private final GatewayProperties gatewayProperties;
 
-    /**
-     * 国际化配置
-     */
-    private final MessageSourceAccessor messages;
 
 
     /** {@inheritDoc} */
@@ -64,18 +60,9 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
         log.warn("当前请求发生异常!{}", error.getMessage());
         String message = error.getMessage();
         String errorCode = getErrorCode(error);
-
         //异常时清除mdc
         MDC.clear();
         errorAttributes.put(Result.RESULT_CODE_FIELD_NAME, errorCode);
-        if (!ObjectUtils.isEmpty(messages)) {
-            String language = request.headers().firstHeader("Accept-Language");
-            Locale locale = LocaleContextHolder.getLocale();
-            if (language != null) {
-                locale = Locale.forLanguageTag(language);
-            }
-            message = messages.getMessage(errorCode, message, locale);
-        }
         errorAttributes.put(Result.RESULT_MSG_FIELD_NAME, message);
         return errorAttributes;
     }

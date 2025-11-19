@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.gateway.authorization;
 
+import cn.bbwres.biscuit.constants.SystemAuthConstant;
 import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.cache.ResourceCacheService;
@@ -44,6 +45,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.server.resource.web.server.authentication.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -51,7 +53,11 @@ import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
 import org.springframework.util.*;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
@@ -136,12 +142,12 @@ public class ResourceServerConfig {
     /**
      * 安全处理类
      *
-     * @param http                                       a {@link org.springframework.security.config.web.server.ServerHttpSecurity} object
-     * @param gatewayProperties                          a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
-     * @param authorizationManager                       a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
-     * @param customServerAccessDeniedHandler            a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
-     * @param customServerAuthenticationEntryPoint       a {@link org.springframework.security.web.server.ServerAuthenticationEntryPoint} object
-     * @param reactiveAuthenticationManager           a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
+     * @param http                                 a {@link org.springframework.security.config.web.server.ServerHttpSecurity} object
+     * @param gatewayProperties                    a {@link cn.bbwres.biscuit.gateway.GatewayProperties} object
+     * @param authorizationManager                 a {@link cn.bbwres.biscuit.gateway.authorization.AuthorizationManager} object
+     * @param customServerAccessDeniedHandler      a {@link org.springframework.security.web.server.authorization.ServerAccessDeniedHandler} object
+     * @param customServerAuthenticationEntryPoint a {@link org.springframework.security.web.server.ServerAuthenticationEntryPoint} object
+     * @param reactiveAuthenticationManager        a {@link org.springframework.security.authentication.ReactiveAuthenticationManager} object
      * @return a {@link org.springframework.security.web.server.SecurityWebFilterChain} object
      */
     @Bean
@@ -177,6 +183,14 @@ public class ResourceServerConfig {
         if (gatewayProperties.getDisableCors()) {
             http.cors(ServerHttpSecurity.CorsSpec::disable);
         }
+        http.addFilterAfter(new WebFilter() {
+            @Override
+            public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+
+                return chain.filter(exchange)
+                        .contextWrite(Context.of("serverWebExchange", exchange)) ;
+            }
+        }, SecurityWebFiltersOrder.HTTP_HEADERS_WRITER);
 
 
         return http.build();

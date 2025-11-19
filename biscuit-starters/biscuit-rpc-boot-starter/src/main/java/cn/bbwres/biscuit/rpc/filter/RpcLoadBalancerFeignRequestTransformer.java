@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.rpc.filter;
 
+import cn.bbwres.biscuit.constants.SystemAuthConstant;
 import cn.bbwres.biscuit.context.UserInfoContext;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.rpc.constants.RpcConstants;
@@ -31,10 +32,12 @@ import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -71,32 +74,35 @@ public class RpcLoadBalancerFeignRequestTransformer implements LoadBalancerFeign
      */
     @Override
     public Request transformRequest(Request request, ServiceInstance instance) {
+        RequestTemplate requestTemplate = request.requestTemplate();
+        Locale locale = LocaleContextHolder.getLocale();
+        //feign 透传语言配置
+        requestTemplate.header(SystemAuthConstant.ACCEPT_LANGUAGE_HEADER, locale.getLanguage() + "-" + locale.getCountry());
         if (rpcProperties.isTransmitUserInfo()) {
             //透传用户信息
             UserBaseInfo userBaseInfo = UserInfoContext.getCurrentContext();
             if ((!ObjectUtils.isEmpty(userBaseInfo)) && !request.headers().containsKey(rpcProperties.getUserInfoHeaderName())) {
-                RequestTemplate requestTemplate = request.requestTemplate();
                 requestTemplate.header(rpcProperties.getUserInfoHeaderName(), JsonUtil.toJsonBase64(userBaseInfo, true));
                 request = Request.create(request.httpMethod(), request.url(), requestTemplate.headers(), request.body(),
                         request.charset(), requestTemplate);
             }
         }
         if (Objects.isNull(instance)) {
-            return request;
+            return Request.create(request.httpMethod(), request.url(), requestTemplate.headers(), request.body(),
+                    request.charset(), requestTemplate);
         }
         String securityAlgorithm = instance.getMetadata().get(RpcConstants.SERVICE_SECURITY_ALGORITHM);
         if (ObjectUtils.isEmpty(securityAlgorithm)) {
             log.debug("当前请求的服务端没有设置安全信息!请求服务端:[{}]", instance.getInstanceId());
-            return request;
+            return Request.create(request.httpMethod(), request.url(), requestTemplate.headers(), request.body(),
+                    request.charset(), requestTemplate);
         }
         RpcSecurityAlgorithmSupport rpcSecurityAlgorithmSupport = rpcSecurityAlgorithmContainer.getRpcSecurityAlgorithmSupport(securityAlgorithm, true);
-
-        RequestTemplate requestTemplate = request.requestTemplate();
 
         String path = requestTemplate.path();
         String targetPath = requestTemplate.feignTarget().url();
 
-        Map<String, List<String>> stringListMap = rpcSecurityAlgorithmSupport.putHeaderAuthorizationInfo(instance, path.replaceFirst(targetPath,""));
+        Map<String, List<String>> stringListMap = rpcSecurityAlgorithmSupport.putHeaderAuthorizationInfo(instance, path.replaceFirst(targetPath, ""));
         if (!CollectionUtils.isEmpty(stringListMap)) {
             for (String headerName : stringListMap.keySet()) {
                 request.header(headerName, stringListMap.get(headerName));

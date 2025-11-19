@@ -18,11 +18,13 @@
 
 package cn.bbwres.biscuit.gateway.service;
 
+import cn.bbwres.biscuit.constants.SystemAuthConstant;
 import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -58,12 +60,18 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public Mono<UserBaseInfo> checkToken(String token) {
-        return webClient.post()
-                .uri(gatewayProperties.getAuthorizationServerName() + gatewayProperties.getAuthorizationServerCheckTokenPath())
-                .bodyValue(token)
-                .retrieve()
-                .bodyToMono(USER_BASE_INFO_TYPE_REFERENCE)
-                .map(Result::checkAndGetData);
+        return Mono.deferContextual(ctx -> {
+            ServerWebExchange exchange = ctx.get("serverWebExchange");
+            String acceptLanguage = exchange.getRequest().getHeaders().getFirst(SystemAuthConstant.ACCEPT_LANGUAGE_HEADER);
+            return webClient.post()
+                    .uri(gatewayProperties.getAuthorizationServerName() + gatewayProperties.getAuthorizationServerCheckTokenPath())
+                    .header(SystemAuthConstant.ACCEPT_LANGUAGE_HEADER, acceptLanguage)
+                    .bodyValue(token)
+                    .retrieve()
+                    .bodyToMono(USER_BASE_INFO_TYPE_REFERENCE)
+                    .map(Result::checkAndGetData);
+        });
+
     }
 
     /**

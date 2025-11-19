@@ -21,13 +21,15 @@ package cn.bbwres.biscuit.dto;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.ErrorCode;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
+import cn.bbwres.biscuit.utils.SpringContextUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.util.ObjectUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * 通用返回对象
@@ -52,6 +54,7 @@ public class Result<T> implements Serializable {
      * data 的字段名称
      */
     public static final String DATA_FIELD_NAME = "data";
+    private static final Logger log = LoggerFactory.getLogger(Result.class);
 
     /**
      * 响应码
@@ -99,8 +102,20 @@ public class Result<T> implements Serializable {
      */
     public Result(String resultCode, String resultMsg) {
         this.resultCode = resultCode;
-        this.resultMsg = resultMsg;
+        this.resultMsg = i18nHandlerResultMsg(resultMsg);
     }
+
+    /**
+     * <p>Constructor for Result.</p>
+     *
+     * @param resultCode a {@link java.lang.String} object
+     * @param resultMsg  a {@link java.lang.String} object
+     */
+    public Result(String resultCode, String resultMsg, boolean i18nHandler) {
+        this.resultCode = resultCode;
+        this.resultMsg = i18nHandler ? i18nHandlerResultMsg(resultMsg) : resultMsg;
+    }
+
     /**
      * i18n处理
      *
@@ -108,20 +123,29 @@ public class Result<T> implements Serializable {
      */
     public Result(ErrorCode errorCode) {
         this.resultCode = errorCode.getCode();
-        this.resultMsg = errorCode.getMessage();
+        this.resultMsg = i18nHandlerResultMsg(errorCode.getMessage());
     }
 
 
     /**
-     * i18n处理
+     * i18n处理状态描述
      *
-     * @param messages  messages
-     * @param errorCode errorCode
+     * @param resultMsg
+     * @return
      */
-    public Result(MessageSourceAccessor messages, ErrorCode errorCode) {
-        this.resultCode = errorCode.getCode();
-        this.resultMsg = Objects.isNull(messages) ? errorCode.getMessage() : messages.getMessage(errorCode.getMessage(), errorCode.getMessage());
+    private String i18nHandlerResultMsg(String resultMsg) {
+        MessageSourceAccessor messageSourceAccessor = null;
+        try {
+            messageSourceAccessor = SpringContextUtil.getBean(MessageSourceAccessor.class);
+        } catch (Exception e) {
+            log.info("获取国际化配置失败!");
+        }
+        if (ObjectUtils.isEmpty(messageSourceAccessor) || ObjectUtils.isEmpty(resultMsg)) {
+            return resultMsg;
+        }
+        return messageSourceAccessor.getMessage(resultMsg, resultMsg);
     }
+
 
     /**
      * <p>Constructor for Result.</p>
@@ -141,8 +165,7 @@ public class Result<T> implements Serializable {
      * @return 返回处理成功的对象
      */
     public static <T> Result<T> success(T data) {
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),
-                GlobalErrorCodeConstants.SUCCESS.getMessage(), data);
+        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(), data);
     }
 
     /**

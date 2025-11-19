@@ -23,8 +23,6 @@ import cn.bbwres.biscuit.exception.ErrorMessageInfo;
 import cn.bbwres.biscuit.exception.ExceptionConvertErrorCode;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -36,14 +34,11 @@ import java.util.List;
  */
 public class ExceptionMessageHandler {
 
-    protected MessageSourceAccessor messages;
 
     private final List<ExceptionConvertErrorCode> exceptionConvertErrorCodes;
 
-    public ExceptionMessageHandler(List<ExceptionConvertErrorCode> exceptionConvertErrorCodes,
-                                   ObjectProvider<MessageSourceAccessor> messagesProvider) {
+    public ExceptionMessageHandler(List<ExceptionConvertErrorCode> exceptionConvertErrorCodes) {
         this.exceptionConvertErrorCodes = exceptionConvertErrorCodes;
-        this.messages = messagesProvider.getIfAvailable();
     }
 
     /**
@@ -60,7 +55,7 @@ public class ExceptionMessageHandler {
         if (ex instanceof SystemRuntimeException systemRuntimeException) {
             errorMessageInfo.setMessage(ObjectUtils.isEmpty(ex.getMessage()) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage() : ex.getMessage());
             errorCode = systemRuntimeException.getErrorCode();
-            return result(errorCode, errorMessageInfo, messages);
+            return new Result<>(errorCode, errorMessageInfo.getMessage(),true);
         }
 
         for (ExceptionConvertErrorCode exceptionConvertErrorCode : exceptionConvertErrorCodes) {
@@ -79,24 +74,10 @@ public class ExceptionMessageHandler {
         errorMessageInfo.setMessage(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getMessage());
         errorMessageInfo = ObjectUtils.isEmpty(convert) ? errorMessageInfo : convert;
         errorCode = ObjectUtils.isEmpty(errorCode) ? GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode() : errorCode;
-        return result(errorCode, errorMessageInfo, messages);
+        if (errorMessageInfo.getI18nHandler() != null && errorMessageInfo.getI18nHandler()) {
+            return new Result<>(errorCode, errorMessageInfo.getMessage(),true);
+        }
+        return new Result<>(errorCode, errorMessageInfo.getMessage(), false);
     }
 
-    /**
-     * 处理响应结果
-     *
-     * @param errorCode
-     * @param errorMessageInfo
-     * @param messages
-     * @return
-     */
-    private Result<?> result(String errorCode, ErrorMessageInfo errorMessageInfo, MessageSourceAccessor messages) {
-        if (!ObjectUtils.isEmpty(messages)
-                && !ObjectUtils.isEmpty(errorMessageInfo.getI18nHandler())
-                && errorMessageInfo.getI18nHandler()) {
-            // 国际化处理
-            errorMessageInfo.setMessage(messages.getMessage(errorMessageInfo.getMessage(), null, errorMessageInfo.getMessage()));
-        }
-        return new Result<>(errorCode, errorMessageInfo.getMessage());
-    }
 }
