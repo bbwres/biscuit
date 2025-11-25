@@ -17,7 +17,8 @@
   ~  */
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.bbwres</groupId>
@@ -47,6 +48,7 @@
         <commons.fileupload.version>1.6.0</commons.fileupload.version>
         <!--数据库-->
         <mybatis-plus.version>3.5.14</mybatis-plus.version>
+        <mybatis-flex.version>1.11.4</mybatis-flex.version>
         <mysql.version>9.4.0</mysql.version>
         <postgresql.version>42.7.7</postgresql.version>
 
@@ -145,7 +147,13 @@
                 <version>${commons-lang3.version}</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-dependencies</artifactId>
+                <version>${mybatis-flex.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-bom</artifactId>
@@ -153,6 +161,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic.datasource.version}</version>
+            </dependency>
+
+
 
             <dependency>
                 <groupId>cloud.tianai.captcha</groupId>
@@ -189,6 +205,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>biscuit-mybatis-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-mybatis-flex-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -241,13 +262,6 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>biscuit-generator-code-maven-plugin</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-                <version>${dynamic.datasource.version}</version>
             </dependency>
 
 
