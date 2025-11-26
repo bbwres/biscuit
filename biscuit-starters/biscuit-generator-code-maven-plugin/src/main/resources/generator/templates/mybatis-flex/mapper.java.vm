@@ -1,0 +1,53 @@
+package ${package.Mapper};
+import ${package.Entity}.${entity};
+import ${superMapperClassPackage};
+import cn.bbwres.biscuit.dto.Page;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.util.ObjectUtils;
+import ${package.Controller}.vo .*;
+import com.mybatisflex.core.query.QueryWrapper;
+
+#set($camelCase = ${entity})
+#set($underScore = $camelCase.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toUpperCase())
+import static ${package.Entity}.table.${entity}TableDef.${underScore};
+
+/**
+ * <p>
+ * $!{table.comment} Mapper 接口
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+@Mapper
+#if(${kotlin})
+interface ${table.mapperName} : ${superMapperClass}<${entity}>
+#else
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
+
+    ## 去掉do
+    #set ($tableClassName = ${entity.replace('Entity','')})
+    /**
+    * 分页查询数据
+    * @param reqVO 分页查询条件
+    * @return
+    */
+    default Page<${entity},${tableClassName}PageReqVO> selectPage(Page<${entity},${tableClassName}PageReqVO> reqVO){
+        QueryWrapper queryWrapper = QueryWrapper.create();
+        if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
+            queryWrapper.where(${underScore}.ID.eq(reqVO.getQuery().getId()));
+        }
+
+        // 大多数情况下，id 倒序
+        queryWrapper.orderBy(${underScore}.ID, false);
+
+        com.mybatisflex.core.paginate.Page<SystemDictTypeEntity> page = paginate(reqVO.getCurrent(), reqVO.getSize(), queryWrapper);
+        reqVO.setRecords(page.getRecords());
+        reqVO.setTotal(page.getTotalRow());
+        reqVO.calculationPages();
+        return reqVO;
+    }
+
+}
+
+#end

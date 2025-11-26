@@ -28,8 +28,8 @@ public class ReadConfig {
      *
      * @return 配置信息
      */
-    public Properties readBiscuitConfig(Log log) {
-        return readProperties("generator/biscuit.properties", log);
+    public Properties readBiscuitConfig(String ormName, Log log) {
+        return readProperties("generator/biscuit-" + ormName + ".properties", log);
     }
 
     /**
@@ -51,18 +51,18 @@ public class ReadConfig {
     public Properties readProperties(String fileName, Log log) {
         Properties prop = new Properties();
         String filePathname = baseDir + File.separator + fileName;
-        log.info("读取配置文件路径为:" + filePathname);
+        log.info("load config path:" + filePathname);
         try (InputStream input = new FileInputStream(filePathname)) {
             //加载properties文件
             prop.load(input);
-            log.info("读取配置文件路径为:" + filePathname + "完成");
+            log.info("load config path:" + filePathname + " success");
         } catch (IOException ex) {
             try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
-                log.info("项目目录不存在插件配置，开始读取插件默认配置");
+                log.info("no project config,load default config..");
                 prop.load(input);
-                log.info("读取插件默认配置完成");
+                log.info("load default config success");
             } catch (Exception e) {
-                log.info("读取配置信息异常:" + e.getMessage());
+                log.info("load default error:" + e.getMessage());
             }
         }
         return prop;

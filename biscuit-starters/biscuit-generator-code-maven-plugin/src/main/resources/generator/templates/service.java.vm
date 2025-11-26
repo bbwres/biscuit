@@ -18,7 +18,7 @@ import cn.bbwres.biscuit.dto.Page;
  * </p>
  *
  * @author ${author}
- * @Date ${date}
+ * @since ${date}
  */
 public interface ${table.serviceName} {
 

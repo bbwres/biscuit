@@ -21,7 +21,7 @@ import cn.bbwres.biscuit.dto.Page;
  * </p>
  *
  * @author ${author}
- * @Date ${date}
+ * @since ${date}
  */
 @Mapper
 public interface ${tableClassName}Convert {

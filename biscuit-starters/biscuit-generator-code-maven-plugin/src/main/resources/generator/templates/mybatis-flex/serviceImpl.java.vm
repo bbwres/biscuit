@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * </p>
  *
  * @author ${author}
- * @Date ${date}
+ * @since ${date}
  */
 #if(${entityLombokModel})
 @RequiredArgsConstructor(onConstructor_={@Autowired})
@@ -53,7 +53,7 @@ public class ${table.serviceImplName} implements ${table.serviceName} {
      */
     @Override
     public ${entity} get${tableClassName}(${idType} id) {
-        return ${tableClassNameLow}Mapper.selectById(id);
+        return ${tableClassNameLow}Mapper.selectOneById(id);
     }
 
     /**
@@ -64,7 +64,7 @@ public class ${table.serviceImplName} implements ${table.serviceName} {
      */
     @Override
     public List<${entity}> get${tableClassName}List(Collection<${idType}> ids) {
-        return ${tableClassNameLow}Mapper.selectByIds(ids);
+        return ${tableClassNameLow}Mapper.selectListByIds(ids);
     }
 
     /**

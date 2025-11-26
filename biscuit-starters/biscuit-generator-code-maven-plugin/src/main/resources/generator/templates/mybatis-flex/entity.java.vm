@@ -1,8 +1,11 @@
 package ${package.Entity};
 
-#foreach($pkg in ${table.importPackages})
-import ${pkg};
-#end
+import ${cfg.baseEntityPackage};
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.keygen.KeyGenerators;
 #foreach($pkg1 in ${enumsPackage})
 import ${pkg1};
 #end
@@ -24,7 +27,7 @@ import java.io.Serial;
 * $!{table.comment}
 *
 * @author ${author}
-* @Date ${date}
+* @since ${date}
 */
 #if(${entityLombokModel})
 @Data
@@ -38,12 +41,10 @@ import java.io.Serial;
     #end
 #end
 #if(${table.convert})
-@TableName("${table.name}")
+@Table("${table.name}")
 #end
 #if(${superEntityClass})
-public class ${entity} extends ${superEntityClass}#if(${activeRecord})<${entity}>#end {
-#elseif(${activeRecord})
-public class ${entity} extends Model<${entity}> {
+public class ${entity} extends ${superEntityClass} {
 #else
 public class ${entity}  {
 #end
@@ -72,30 +73,22 @@ public class ${entity}  {
 #if(${field.keyFlag})
 ## 主键
 #if(${field.keyIdentityFlag})
-    @TableId(value = "${field.annotationColumnName}", type = IdType.AUTO)
+    @Id(keyType = KeyType.Auto)
 #elseif(!$null.isNull(${idType}) && "$!idType" != "")
-    @TableId(value = "${field.annotationColumnName}", type = IdType.ASSIGN_ID)
+    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
 #elseif(${field.convert})
-    @TableId("${field.annotationColumnName}")
+    @Id
 #end
 ## 普通字段
 #elseif(${field.fill})
 ## -----   存在字段填充设置   -----
 #if(${field.convert})
-    @TableField(value = "${field.annotationColumnName}", fill = FieldFill.${field.fill})
+    @Column(value = "${field.annotationColumnName}")
 #else
-    @TableField(fill = FieldFill.${field.fill})
+    @Column(value = "${field.annotationColumnName}")
 #end
 #elseif(${field.convert})
-    @TableField("${field.annotationColumnName}")
-#end
-## 乐观锁注解
-#if(${versionFieldName}==${field.name})
-    @Version
-#end
-## 逻辑删除注解
-#if(${logicDeleteFieldName}==${field.name})
-    @TableLogic
+    @Column(value = "${field.annotationColumnName}")
 #end
     private ${propertyType} ${field.propertyName};
 
@@ -136,17 +129,6 @@ public class ${entity}  {
     public static final String ${field.name.toUpperCase()} = "${field.name}";
 
     #end
-#end
-#if(${activeRecord})
-@Override
-protected Serializable pkVal() {
-    #if(${keyPropertyName})
-    return this.${keyPropertyName};
-    #else
-    return null;
-    #end
-}
-
 #end
 #if(!${entityLombokModel})
 @Override

@@ -119,6 +119,7 @@ public class Generator {
 
             customMap.put("convertPackage", PackageUtils.joinPackage(parentPath, "convert"));
             customMap.put("vo", PackageUtils.joinPackage(parentPath, "vo"));
+            customMap.put("baseEntityPackage", getBaseEntity());
             builder.customMap(customMap);
             builder.beforeOutputFile((tableInfo, stringObjectMap) -> {
                 if (StringUtils.isNotBlank(tableInfo.getComment())) {
@@ -138,7 +139,6 @@ public class Generator {
                 stringObjectMap.put("importPackages", importPackages);
             });
             customFiles(prop.getProperty(GeneratorConstant.INJECTION_CONFIG_CUSTOM_FILES), builder);
-
         });
     }
 
@@ -178,15 +178,7 @@ public class Generator {
             if (Boolean.parseBoolean(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_ENABLE_TABLE_FIELD_ANNOTATION))) {
                 eb.enableTableFieldAnnotation();
             }
-            if (Boolean.parseBoolean(useTenant)) {
-                if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_TENANT_CLASS))) {
-                    eb.superClass(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_TENANT_CLASS));
-                }
-            } else {
-                if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_CLASS))) {
-                    eb.superClass(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_CLASS));
-                }
-            }
+            eb.superClass(getBaseEntity());
             Service.Builder sb = eb.serviceBuilder();
             if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_SERVICE_FORMAT_SERVICE_FILE_NAME))) {
                 sb.formatServiceFileName(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_SERVICE_FORMAT_SERVICE_FILE_NAME));
@@ -238,6 +230,25 @@ public class Generator {
             }
             mb.build();
         });
+    }
+
+
+    /**
+     * 获取实体的父类
+     *
+     * @return
+     */
+    private String getBaseEntity() {
+        if (Boolean.parseBoolean(useTenant)) {
+            if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_TENANT_CLASS))) {
+                return prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_TENANT_CLASS);
+            }
+        } else {
+            if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_CLASS))) {
+                return prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_ENTITY_SUPER_CLASS);
+            }
+        }
+        return null;
     }
 
     /**

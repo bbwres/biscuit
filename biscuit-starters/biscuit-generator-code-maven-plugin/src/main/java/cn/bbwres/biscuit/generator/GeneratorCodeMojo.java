@@ -42,6 +42,7 @@ public class GeneratorCodeMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
+
     /**
      * 执行命令
      *
@@ -57,38 +58,43 @@ public class GeneratorCodeMojo extends AbstractMojo {
         String outputDir = System.getProperty("user.dir");
         String author = projectConfig.getProperty("author");
         if (StringUtils.isBlank(author)) {
-            author = readConfig.scannerNext("请输入作者名称？", null);
+            author = readConfig.scannerNext("author:", null);
         }
         String parentPath = projectConfig.getProperty("parentPath");
         if (StringUtils.isBlank(parentPath)) {
-            parentPath = readConfig.scannerNext("请输入包名？", null);
+            parentPath = readConfig.scannerNext("parentPath:", null);
         }
         String tableNames = projectConfig.getProperty("tableNames");
         if (StringUtils.isBlank(tableNames)) {
-            tableNames = readConfig.scannerNext("请输入表名，多个英文逗号分隔？", null);
+            tableNames = readConfig.scannerNext("Please enter the table names, separated by English commas:", null);
         }
         String outputDirConfig = projectConfig.getProperty("outputDir");
         if (StringUtils.isBlank(outputDirConfig)) {
-            outputDir = readConfig.scannerNext("请输入文件生成目录，默认:" + outputDir, outputDir);
+            outputDir = readConfig.scannerNext("outputDir? default:" + outputDir, outputDir);
         } else {
             outputDir = outputDirConfig;
         }
         String dbUrl = projectConfig.getProperty("dbUrl");
         if (StringUtils.isBlank(dbUrl)) {
-            dbUrl = readConfig.scannerNext("请输入数据库链接信息？", null);
+            dbUrl = readConfig.scannerNext("dbUrl:", null);
         }
         String dbUsername = projectConfig.getProperty("dbUsername");
         if (StringUtils.isBlank(dbUsername)) {
-            dbUsername = readConfig.scannerNext("请输入数据库账号？", null);
+            dbUsername = readConfig.scannerNext("dbUsername:", null);
         }
         String dbPassword = projectConfig.getProperty("dbPassword");
         if (StringUtils.isBlank(dbPassword)) {
-            dbPassword = readConfig.scannerNext("请输入数据库密码？", null);
+            dbPassword = readConfig.scannerNext("dbPassword:", null);
         }
 
         String useTenant = projectConfig.getProperty("useTenant");
         if (StringUtils.isBlank(useTenant)) {
             useTenant = "false";
+        }
+        //orm的框架
+        String ormName = projectConfig.getProperty("ormName");
+        if (StringUtils.isBlank(ormName)) {
+            ormName = "mybatis-plus";
         }
         //是否覆盖文件
         String enableFileOverride = projectConfig.getProperty("enableFileOverride");
@@ -97,8 +103,8 @@ public class GeneratorCodeMojo extends AbstractMojo {
         }
 
         DataSourceConfig.Builder builder = new DataSourceConfig.Builder(dbUrl, dbUsername, dbPassword);
-        Generator generator = new Generator(builder, outputDir, readConfig.readBiscuitConfig(getLog()),
-                author, parentPath, tableNames, useTenant,enableFileOverride);
+        Generator generator = new Generator(builder, outputDir, readConfig.readBiscuitConfig(ormName,getLog()),
+                author, parentPath, tableNames, useTenant, enableFileOverride);
         generator.generator();
     }
 

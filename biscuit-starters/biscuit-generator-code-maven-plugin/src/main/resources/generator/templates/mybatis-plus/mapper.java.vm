@@ -16,7 +16,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
  * </p>
  *
  * @author ${author}
- * @Date ${date}
+ * @since ${date}
  */
 @Mapper
 #if(${kotlin})

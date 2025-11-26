@@ -23,7 +23,7 @@ import java.io.Serial;
 * </p>
 *
 * @author ${author}
-* @Date ${date}
+* @since ${date}
 */
 #if(${swagger})
 @Schema(description = "${table.comment}分页 Request VO")
