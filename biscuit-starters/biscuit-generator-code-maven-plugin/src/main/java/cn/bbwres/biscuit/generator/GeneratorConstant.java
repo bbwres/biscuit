@@ -58,6 +58,7 @@ public class GeneratorConstant {
      */
     public static final String STRATEGY_CONFIG_MAPPER_MAPPER_ANNOTATION = "strategyConfig.mapper.mapperAnnotation";
     public static final String STRATEGY_CONFIG_MAPPER_ENABLE_BASE_RESULT_MAP = "strategyConfig.mapper.enableBaseResultMap";
+    public static final String STRATEGY_CONFIG_MAPPER_DISABLE_MAPPER_XML = "strategyConfig.mapper.disableMapperXml";
     public static final String STRATEGY_CONFIG_MAPPER_ENABLE_BASE_COLUMN_LIST = "strategyConfig.mapper.enableBaseColumnList";
     public static final String STRATEGY_CONFIG_MAPPER_MAPPER_TEMPLATE = "strategyConfig.mapper.mapperTemplate";
     public static final String STRATEGY_CONFIG_MAPPER_SUPER_CLASS = "strategyConfig.mapper.superClass";

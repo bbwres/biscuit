@@ -212,6 +212,13 @@ public class Generator {
             if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_SUPER_CLASS))) {
                 mb.superClass(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_SUPER_CLASS));
             }
+            if (Boolean.parseBoolean(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_DISABLE_MAPPER_XML))) {
+                mb.disableMapperXml();
+            }
+
+            if (StringUtils.isNotBlank(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_SUPER_CLASS))) {
+                mb.superClass(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_SUPER_CLASS));
+            }
             if (Boolean.parseBoolean(prop.getProperty(GeneratorConstant.STRATEGY_CONFIG_MAPPER_ENABLE_BASE_RESULT_MAP))) {
                 mb.enableBaseResultMap();
             }
