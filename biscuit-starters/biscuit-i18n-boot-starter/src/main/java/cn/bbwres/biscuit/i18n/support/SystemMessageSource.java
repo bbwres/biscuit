@@ -18,7 +18,6 @@
 
 package cn.bbwres.biscuit.i18n.support;
 
-import cn.bbwres.biscuit.i18n.I18nProperties;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.nio.charset.StandardCharsets;
