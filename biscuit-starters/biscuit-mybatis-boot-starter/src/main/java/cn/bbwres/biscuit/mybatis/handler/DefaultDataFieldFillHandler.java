@@ -19,7 +19,9 @@
 package cn.bbwres.biscuit.mybatis.handler;
 
 import cn.bbwres.biscuit.entity.BaseEntity;
+import cn.bbwres.biscuit.entity.BaseNameEntity;
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
+import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.mybatis.config.MybatisProperties;
 import cn.bbwres.biscuit.mybatis.config.MybatisTenantProperties;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
@@ -47,7 +49,9 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
     private static final String UPDATE_TIME = "updateTime";
     private static final String CREATE_TIME = "createTime";
     private static final String UPDATER = "updater";
+    private static final String UPDATER_NAME = "updaterName";
     private static final String CREATOR = "creator";
+    private static final String CREATOR_NAME = "creatorName";
     private static final String TENANT_ID = "tenantId";
 
     /**
@@ -58,10 +62,17 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
 
-        if (metaObject.getOriginalObject() instanceof BaseEntity) {
+        if (metaObject.getOriginalObject() instanceof BaseEntity baseEntity) {
             strictInsertFill(metaObject, CREATE_TIME, LocalDateTime.class, LocalDateTime.now());
-            strictInsertFill(metaObject, CREATOR, () -> mybatisProperties.obtainUserInfo(userBaseInfo ->
-                    String.join("-", userBaseInfo.getUserId(), userBaseInfo.getUsername())), String.class);
+            if (baseEntity instanceof BaseNameEntity) {
+                strictInsertFill(metaObject, CREATOR, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
+                strictInsertFill(metaObject, CREATOR_NAME, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getZhName), String.class);
+            } else {
+                strictInsertFill(metaObject, CREATOR, () -> mybatisProperties.obtainUserInfo(userBaseInfo ->
+                        String.join("-", userBaseInfo.getUserId(), userBaseInfo.getUsername())), String.class);
+            }
+
+
         }
         if (mybatisTenantProperties.isEnabled() && metaObject.getOriginalObject() instanceof BaseTenantEntity) {
             //获取租户id
@@ -78,11 +89,16 @@ public class DefaultDataFieldFillHandler implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        if (metaObject.getOriginalObject() instanceof BaseEntity) {
+        if (metaObject.getOriginalObject() instanceof BaseEntity baseEntity) {
             strictUpdateFill(metaObject, UPDATE_TIME, LocalDateTime.class, LocalDateTime.now());
-            strictUpdateFill(metaObject, UPDATER, () -> mybatisProperties.obtainUserInfo(userBaseInfo ->
-                            String.join("-", userBaseInfo.getUserId(), userBaseInfo.getUsername())),
-                    String.class);
+            if (baseEntity instanceof BaseNameEntity) {
+                strictUpdateFill(metaObject, UPDATER, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getUserId), String.class);
+                strictUpdateFill(metaObject, UPDATER_NAME, () -> mybatisProperties.obtainUserInfo(UserBaseInfo::getZhName), String.class);
+            } else {
+                strictUpdateFill(metaObject, UPDATER, () -> mybatisProperties.obtainUserInfo(userBaseInfo ->
+                        String.join("-", userBaseInfo.getUserId(), userBaseInfo.getUsername())), String.class);
+            }
+
         }
 
     }
