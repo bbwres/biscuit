@@ -29,3 +29,6 @@ biscuit-common-boot-starter 是基于SpringBoot的通用开发框架，提供了
 * SystemBusinessRuntimeException 为系统业务失败的异常，继承了SystemRuntimeException。
 * JsonUtil 为基于jackson的json工具类，提供了常用的json序列化方法
 * Result 提供了Result为通用的返回对象，包含resultCode、resultMsg、data等字段。
+* json序列化时的脱敏配置 在字段上增加注解 @Desensitize(desensitization=xxxx.class) 即可实现字段脱敏处理
+
+

@@ -24,3 +24,43 @@ mybatis-plus:
     cache-enabled: false
     local-cache-scope: statement
 ```
+
+### 多数据源支持
+```yaml
+spring:
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          url: jdbc:mysql://xx.xx.xx.xx:3306/dynamic
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+        slave_1:
+          url: jdbc:mysql://xx.xx.xx.xx:3307/dynamic
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+        slave_2:
+          url: ENC(xxxxx)
+          username: ENC(xxxxx)
+          password: ENC(xxxxx)
+          driver-class-name: com.mysql.jdbc.Driver
+```
+```java
+@Service
+@DS("slave")
+public class UserServiceImpl implements UserService {
+
+  @Autowired
+  private JdbcTemplate jdbcTemplate;
+
+  @Override
+  @DS("slave_1")
+  public List selectByCondition() {
+    return jdbcTemplate.queryForList("select * from user where age >10");
+  }
+}
+```
