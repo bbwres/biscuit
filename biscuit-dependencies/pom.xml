@@ -44,7 +44,8 @@
         <nimbus-jose-jwt.version>10.5</nimbus-jose-jwt.version>
         <json-path.version>2.9.0</json-path.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
-        <commons.fileupload.version>1.6.0</commons.fileupload.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
+        <commons-io.version>2.21.0</commons-io.version>
         <!--数据库-->
         <mybatis-plus.version>3.5.14</mybatis-plus.version>
         <mybatis-flex.version>1.11.4</mybatis-flex.version>
@@ -71,11 +72,15 @@
                 <artifactId>logback-core</artifactId>
                 <version>${logback.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
-                <version>${commons.fileupload.version}</version>
+                <version>${commons-fileupload.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>

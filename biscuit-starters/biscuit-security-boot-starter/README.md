@@ -81,7 +81,7 @@
 #### 自有登陆流程
 
 1. 请求 登陆接口 传入username,password 和其他必填参数
-2. 用户密码传输规则为:sha1(用户登录账号+用户密码）
+2. 用户密码传输规则为:sha256(md5(用户账号)+用户密码)
 3. 获取返回值
 4. 保存 access_token和refresh_token 等信息
 5. 后续请求时将返回的token_type+空格+access_token组成认证token 放入请求头Authorization 字段中
