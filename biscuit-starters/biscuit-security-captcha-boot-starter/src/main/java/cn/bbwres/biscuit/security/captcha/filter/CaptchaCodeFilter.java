@@ -119,6 +119,7 @@ public class CaptchaCodeFilter extends BaseSecuriteHttpFilter {
         String codeKey = request.getParameter(captchaProperties.getCaptchaCodeKeyName());
         if (checkCaptchaService.check(grantType, code, codeKey)) {
             filterChain.doFilter(request, response);
+            return;
         }
         throw new SystemRuntimeException(Oauth2ErrorCodeConstants.OAUTH2_INVALID_CAPTCHA);
     }

@@ -23,6 +23,7 @@ import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
  *
  * @author zhanglinfeng
  */
+@Controller
 @RequestMapping("/captcha")
 public class CaptchaEndpoint {
 
@@ -45,7 +47,7 @@ public class CaptchaEndpoint {
      *
      * @return
      */
-    @GetMapping("/create")
+    @PostMapping("/create")
     @ResponseBody
     public ApiResponse<ImageCaptchaVO> createCaptcha(@RequestParam(value = "type", required = false) String type) {
         if (ObjectUtils.isEmpty(type)) {
@@ -54,17 +56,21 @@ public class CaptchaEndpoint {
         return imageCaptchaApplication.generateCaptcha(type);
     }
 
+
     /**
      * 检查图形验证码
      *
-     * @param captchaId
-     * @param sliderCaptchaTrack
+     * @param data
      * @return
      */
-    @PostMapping("/checkCaptcha/{captchaId}")
+    @PostMapping("/checkCaptcha")
     @ResponseBody
-    public ApiResponse<?> checkCaptcha(@PathVariable("captchaId") String captchaId, @RequestBody ImageCaptchaTrack sliderCaptchaTrack) {
-        return imageCaptchaApplication.matching(captchaId, sliderCaptchaTrack);
+    public ApiResponse<?> checkCaptcha(@RequestBody ImageCaptchaTrackData data) {
+        return imageCaptchaApplication.matching(data.id, data.imageCaptchaTrack);
+    }
+
+
+    public record ImageCaptchaTrackData(String id, ImageCaptchaTrack imageCaptchaTrack) {
     }
 
 

@@ -29,6 +29,7 @@ import cn.bbwres.biscuit.security.captcha.filter.CaptchaCodeFilter;
 import cn.bbwres.biscuit.security.oauth2.service.redis.RedisCheckUserLockService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
@@ -51,6 +52,7 @@ public class CaptchaAutoConfigure {
      * @return CaptchaEndpoint
      */
     @Bean
+    @ConditionalOnMissingBean
     public CaptchaEndpoint captchaEndpoint(ImageCaptchaApplication imageCaptchaApplication) {
         return new CaptchaEndpoint(imageCaptchaApplication);
     }

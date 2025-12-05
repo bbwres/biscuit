@@ -57,7 +57,7 @@ biscuit:
 
 3. 验证码请求地址
 
-| 请求路径                           | 请求参数                                                                           | 响应参数 | 备注      |
-|--------------------------------|--------------------------------------------------------------------------------|------|---------|
-| GET:/captcha/create            | type(可选)，请求验证码的类型：SLIDER-滑块，ROTATE-旋转验证码 ,CONCAT-滑动还原验证码,WORD_IMAGE_CLICK-文字点选 |      | 创建验证码信息 |
-| POST:/checkCaptcha/{captchaId} | captchaId(必填)，验证码id,ImageCaptchaTrack-验证码参数                                    |      | 检查验证码   |
+| 请求路径                                   | 请求参数                                                                           | 响应参数 | 备注      |
+|----------------------------------------|--------------------------------------------------------------------------------|------|---------|
+| GET:/captcha/create                    | type(可选)，请求验证码的类型：SLIDER-滑块，ROTATE-旋转验证码 ,CONCAT-滑动还原验证码,WORD_IMAGE_CLICK-文字点选 |      | 创建验证码信息 |
+| POST:/captcha/checkCaptcha/{captchaId} | captchaId(必填)，验证码id,ImageCaptchaTrack-验证码参数                                    |      | 检查验证码   |
