@@ -19,18 +19,20 @@
 package cn.bbwres.biscuit.web.file.service;
 
 import cn.bbwres.biscuit.entity.UserBaseInfo;
-import cn.bbwres.biscuit.web.file.controller.vo.FileInfoVO;
+import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessExpandParams;
+import cn.bbwres.biscuit.web.file.endpoint.vo.FileInfoParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 文件上传与下载的服务
+ * 文件信息操作接口
  *
  * @author zhanglinfeng
  */
-public interface FileUploadAndDownloadService {
+public interface FileInfoOperation {
 
 
     /**
@@ -43,11 +45,11 @@ public interface FileUploadAndDownloadService {
 
 
     /**
-     * 根据
+     * 根据 文件业务类型和业务id 以及文件id查询文件列表
      *
      * @param businessType
      * @param businessId
-     * @param fileId  文件id
+     * @param fileId       文件id
      * @return
      */
     List<FileInfo> findByBusinessAndId(String businessType, String businessId, String... fileId);
@@ -65,10 +67,71 @@ public interface FileUploadAndDownloadService {
 
     /**
      * 根据业务类型和业务id查询出关联的附件列表信息
+     *
      * @param businessType
      * @param businessId
      * @return
      */
-    List<FileInfoVO> findByBusiness(String businessType, String businessId);
+    List<FileInfoParams> findByBusiness(String businessType, String businessId);
+
+    /**
+     * 根据文件hash查询临时文件中是否存在
+     *
+     * @param fileHash
+     * @return
+     */
+    FileInfo findByFileHashOne(String fileHash);
+
+    /**
+     * 根据ID查询出临时文件
+     *
+     * @param fileIds
+     * @return
+     */
+    List<TempFileInfo> findTempFileInfoByIds(List<String> fileIds);
+
+    /**
+     * 文件绑定业务信息
+     * 1.先删除临时文件信息
+     * 2.再保存文件信息
+     *
+     * @param fileBindBusinessExpandParams 请求参数信息
+     * @param fileInfos                    文件信息
+     */
+    void fileBindBusiness(FileBindBusinessExpandParams fileBindBusinessExpandParams, List<FileInfo> fileInfos);
+
+    /**
+     * 更新文件信息
+     *
+     * @param fileInfos
+     */
+    void updateFileInfo(List<FileInfo> fileInfos);
+
+    /**
+     * 保存文件信息
+     *
+     * @param fileInfos
+     */
+    void saveFileInfo(List<FileInfo> fileInfos);
+
+    /**
+     * 根据文件id删除文件信息
+     *
+     * @param list
+     */
+    void deleteByFileIds(List<String> list);
+
+    /**
+     * 查询在指定时间也没有业务关联的临时文件信息
+     * @param gtData
+     * @return
+     */
+    List<TempFileInfo> findByNoBusiness(LocalDateTime gtData);
+
+    /**
+     * 根据临时文件信息，删除临时文件
+     * @param noBusinessList
+     */
+    void deleteTempFileInfo(List<TempFileInfo> noBusinessList);
 
 }

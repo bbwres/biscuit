@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.web.file.service;
 
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
+import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -33,10 +34,11 @@ public interface FileOperation {
     /**
      * 上传文件
      *
-     * @param file 文件内容
+     * @param file     文件内容
+     * @param fileInfo 文件信息
      * @return 文件的唯一路径
      */
-    String uploadFile(MultipartFile file);
+    String uploadFile(MultipartFile file, TempFileInfo fileInfo);
 
 
     /**
@@ -46,4 +48,20 @@ public interface FileOperation {
      * @return
      */
     InputStream downloadFile(FileInfo fileInfo);
+
+
+    /**
+     * 复制文件
+     *
+     * @param srcfileInfo 原文件信息
+     * @return
+     */
+    String copyFile(FileInfo srcfileInfo);
+
+    /**
+     * 根据 fileInfo信息删除文件实体信息
+     * @param fileInfo
+     */
+    void deleteFile(FileInfo fileInfo);
+
 }

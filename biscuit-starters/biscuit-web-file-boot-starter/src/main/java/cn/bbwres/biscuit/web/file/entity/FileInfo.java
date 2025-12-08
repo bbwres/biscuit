@@ -104,10 +104,6 @@ public class FileInfo implements Serializable {
      */
     private String fileHash;
 
-    /**
-     * 文件状态
-     */
-    private String fileStatus;
 
 
     /**
