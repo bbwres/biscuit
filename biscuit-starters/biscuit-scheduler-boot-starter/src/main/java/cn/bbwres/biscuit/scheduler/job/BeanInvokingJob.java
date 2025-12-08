@@ -44,7 +44,9 @@ public class BeanInvokingJob implements Job {
         this.applicationContext = applicationContext;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String targetBean = null;
@@ -54,13 +56,13 @@ public class BeanInvokingJob implements Job {
             log.debug("start");
             JobDataMap jobDataMap = context.getMergedJobDataMap();
             targetBean = jobDataMap.getString(SchedulerConstant.TARGET_BEAN);
-            log.debug("targetBean is " + targetBean);
+            log.debug("targetBean is {}", targetBean);
             if (targetBean == null) {
                 throw new JobExecutionException("targetBean cannot be null.", false);
             }
 
             targetMethod = jobDataMap.getString(SchedulerConstant.TARGET_METHOD);
-            log.debug("targetMethod is " + targetMethod);
+            log.debug("targetMethod is {}", targetMethod);
             if (targetMethod == null) {
                 throw new JobExecutionException("targetMethod cannot be null.", false);
             }
@@ -80,7 +82,7 @@ public class BeanInvokingJob implements Job {
             MethodInvoker beanMethod = new MethodInvoker();
             beanMethod.setTargetObject(bean);
             beanMethod.setTargetMethod(targetMethod);
-            if(jobDataMap.getBoolean(SchedulerConstant.USE_CONTEXT)){
+            if (jobDataMap.getBoolean(SchedulerConstant.USE_CONTEXT)) {
                 beanMethod.setArguments(context);
             }
             beanMethod.prepare();
