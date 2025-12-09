@@ -1,5 +1,6 @@
 package cn.bbwres.biscuit.web.file.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -82,6 +83,12 @@ public class TempFileInfo implements Serializable {
      * 文件路径
      */
     private String filePath;
+
+
+    /**
+     * 文件存储目录
+     */
+    private String fileStorageMenu;
 
 
     /**

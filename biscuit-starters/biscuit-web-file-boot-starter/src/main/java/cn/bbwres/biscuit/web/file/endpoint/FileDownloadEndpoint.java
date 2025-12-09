@@ -22,12 +22,12 @@ import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.web.file.config.FileProperties;
-import cn.bbwres.biscuit.web.file.entity.FileInfo;
-import cn.bbwres.biscuit.web.file.service.FileInfoOperation;
-import cn.bbwres.biscuit.web.file.service.FileOperation;
-import cn.bbwres.biscuit.web.file.utils.ZipByteArrayUtil;
 import cn.bbwres.biscuit.web.file.endpoint.vo.DownloadFileInfoParams;
 import cn.bbwres.biscuit.web.file.endpoint.vo.FileInfoParams;
+import cn.bbwres.biscuit.web.file.entity.FileInfo;
+import cn.bbwres.biscuit.web.file.service.CustomFileOperation;
+import cn.bbwres.biscuit.web.file.service.FileInfoOperation;
+import cn.bbwres.biscuit.web.file.utils.ZipByteArrayUtil;
 import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,14 +60,14 @@ import java.util.UUID;
 public class FileDownloadEndpoint extends BaseFileEndpoint {
 
 
-    private final FileOperation fileOperation;
+    private final CustomFileOperation customFileOperation;
 
     private final FileProperties fileProperties;
 
     private final FileInfoOperation fileInfoOperation;
 
-    public FileDownloadEndpoint(FileOperation fileOperation, FileProperties fileProperties, FileInfoOperation fileInfoOperation) {
-        this.fileOperation = fileOperation;
+    public FileDownloadEndpoint(CustomFileOperation customFileOperation, FileProperties fileProperties, FileInfoOperation fileInfoOperation) {
+        this.customFileOperation = customFileOperation;
         this.fileProperties = fileProperties;
         this.fileInfoOperation = fileInfoOperation;
     }
@@ -122,7 +122,7 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
             //多文件处理
             List<ZipByteArrayUtil.StreamEntry> streamEntries = new ArrayList<>(16);
             for (FileInfo fileInfo : fileInfos) {
-                streamEntries.add(new ZipByteArrayUtil.StreamEntry(fileOperation.downloadFile(fileInfo), fileInfo.getFileName()));
+                streamEntries.add(new ZipByteArrayUtil.StreamEntry(customFileOperation.downloadFile(fileInfo), fileInfo.getFileName()));
             }
             String fileName = UUID.randomUUID() + ".zip";
             response.setHeader("Content-Disposition", "attchment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
@@ -131,7 +131,7 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
         }
         //单文件处理下
         FileInfo fileInfo = fileInfos.getFirst();
-        try (InputStream inputStream = fileOperation.downloadFile(fileInfo)) {
+        try (InputStream inputStream = customFileOperation.downloadFile(fileInfo)) {
             if (fileInfo.getFileSize() != null) {
                 response.setHeader("Content-Length", fileInfo.getFileSize() + "");
             }

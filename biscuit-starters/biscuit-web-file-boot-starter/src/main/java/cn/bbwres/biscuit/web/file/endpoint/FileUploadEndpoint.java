@@ -9,7 +9,7 @@ import cn.bbwres.biscuit.web.file.config.FileProperties;
 import cn.bbwres.biscuit.web.file.endpoint.vo.UploadFileInfoParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
-import cn.bbwres.biscuit.web.file.service.FileOperation;
+import cn.bbwres.biscuit.web.file.service.CustomFileOperation;
 import cn.bbwres.biscuit.web.file.service.FileInfoOperation;
 import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,16 +37,16 @@ import java.util.Objects;
 public class FileUploadEndpoint {
 
 
-    private final FileOperation fileOperation;
+    private final CustomFileOperation customFileOperation;
 
     private final FileProperties fileProperties;
 
-    private final FileInfoOperation fileUploadAndDownloadService;
+    private final FileInfoOperation fileInfoOperation;
 
-    public FileUploadEndpoint(FileOperation fileOperation, FileProperties fileProperties, FileInfoOperation fileUploadAndDownloadService) {
-        this.fileOperation = fileOperation;
+    public FileUploadEndpoint(CustomFileOperation customFileOperation, FileProperties fileProperties, FileInfoOperation fileInfoOperation) {
+        this.customFileOperation = customFileOperation;
         this.fileProperties = fileProperties;
-        this.fileUploadAndDownloadService = fileUploadAndDownloadService;
+        this.fileInfoOperation = fileInfoOperation;
     }
 
 
@@ -77,20 +77,22 @@ public class FileUploadEndpoint {
         }
         //设置数据
         TempFileInfo fileInfo = new TempFileInfo()
+
                 .setFileName(uploadFileInfo.getFileName())
                 .setFileSize(uploadFileInfo.getFileSize())
                 .setFileHash(uploadFileInfo.getFileHash())
                 .setFileSuffix(FilenameUtils.getExtension(uploadFileInfo.getFileName()))
                 .setCreateTime(LocalDateTime.now())
-                .setFileStorageType(fileProperties.getStorageType());
+                .setFileStorageMenu(StringUtils.isBlank(uploadFileInfo.getFileStorageMenu()) ? fileProperties.getDefaultStorageMenu() : uploadFileInfo.getFileStorageMenu())
+                .setFileStorageType(StringUtils.isBlank(uploadFileInfo.getFileStorageType()) ? fileProperties.getDefaultStorageType() : uploadFileInfo.getFileStorageType());
         if (Objects.nonNull(requestUser)) {
             fileInfo.setCreator(requestUser.getUserId())
                     .setCreatorName(requestUser.getZhName())
                     .setTenantId(requestUser.getTenantId());
         }
-        fileInfo.setFilePath(fileOperation.uploadFile(file, fileInfo));
+        fileInfo.setFilePath(customFileOperation.uploadFile(file, fileInfo));
         //保存记录数据到临时文件表
-        fileInfo = fileUploadAndDownloadService.saveTempFileInfo(fileInfo);
+        fileInfo = fileInfoOperation.saveTempFileInfo(fileInfo);
         //返回文件的id
         return Result.success(fileInfo.getId());
     }
@@ -104,7 +106,7 @@ public class FileUploadEndpoint {
     @Operation(summary = "根据文件的hash检查文件是否存在-用于文件秒传")
     @GetMapping(value = "/checkFileHashExist")
     public Result<Boolean> checkFileHashExist(@RequestParam("fileHash") String fileHash) {
-        FileInfo fileInfo = fileUploadAndDownloadService.findByFileHashOne(fileHash);
+        FileInfo fileInfo = fileInfoOperation.findByFileHashOne(fileHash);
         if (fileInfo != null) {
             log.info("当前文件的hash:[{}]已经存在在系统中", fileHash);
             return Result.success(true);
@@ -125,7 +127,7 @@ public class FileUploadEndpoint {
             log.info("秒传失败！未传入文件的hash,请求参数为:[{}]", uploadFileInfo);
             return Result.error(GlobalErrorCodeConstants.BAD_REQUEST);
         }
-        FileInfo fileInfo = fileUploadAndDownloadService.findByFileHashOne(uploadFileInfo.getFileHash());
+        FileInfo fileInfo = fileInfoOperation.findByFileHashOne(uploadFileInfo.getFileHash());
         if (fileInfo == null) {
             log.info("秒传失败！传入的文件hash找不到文件信息,请求参数为:[{}]", uploadFileInfo);
             return Result.error(GlobalErrorCodeConstants.BAD_REQUEST);
@@ -143,9 +145,9 @@ public class FileUploadEndpoint {
                     .setCreatorName(requestUser.getZhName())
                     .setTenantId(requestUser.getTenantId());
         }
-        tempFileInfo.setFilePath(fileOperation.copyFile(fileInfo));
+        tempFileInfo.setFilePath(customFileOperation.copyFile(fileInfo));
         //保存记录数据到临时文件表
-        tempFileInfo = fileUploadAndDownloadService.saveTempFileInfo(tempFileInfo);
+        tempFileInfo = fileInfoOperation.saveTempFileInfo(tempFileInfo);
         //返回文件的id
         return Result.success(tempFileInfo.getId());
 

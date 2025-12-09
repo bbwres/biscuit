@@ -94,6 +94,12 @@ public class FileInfo implements Serializable {
 
 
     /**
+     * 文件存储目录
+     */
+    private String fileStorageMenu;
+
+
+    /**
      * 文件存储类型
      */
     private String fileStorageType;
@@ -103,7 +109,6 @@ public class FileInfo implements Serializable {
      * 文件hash值
      */
     private String fileHash;
-
 
 
     /**

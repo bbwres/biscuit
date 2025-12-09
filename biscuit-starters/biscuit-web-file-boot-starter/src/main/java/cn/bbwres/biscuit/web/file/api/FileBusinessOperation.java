@@ -23,6 +23,7 @@ import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessParams;
 import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessRefOldParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -78,10 +79,13 @@ public interface FileBusinessOperation {
 
 
     /**
-     * 解析文件,获取文件内容，支持excel
+     * 获取文件流
      *
-     * @param fileBindBusinessParams 要解析的文件信息，文件id必须并且只能是一个
-     * @return 文件内容
+     * @param businessType
+     * @param businessId
+     * @param fileId
+     * @return
      */
-    Object parseFile(FileBindBusinessParams fileBindBusinessParams);
+    InputStream getFileInputStream(String businessType, String businessId, String fileId);
+
 }

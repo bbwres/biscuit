@@ -64,4 +64,10 @@ public interface FileOperation {
      */
     void deleteFile(FileInfo fileInfo);
 
+
+    /**
+     * 当前的存储类型
+     * @return
+     */
+    String storageType();
 }

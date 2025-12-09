@@ -27,12 +27,13 @@ import cn.bbwres.biscuit.web.file.config.FileProperties;
 import cn.bbwres.biscuit.web.file.endpoint.vo.FileInfoParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
+import cn.bbwres.biscuit.web.file.service.CustomFileOperation;
 import cn.bbwres.biscuit.web.file.service.FileInfoOperation;
-import cn.bbwres.biscuit.web.file.service.FileOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,13 +47,13 @@ import java.util.stream.Collectors;
 public class DefaultFileBusinessOperation implements FileBusinessOperation {
 
     private final FileInfoOperation fileInfoOperation;
-    private final FileOperation fileOperation;
+    private final CustomFileOperation customFileOperation;
     private final FileProperties fileProperties;
 
-    public DefaultFileBusinessOperation(FileInfoOperation fileInfoOperation, FileOperation fileOperation,
+    public DefaultFileBusinessOperation(FileInfoOperation fileInfoOperation, CustomFileOperation customFileOperation,
                                         FileProperties fileProperties) {
         this.fileInfoOperation = fileInfoOperation;
-        this.fileOperation = fileOperation;
+        this.customFileOperation = customFileOperation;
         this.fileProperties = fileProperties;
     }
 
@@ -75,7 +76,7 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
                             //过滤出不在要绑定的文件id列表中的文件。以最新绑定数据为准
                             .filter(fileInfoParams -> !fileBindBusinessExpandParams.getFileIds().contains(fileInfoParams.getId()))
                             .filter(fileInfoParams -> StringUtils.isNotBlank(fileInfoParams.getFilePath()))
-                            .forEach(fileOperation::deleteFile);
+                            .forEach(customFileOperation::deleteFile);
                 } catch (Exception e) {
                     log.warn("删除文件中台文件异常！", e);
                 }
@@ -179,7 +180,7 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
         fileInfoOperation.deleteByFileIds(fileInfos.stream().map(FileInfo::getId).toList());
         //删除文件
         fileInfos.stream().filter(fileInfoParams -> StringUtils.isNotBlank(fileInfoParams.getFilePath()))
-                .forEach(fileOperation::deleteFile);
+                .forEach(customFileOperation::deleteFile);
 
     }
 
@@ -195,7 +196,7 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
             try {
                 noBusinessList.stream()
                         .filter(tempfileInfo -> StringUtils.isNotBlank(tempfileInfo.getFilePath()))
-                        .forEach(tempfileInfo -> fileOperation.deleteFile(new FileInfo()
+                        .forEach(tempfileInfo -> customFileOperation.deleteFile(new FileInfo()
                                 .setFilePath(tempfileInfo.getFilePath())
                                 .setFileHash(tempfileInfo.getFileHash())
                                 .setFileStorageType(tempfileInfo.getFileStorageType())));
@@ -221,15 +222,24 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     }
 
     /**
-     * 解析文件,获取文件内容，支持excel
+     * 获取文件流
      *
-     * @param fileBindBusinessParams 要解析的文件信息，文件id必须并且只能是一个
-     * @return 文件内容
+     * @param businessType
+     * @param businessId
+     * @param fileId
+     * @return
      */
     @Override
-    public Object parseFile(FileBindBusinessParams fileBindBusinessParams) {
-        return null;
+    public InputStream getFileInputStream(String businessType, String businessId, String fileId) {
+        List<FileInfo> fileInfos = fileInfoOperation.findByBusinessAndId(businessType, businessId, fileId);
+        if (CollectionUtils.isEmpty(fileInfos)) {
+            log.warn("根据原始业务类型:[{}]原始业务id:[{}],文件ID:[{}]查询不出文件信息!", businessType, businessId, fileId);
+            throw new SystemRuntimeException(GlobalErrorCodeConstants.BAD_REQUEST);
+        }
+        FileInfo fileInfo = fileInfos.getFirst();
+        return customFileOperation.downloadFile(fileInfo);
     }
+
 
     /**
      * 查询并过滤旧数据
@@ -253,5 +263,6 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
         }
         return fileInfos;
     }
+
 
 }

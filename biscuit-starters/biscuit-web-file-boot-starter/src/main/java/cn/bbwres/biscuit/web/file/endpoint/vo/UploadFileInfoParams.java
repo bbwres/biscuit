@@ -72,4 +72,18 @@ public class UploadFileInfoParams implements Serializable {
     private String fileHash;
 
 
+    /**
+     * 文件存储类型
+     */
+    @Schema(name = "文件存储类型")
+    private String fileStorageType;
+
+
+    /**
+     * 文件存储目录
+     */
+    @Schema(name = "文件存储目录")
+    private String fileStorageMenu;
+
+
 }
