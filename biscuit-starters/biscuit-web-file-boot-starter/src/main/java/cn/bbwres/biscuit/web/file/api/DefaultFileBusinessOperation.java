@@ -91,13 +91,6 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
         List<FileInfo> fileInfos = tempFileInfos.stream().map(tempFileInfo -> {
             FileInfo fileInfo = new FileInfo()
                     .setId(tempFileInfo.getId())
-                    .setTenantId(tempFileInfo.getTenantId())
-                    .setCreator(tempFileInfo.getCreator())
-                    .setCreatorName(tempFileInfo.getCreatorName())
-                    .setCreateTime(tempFileInfo.getCreateTime())
-                    .setUpdater(tempFileInfo.getUpdater())
-                    .setUpdaterName(tempFileInfo.getUpdaterName())
-                    .setUpdateTime(tempFileInfo.getUpdateTime())
                     .setFileName(tempFileInfo.getFileName())
                     .setFileSuffix(tempFileInfo.getFileSuffix())
                     .setFileSize(tempFileInfo.getFileSize())
@@ -106,8 +99,7 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
                     .setFileHash(tempFileInfo.getFileHash());
 
             fileInfo.setBusinessId(fileBindBusinessExpandParams.getBusinessId())
-                    .setBusinessType(fileBindBusinessExpandParams.getBusinessType())
-                    .setUpdateTime(LocalDateTime.now());
+                    .setBusinessType(fileBindBusinessExpandParams.getBusinessType());
             return fileInfo;
         }).collect(Collectors.toList());
         //更新业务数据
@@ -128,11 +120,9 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
             return;
         }
 
-        LocalDateTime updateTime = LocalDateTime.now();
         for (FileInfo fileInfo : fileInfos) {
             fileInfo.setBusinessType(fileBindBusinessRefOldParams.getBusinessType())
-                    .setBusinessId(fileBindBusinessRefOldParams.getBusinessId())
-                    .setUpdateTime(updateTime);
+                    .setBusinessId(fileBindBusinessRefOldParams.getBusinessId());
         }
 
         fileInfoOperation.updateFileInfo(fileInfos);
@@ -150,11 +140,10 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
             log.info("没有匹配的文件可以copy。请求参数为:[{}]", fileBindBusinessRefOldParams);
             return;
         }
-        LocalDateTime createTime = LocalDateTime.now();
         for (FileInfo fileInfo : fileInfos) {
             fileInfo.setBusinessType(fileBindBusinessRefOldParams.getBusinessType())
                     .setBusinessId(fileBindBusinessRefOldParams.getBusinessId())
-                    .setCreateTime(createTime).setId(null);
+                    .setId(null);
         }
         fileInfoOperation.saveFileInfo(fileInfos);
     }

@@ -28,39 +28,6 @@ public class TempFileInfo implements Serializable {
      */
     private String id;
 
-    /**
-     * 租户id
-     */
-    private String tenantId;
-
-    /**
-     * 创建人
-     */
-    private String creator;
-    /**
-     * 创建人名称
-     */
-    private String creatorName;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    private String updater;
-    /**
-     * 修改人名称
-     */
-    private String updaterName;
-
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
-
 
     /**
      * 文件名称

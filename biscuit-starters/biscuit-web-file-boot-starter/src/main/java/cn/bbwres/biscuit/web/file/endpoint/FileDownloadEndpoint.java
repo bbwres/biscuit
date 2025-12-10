@@ -151,7 +151,7 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
      * @return
      */
     @Operation(summary = "下载文件")
-    @GetMapping(value = "/downloadFile")
+    @GetMapping(value = "/downloadFileByFileIds")
     public void downloadFiles(@Validated DownloadFileInfoParams downloadFileInfo, HttpServletResponse response) throws IOException {
         downloadFileByFileIds(downloadFileInfo, response);
     }

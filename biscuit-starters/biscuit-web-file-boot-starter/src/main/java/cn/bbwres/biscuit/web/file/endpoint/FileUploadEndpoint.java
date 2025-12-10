@@ -1,7 +1,6 @@
 package cn.bbwres.biscuit.web.file.endpoint;
 
 import cn.bbwres.biscuit.dto.Result;
-import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.validate.ValidateAddGroup;
 import cn.bbwres.biscuit.validate.ValidationUtil;
@@ -11,7 +10,6 @@ import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
 import cn.bbwres.biscuit.web.file.service.CustomFileOperation;
 import cn.bbwres.biscuit.web.file.service.FileInfoOperation;
-import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -43,7 +40,8 @@ public class FileUploadEndpoint {
 
     private final FileInfoOperation fileInfoOperation;
 
-    public FileUploadEndpoint(CustomFileOperation customFileOperation, FileProperties fileProperties, FileInfoOperation fileInfoOperation) {
+    public FileUploadEndpoint(CustomFileOperation customFileOperation, FileProperties fileProperties,
+                              FileInfoOperation fileInfoOperation) {
         this.customFileOperation = customFileOperation;
         this.fileProperties = fileProperties;
         this.fileInfoOperation = fileInfoOperation;
@@ -63,7 +61,6 @@ public class FileUploadEndpoint {
     @Operation(summary = "上传单个文件")
     @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Result<String> uploadFile(@RequestPart("file") MultipartFile file, @RequestPart(name = "fileInfo", required = false) UploadFileInfoParams uploadFileInfo) {
-        UserBaseInfo requestUser = WebFrameworkUtils.getRequestUser();
         if (Objects.isNull(uploadFileInfo)) {
             uploadFileInfo = new UploadFileInfoParams();
             uploadFileInfo.setFileName(file.getOriginalFilename());
@@ -82,14 +79,9 @@ public class FileUploadEndpoint {
                 .setFileSize(uploadFileInfo.getFileSize())
                 .setFileHash(uploadFileInfo.getFileHash())
                 .setFileSuffix(FilenameUtils.getExtension(uploadFileInfo.getFileName()))
-                .setCreateTime(LocalDateTime.now())
                 .setFileStorageMenu(StringUtils.isBlank(uploadFileInfo.getFileStorageMenu()) ? fileProperties.getDefaultStorageMenu() : uploadFileInfo.getFileStorageMenu())
                 .setFileStorageType(StringUtils.isBlank(uploadFileInfo.getFileStorageType()) ? fileProperties.getDefaultStorageType() : uploadFileInfo.getFileStorageType());
-        if (Objects.nonNull(requestUser)) {
-            fileInfo.setCreator(requestUser.getUserId())
-                    .setCreatorName(requestUser.getZhName())
-                    .setTenantId(requestUser.getTenantId());
-        }
+
         fileInfo.setFilePath(customFileOperation.uploadFile(file, fileInfo));
         //保存记录数据到临时文件表
         fileInfo = fileInfoOperation.saveTempFileInfo(fileInfo);
@@ -122,7 +114,6 @@ public class FileUploadEndpoint {
     @Operation(summary = "秒传文件上传")
     @PostMapping(value = "/uploadFileBySecondTransfer")
     public Result<String> uploadFileBySecondTransfer(@RequestBody UploadFileInfoParams uploadFileInfo) {
-        UserBaseInfo requestUser = WebFrameworkUtils.getRequestUser();
         if (StringUtils.isBlank(uploadFileInfo.getFileHash())) {
             log.info("秒传失败！未传入文件的hash,请求参数为:[{}]", uploadFileInfo);
             return Result.error(GlobalErrorCodeConstants.BAD_REQUEST);
@@ -138,13 +129,8 @@ public class FileUploadEndpoint {
                 .setFileSize(fileInfo.getFileSize())
                 .setFileHash(fileInfo.getFileHash())
                 .setFileSuffix(fileInfo.getFileSuffix())
-                .setCreateTime(LocalDateTime.now())
                 .setFileStorageType(fileInfo.getFileStorageType());
-        if (Objects.nonNull(requestUser)) {
-            tempFileInfo.setCreator(requestUser.getUserId())
-                    .setCreatorName(requestUser.getZhName())
-                    .setTenantId(requestUser.getTenantId());
-        }
+
         tempFileInfo.setFilePath(customFileOperation.copyFile(fileInfo));
         //保存记录数据到临时文件表
         tempFileInfo = fileInfoOperation.saveTempFileInfo(tempFileInfo);

@@ -32,18 +32,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
- * 本地存储的文件操作实现类s
+ * 本地存储的文件操作实现类
  *
  * @author zhanglinfeng
  */
 @Slf4j
 public class LocalStorageFileOperation implements FileOperation {
 
-    private static final String STORAGE_TYPE = "local";
+    public static final String STORAGE_TYPE = "local";
 
     private final FileStorageProperties fileStorageProperties;
 
@@ -68,7 +69,7 @@ public class LocalStorageFileOperation implements FileOperation {
             createDir(fileInfo.getFileStorageMenu());
         }
         // 2. 生成文件存储路径（按日期分目录，避免单目录文件过多）
-        String dateDir = fileInfo.getCreateTime().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String dateDir = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String relativeDir = dateDir + "/";
         String absoluteDir = fileStorageProperties.getStoragePath() + fileInfo.getFileStorageMenu() + relativeDir;
         // 3. 创建日期子目录
@@ -82,7 +83,7 @@ public class LocalStorageFileOperation implements FileOperation {
             file.transferTo(targetFile);
         } catch (Exception e) {
             log.warn("文件保存在本地失败!文件路径:[{}]", fileFullPath, e);
-            throw new SystemRuntimeException("文件保存在本地失败：" + fileFullPath);
+            throw new SystemRuntimeException("文件保存在存储端失败：" + e.getMessage());
         }
         return fileFullPath;
     }

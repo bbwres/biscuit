@@ -30,7 +30,7 @@ import java.security.NoSuchAlgorithmException;
  *
  * @author zhanglinfeng
  */
-public class LargeFileHashUtils {
+public class LargeFileHashUtil {
     /**
      * 缓冲区大小（推荐8KB~64KB，平衡性能与内存）
      * // 32KB

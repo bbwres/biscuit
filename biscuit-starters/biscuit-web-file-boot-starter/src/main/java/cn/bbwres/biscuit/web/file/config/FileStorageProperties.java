@@ -37,7 +37,7 @@ public class FileStorageProperties {
     private Boolean enabled = false;
 
     /**
-     * 存储根目录
+     * 存储根目录(桶名称)
      */
     private String storagePath;
 

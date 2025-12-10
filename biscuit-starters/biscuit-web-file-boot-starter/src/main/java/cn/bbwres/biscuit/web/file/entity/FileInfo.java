@@ -5,7 +5,6 @@ import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -26,39 +25,6 @@ public class FileInfo implements Serializable {
      * id
      */
     private String id;
-
-    /**
-     * 租户id
-     */
-    private String tenantId;
-
-    /**
-     * 创建人
-     */
-    private String creator;
-    /**
-     * 创建人名称
-     */
-    private String creatorName;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    private String updater;
-    /**
-     * 修改人名称
-     */
-    private String updaterName;
-
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
 
 
     /**
