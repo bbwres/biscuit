@@ -155,4 +155,6 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
     public void downloadFiles(@Validated DownloadFileInfoParams downloadFileInfo, HttpServletResponse response) throws IOException {
         downloadFileByFileIds(downloadFileInfo, response);
     }
+
+
 }
