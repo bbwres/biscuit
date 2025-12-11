@@ -26,6 +26,7 @@ import java.nio.file.Paths;
  * 提取文件路径
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class PathExtractUtil {
 

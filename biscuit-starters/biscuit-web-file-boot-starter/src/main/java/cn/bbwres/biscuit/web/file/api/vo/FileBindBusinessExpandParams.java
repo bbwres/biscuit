@@ -28,6 +28,7 @@ import java.io.Serial;
  * 文件业务关联请求参数
  *
  * @author zhanglinfeng12
+ * @version $Id: $Id
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

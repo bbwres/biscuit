@@ -28,6 +28,7 @@ import java.io.Serializable;
  * 文件业务关联请求参数
  *
  * @author zhanglinfeng12
+ * @version $Id: $Id
  */
 @Data
 @Accessors(chain = true)

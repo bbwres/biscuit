@@ -6,9 +6,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Map;
 
 /**
+ * <p>FileProperties class.</p>
+ *
  * @author loukia
  * @since 2022/3/25
- **/
+ * @version $Id: $Id
+ */
 @Data
 @ConfigurationProperties(prefix = "file")
 public class FileProperties {

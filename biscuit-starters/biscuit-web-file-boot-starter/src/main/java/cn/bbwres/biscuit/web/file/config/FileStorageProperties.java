@@ -26,6 +26,7 @@ import java.util.Map;
  * 文件存储配置信息
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Data
 public class FileStorageProperties {

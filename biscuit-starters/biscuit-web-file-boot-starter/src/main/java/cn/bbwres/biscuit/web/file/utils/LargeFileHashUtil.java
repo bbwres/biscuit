@@ -29,6 +29,7 @@ import java.security.NoSuchAlgorithmException;
  * 文件hash计算
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public class LargeFileHashUtil {
     /**
@@ -49,6 +50,8 @@ public class LargeFileHashUtil {
      * @param file      目标文件
      * @param algorithm 哈希算法（MD5/SHA-256/SHA-512）
      * @return 十六进制哈希字符串
+     * @throws java.security.NoSuchAlgorithmException if any.
+     * @throws java.io.IOException if any.
      */
     public static String calculateFileHash(File file, String algorithm) throws NoSuchAlgorithmException, IOException {
         MessageDigest digest = MessageDigest.getInstance(algorithm);
@@ -83,10 +86,10 @@ public class LargeFileHashUtil {
     /**
      * 简化方法：计算SHA-256（推荐用于大文件）
      *
-     * @param file
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
+     * @param file a {@link java.io.File} object
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.io.IOException
+     * @return a {@link java.lang.String} object
      */
     public static String calculateSHA256(File file) throws NoSuchAlgorithmException, IOException {
         return calculateFileHash(file, "SHA-256");
@@ -95,10 +98,10 @@ public class LargeFileHashUtil {
     /**
      * 简化方法：计算MD5（仅用于非加密场景）
      *
-     * @param file
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
+     * @param file a {@link java.io.File} object
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.io.IOException
+     * @return a {@link java.lang.String} object
      */
     public static String calculateMD5(File file) throws NoSuchAlgorithmException, IOException {
         return calculateFileHash(file, "MD5");

@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
  * 文件操作的基础controller
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class BaseFileEndpoint {

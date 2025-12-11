@@ -26,6 +26,7 @@ import java.util.Objects;
  *
  * @author zlf
  * @since 2022-09-03
+ * @version $Id: $Id
  */
 @Slf4j
 @Tag(name = "文件上传端点")
@@ -40,6 +41,13 @@ public class FileUploadEndpoint {
 
     private final FileInfoOperation fileInfoOperation;
 
+    /**
+     * <p>Constructor for FileUploadEndpoint.</p>
+     *
+     * @param customFileOperation a {@link cn.bbwres.biscuit.web.file.service.CustomFileOperation} object
+     * @param fileProperties a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
+     * @param fileInfoOperation a {@link cn.bbwres.biscuit.web.file.service.FileInfoOperation} object
+     */
     public FileUploadEndpoint(CustomFileOperation customFileOperation, FileProperties fileProperties,
                               FileInfoOperation fileInfoOperation) {
         this.customFileOperation = customFileOperation;
@@ -55,8 +63,9 @@ public class FileUploadEndpoint {
      * 2.把接口范文的文件id传入到业务接口中
      * 3.业务接口调用绑定文件关系接口
      *
-     * @param file
-     * @return
+     * @param file a {@link org.springframework.web.multipart.MultipartFile} object
+     * @param uploadFileInfo a {@link cn.bbwres.biscuit.web.file.endpoint.vo.UploadFileInfoParams} object
+     * @return a {@link cn.bbwres.biscuit.dto.Result} object
      */
     @Operation(summary = "上传单个文件")
     @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -94,6 +103,9 @@ public class FileUploadEndpoint {
      * 文件秒传
      * 1.根据文件的hash检查文件是否存在
      * 2. 根据文件的hash复制文件
+     *
+     * @param fileHash a {@link java.lang.String} object
+     * @return a {@link cn.bbwres.biscuit.dto.Result} object
      */
     @Operation(summary = "根据文件的hash检查文件是否存在-用于文件秒传")
     @GetMapping(value = "/checkFileHashExist")
@@ -110,6 +122,7 @@ public class FileUploadEndpoint {
      * 秒传的文件上传
      *
      * @return Result
+     * @param uploadFileInfo a {@link cn.bbwres.biscuit.web.file.endpoint.vo.UploadFileInfoParams} object
      */
     @Operation(summary = "秒传文件上传")
     @PostMapping(value = "/uploadFileBySecondTransfer")

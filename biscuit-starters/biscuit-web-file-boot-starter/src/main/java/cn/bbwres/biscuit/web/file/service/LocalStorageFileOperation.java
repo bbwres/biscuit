@@ -40,14 +40,21 @@ import java.util.UUID;
  * 本地存储的文件操作实现类
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class LocalStorageFileOperation implements FileOperation {
 
+    /** Constant <code>STORAGE_TYPE="local"</code> */
     public static final String STORAGE_TYPE = "local";
 
     private final FileStorageProperties fileStorageProperties;
 
+    /**
+     * <p>Constructor for LocalStorageFileOperation.</p>
+     *
+     * @param fileProperties a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
+     */
     public LocalStorageFileOperation(FileProperties fileProperties) {
         this.fileStorageProperties = fileProperties.getStorageConfig().get(STORAGE_TYPE);
         if (!StringUtils.isBlank(fileStorageProperties.getStoragePath())) {
@@ -57,11 +64,9 @@ public class LocalStorageFileOperation implements FileOperation {
     }
 
     /**
-     * 上传文件
+     * {@inheritDoc}
      *
-     * @param file     文件内容
-     * @param fileInfo 文件信息
-     * @return 文件的唯一路径
+     * 上传文件
      */
     @Override
     public String uploadFile(MultipartFile file, TempFileInfo fileInfo) {
@@ -90,10 +95,9 @@ public class LocalStorageFileOperation implements FileOperation {
 
 
     /**
-     * 根据文件信息获取文件流
+     * {@inheritDoc}
      *
-     * @param fileInfo
-     * @return
+     * 根据文件信息获取文件流
      */
     @Override
     public InputStream downloadFile(FileInfo fileInfo) {
@@ -109,10 +113,9 @@ public class LocalStorageFileOperation implements FileOperation {
     }
 
     /**
-     * 复制文件
+     * {@inheritDoc}
      *
-     * @param srcfileInfo 原文件信息
-     * @return
+     * 复制文件
      */
     @Override
     public String copyFile(FileInfo srcfileInfo) {
@@ -134,9 +137,9 @@ public class LocalStorageFileOperation implements FileOperation {
 
 
     /**
-     * 根据 fileInfo信息删除文件实体信息
+     * {@inheritDoc}
      *
-     * @param fileInfo
+     * 根据 fileInfo信息删除文件实体信息
      */
     @Override
     public void deleteFile(FileInfo fileInfo) {
@@ -148,9 +151,9 @@ public class LocalStorageFileOperation implements FileOperation {
     }
 
     /**
-     * 当前的存储类型
+     * {@inheritDoc}
      *
-     * @return
+     * 当前的存储类型
      */
     @Override
     public String storageType() {

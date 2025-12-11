@@ -34,6 +34,7 @@ import java.io.Serializable;
  * 上传文件请求参数
  *
  * @author zhanglinfeng12
+ * @version $Id: $Id
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

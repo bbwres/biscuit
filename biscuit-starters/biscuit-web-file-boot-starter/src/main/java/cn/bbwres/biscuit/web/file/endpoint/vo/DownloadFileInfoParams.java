@@ -31,6 +31,7 @@ import java.io.Serializable;
  * 下载文件请求参数
  *
  * @author zlf
+ * @version $Id: $Id
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

@@ -50,10 +50,12 @@ import java.util.UUID;
  * s3存储的文件操作实现类
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class S3StorageFileOperation implements FileOperation {
 
+    /** Constant <code>STORAGE_TYPE="s3"</code> */
     public static final String STORAGE_TYPE = "s3";
 
     private final FileStorageProperties fileStorageProperties;
@@ -73,6 +75,11 @@ public class S3StorageFileOperation implements FileOperation {
     private static final String SERVICE_CONFIGURATION_CHUNKED_ENCODING_ENABLED = "service.configuration.chunked.encoding.enabled";
 
 
+    /**
+     * <p>Constructor for S3StorageFileOperation.</p>
+     *
+     * @param fileProperties a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
+     */
     public S3StorageFileOperation(FileProperties fileProperties) {
         this.fileStorageProperties = fileProperties.getStorageConfig().get(STORAGE_TYPE);
         //初始化s3client
@@ -107,12 +114,10 @@ public class S3StorageFileOperation implements FileOperation {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * 上传文件
      * 返回的路径为 桶:/xxx/xx.jpg
-     *
-     * @param file     文件内容
-     * @param fileInfo 文件信息
-     * @return 文件的唯一路径
      */
     @Override
     public String uploadFile(MultipartFile file, TempFileInfo fileInfo) {
@@ -140,10 +145,9 @@ public class S3StorageFileOperation implements FileOperation {
 
 
     /**
-     * 根据文件信息获取文件流
+     * {@inheritDoc}
      *
-     * @param fileInfo
-     * @return
+     * 根据文件信息获取文件流
      */
     @Override
     public InputStream downloadFile(FileInfo fileInfo) {
@@ -156,10 +160,9 @@ public class S3StorageFileOperation implements FileOperation {
 
 
     /**
-     * 复制文件
+     * {@inheritDoc}
      *
-     * @param srcfileInfo 原文件信息
-     * @return
+     * 复制文件
      */
     @Override
     public String copyFile(FileInfo srcfileInfo) {
@@ -180,9 +183,9 @@ public class S3StorageFileOperation implements FileOperation {
 
 
     /**
-     * 根据 fileInfo信息删除文件实体信息
+     * {@inheritDoc}
      *
-     * @param fileInfo
+     * 根据 fileInfo信息删除文件实体信息
      */
     @Override
     public void deleteFile(FileInfo fileInfo) {
@@ -196,9 +199,9 @@ public class S3StorageFileOperation implements FileOperation {
     }
 
     /**
-     * 当前的存储类型
+     * {@inheritDoc}
      *
-     * @return
+     * 当前的存储类型
      */
     @Override
     public String storageType() {

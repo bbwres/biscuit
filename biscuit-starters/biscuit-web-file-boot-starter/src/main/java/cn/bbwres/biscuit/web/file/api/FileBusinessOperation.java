@@ -30,6 +30,7 @@ import java.util.List;
  * 文件与业务关系操作
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public interface FileBusinessOperation {
 
@@ -81,10 +82,10 @@ public interface FileBusinessOperation {
     /**
      * 获取文件流
      *
-     * @param businessType
-     * @param businessId
-     * @param fileId
-     * @return
+     * @param businessType a {@link java.lang.String} object
+     * @param businessId a {@link java.lang.String} object
+     * @param fileId a {@link java.lang.String} object
+     * @return a {@link java.io.InputStream} object
      */
     InputStream getFileInputStream(String businessType, String businessId, String fileId);
 

@@ -28,6 +28,7 @@ import java.io.InputStream;
  * 文件操作服务接口
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public interface FileOperation {
 
@@ -44,8 +45,8 @@ public interface FileOperation {
     /**
      * 根据文件信息获取文件流
      *
-     * @param fileInfo
-     * @return
+     * @param fileInfo a {@link cn.bbwres.biscuit.web.file.entity.FileInfo} object
+     * @return a {@link java.io.InputStream} object
      */
     InputStream downloadFile(FileInfo fileInfo);
 
@@ -54,20 +55,22 @@ public interface FileOperation {
      * 复制文件
      *
      * @param srcfileInfo 原文件信息
-     * @return
+     * @return a {@link java.lang.String} object
      */
     String copyFile(FileInfo srcfileInfo);
 
     /**
      * 根据 fileInfo信息删除文件实体信息
-     * @param fileInfo
+     *
+     * @param fileInfo a {@link cn.bbwres.biscuit.web.file.entity.FileInfo} object
      */
     void deleteFile(FileInfo fileInfo);
 
 
     /**
      * 当前的存储类型
-     * @return
+     *
+     * @return a {@link java.lang.String} object
      */
     String storageType();
 }

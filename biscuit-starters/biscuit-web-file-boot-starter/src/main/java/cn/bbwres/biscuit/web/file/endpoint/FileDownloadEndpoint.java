@@ -52,6 +52,7 @@ import java.util.UUID;
  * 文件下载端点
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 @Tag(name = "文件下载端点")
@@ -66,6 +67,13 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
 
     private final FileInfoOperation fileInfoOperation;
 
+    /**
+     * <p>Constructor for FileDownloadEndpoint.</p>
+     *
+     * @param customFileOperation a {@link cn.bbwres.biscuit.web.file.service.CustomFileOperation} object
+     * @param fileProperties a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
+     * @param fileInfoOperation a {@link cn.bbwres.biscuit.web.file.service.FileInfoOperation} object
+     */
     public FileDownloadEndpoint(CustomFileOperation customFileOperation, FileProperties fileProperties, FileInfoOperation fileInfoOperation) {
         this.customFileOperation = customFileOperation;
         this.fileProperties = fileProperties;
@@ -76,8 +84,8 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
     /**
      * 根据业务id和业务类型获取出文件列表
      *
-     * @param downloadFileInfo
-     * @return
+     * @param downloadFileInfo a {@link cn.bbwres.biscuit.web.file.endpoint.vo.DownloadFileInfoParams} object
+     * @return a {@link cn.bbwres.biscuit.dto.Result} object
      */
     @Operation(summary = "根据业务id和业务类型获取出文件列表")
     @PostMapping(value = "/findFileInfoByBusiness")
@@ -95,8 +103,9 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
     /**
      * 下载文件
      *
-     * @param downloadFileInfo
-     * @return
+     * @param downloadFileInfo a {@link cn.bbwres.biscuit.web.file.endpoint.vo.DownloadFileInfoParams} object
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object
+     * @throws java.io.IOException if any.
      */
     @Operation(summary = "下载文件")
     @PostMapping(value = "/downloadFileByFileIds")
@@ -147,8 +156,9 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
     /**
      * 下载文件
      *
-     * @param downloadFileInfo
-     * @return
+     * @param downloadFileInfo a {@link cn.bbwres.biscuit.web.file.endpoint.vo.DownloadFileInfoParams} object
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object
+     * @throws java.io.IOException if any.
      */
     @Operation(summary = "下载文件")
     @GetMapping(value = "/downloadFileByFileIds")

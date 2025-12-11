@@ -35,6 +35,7 @@ import java.util.List;
  * web自动配置
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @AutoConfiguration
 @EnableConfigurationProperties(FileProperties.class)
@@ -58,6 +59,9 @@ public class FileAutoConfiguration {
      * 默认的文件业务操作类
      *
      * @return DefaultFileBusinessOperation
+     * @param fileInfoOperation a {@link cn.bbwres.biscuit.web.file.service.FileInfoOperation} object
+     * @param customFileOperation a {@link cn.bbwres.biscuit.web.file.service.CustomFileOperation} object
+     * @param fileProperties a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
      */
     @Bean
     @ConditionalOnMissingBean

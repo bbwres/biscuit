@@ -13,6 +13,7 @@ import java.io.Serializable;
  *
  * @author zlf
  * @since 2022-09-03
+ * @version $Id: $Id
  */
 @Data
 @Accessors(chain = true)

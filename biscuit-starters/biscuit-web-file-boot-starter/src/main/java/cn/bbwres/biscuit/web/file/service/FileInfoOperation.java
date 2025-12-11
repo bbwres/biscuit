@@ -31,6 +31,7 @@ import java.util.List;
  * 文件信息操作接口
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 public interface FileInfoOperation {
 
@@ -47,10 +48,10 @@ public interface FileInfoOperation {
     /**
      * 根据 文件业务类型和业务id 以及文件id查询文件列表
      *
-     * @param businessType
-     * @param businessId
+     * @param businessType a {@link java.lang.String} object
+     * @param businessId a {@link java.lang.String} object
      * @param fileId       文件id
-     * @return
+     * @return a {@link java.util.List} object
      */
     List<FileInfo> findByBusinessAndId(String businessType, String businessId, String... fileId);
 
@@ -68,25 +69,25 @@ public interface FileInfoOperation {
     /**
      * 根据业务类型和业务id查询出关联的附件列表信息
      *
-     * @param businessType
-     * @param businessId
-     * @return
+     * @param businessType a {@link java.lang.String} object
+     * @param businessId a {@link java.lang.String} object
+     * @return a {@link java.util.List} object
      */
     List<FileInfoParams> findByBusiness(String businessType, String businessId);
 
     /**
      * 根据文件hash查询临时文件中是否存在
      *
-     * @param fileHash
-     * @return
+     * @param fileHash a {@link java.lang.String} object
+     * @return a {@link cn.bbwres.biscuit.web.file.entity.FileInfo} object
      */
     FileInfo findByFileHashOne(String fileHash);
 
     /**
      * 根据ID查询出临时文件
      *
-     * @param fileIds
-     * @return
+     * @param fileIds a {@link java.util.List} object
+     * @return a {@link java.util.List} object
      */
     List<TempFileInfo> findTempFileInfoByIds(List<String> fileIds);
 
@@ -103,34 +104,36 @@ public interface FileInfoOperation {
     /**
      * 更新文件信息
      *
-     * @param fileInfos
+     * @param fileInfos a {@link java.util.List} object
      */
     void updateFileInfo(List<FileInfo> fileInfos);
 
     /**
      * 保存文件信息
      *
-     * @param fileInfos
+     * @param fileInfos a {@link java.util.List} object
      */
     void saveFileInfo(List<FileInfo> fileInfos);
 
     /**
      * 根据文件id删除文件信息
      *
-     * @param list
+     * @param list a {@link java.util.List} object
      */
     void deleteByFileIds(List<String> list);
 
     /**
      * 查询在指定时间也没有业务关联的临时文件信息
-     * @param gtData
-     * @return
+     *
+     * @param gtData a {@link java.time.LocalDateTime} object
+     * @return a {@link java.util.List} object
      */
     List<TempFileInfo> findByNoBusiness(LocalDateTime gtData);
 
     /**
      * 根据临时文件信息，删除临时文件
-     * @param noBusinessList
+     *
+     * @param noBusinessList a {@link java.util.List} object
      */
     void deleteTempFileInfo(List<TempFileInfo> noBusinessList);
 

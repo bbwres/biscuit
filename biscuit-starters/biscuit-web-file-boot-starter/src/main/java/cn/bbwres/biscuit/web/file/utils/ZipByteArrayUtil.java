@@ -12,6 +12,7 @@ import static org.springframework.util.StreamUtils.BUFFER_SIZE;
  * 压缩多个文件的byte数据为ZIP，并返回输入流
  *
  * @author zlf
+ * @version $Id: $Id
  */
 public class ZipByteArrayUtil {
 
@@ -19,7 +20,7 @@ public class ZipByteArrayUtil {
      * 压缩多个文件的byte数据为ZIP，并返回输入流
      *
      * @param fileDataMap 键：文件名（含扩展名），值：文件的byte数组
-     * @return 压缩后的ZIP输入流
+     * @param outputStream a {@link java.io.OutputStream} object
      */
     public static void compressToZipStream(OutputStream outputStream, Map<String, byte[]> fileDataMap) {
         try (ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
@@ -49,7 +50,7 @@ public class ZipByteArrayUtil {
      *
      * @param streamEntries 待压缩的流列表（包含流和对应文件名）
      * @param outputStream  zip 输出流
-     * @throws IOException
+     * @throws java.io.IOException
      */
     public static void compressMultipleInputStreamsToZip(List<StreamEntry> streamEntries, OutputStream outputStream) throws IOException {
         try (BufferedOutputStream bos = new BufferedOutputStream(outputStream);
@@ -75,6 +76,13 @@ public class ZipByteArrayUtil {
     }
 
     // 封装InputStream和对应文件名的实体类
+    /**
+     * <p>StreamEntry.</p>
+     *
+     * @param inputStream a {@link java.io.InputStream} object
+     * @param entryName a {@link java.lang.String} object
+     * @return a record object
+     */
     public record StreamEntry(InputStream inputStream, String entryName) {
 
     }

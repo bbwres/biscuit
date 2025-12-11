@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
  * 默认的文件业务信息操作实现类
  *
  * @author zhanglinfeng
+ * @version $Id: $Id
  */
 @Slf4j
 public class DefaultFileBusinessOperation implements FileBusinessOperation {
@@ -50,6 +51,13 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     private final CustomFileOperation customFileOperation;
     private final FileProperties fileProperties;
 
+    /**
+     * <p>Constructor for DefaultFileBusinessOperation.</p>
+     *
+     * @param fileInfoOperation a {@link cn.bbwres.biscuit.web.file.service.FileInfoOperation} object
+     * @param customFileOperation a {@link cn.bbwres.biscuit.web.file.service.CustomFileOperation} object
+     * @param fileProperties a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
+     */
     public DefaultFileBusinessOperation(FileInfoOperation fileInfoOperation, CustomFileOperation customFileOperation,
                                         FileProperties fileProperties) {
         this.fileInfoOperation = fileInfoOperation;
@@ -58,9 +66,9 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     }
 
     /**
-     * 1.文件与业务id绑定
+     * {@inheritDoc}
      *
-     * @param fileBindBusinessExpandParams 文件业务绑定参数
+     * 1.文件与业务id绑定
      */
     @Override
     public void fileBindBusiness(FileBindBusinessExpandParams fileBindBusinessExpandParams) {
@@ -107,9 +115,9 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     }
 
     /**
-     * 2. 文件绑定的业务变更（用于将原文件绑定到新业务上）
+     * {@inheritDoc}
      *
-     * @param fileBindBusinessRefOldParams 文件业务绑定参数
+     * 2. 文件绑定的业务变更（用于将原文件绑定到新业务上）
      */
     @Override
     public void fileBindBusinessChange(FileBindBusinessRefOldParams fileBindBusinessRefOldParams) {
@@ -129,9 +137,9 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     }
 
     /**
-     * 3. 文件绑定复制（用于将原业务关联的附件 复制到新的业务上）
+     * {@inheritDoc}
      *
-     * @param fileBindBusinessRefOldParams 文件业务绑定参数
+     * 3. 文件绑定复制（用于将原业务关联的附件 复制到新的业务上）
      */
     @Override
     public void fileBindBusinessCopy(FileBindBusinessRefOldParams fileBindBusinessRefOldParams) {
@@ -150,9 +158,9 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
 
 
     /**
-     * 4. 根据业务id删除附件（支持删除单个或者多个）
+     * {@inheritDoc}
      *
-     * @param fileBindBusinessParams 文件业务绑定参数
+     * 4. 根据业务id删除附件（支持删除单个或者多个）
      */
     @Override
     public void deleteFileByBusinessInfo(FileBindBusinessParams fileBindBusinessParams) {
@@ -174,6 +182,8 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * 5. 删除过期没有关联的临时文件
      */
     @Override
@@ -196,10 +206,9 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     }
 
     /**
-     * 6. 获取文件信息
+     * {@inheritDoc}
      *
-     * @param fileBindBusinessParams 业务信息
-     * @return 文件列表
+     * 6. 获取文件信息
      */
     @Override
     public List<FileInfo> findFileInfoByBusiness(FileBindBusinessParams fileBindBusinessParams) {
@@ -211,12 +220,9 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
     }
 
     /**
-     * 获取文件流
+     * {@inheritDoc}
      *
-     * @param businessType
-     * @param businessId
-     * @param fileId
-     * @return
+     * 获取文件流
      */
     @Override
     public InputStream getFileInputStream(String businessType, String businessId, String fileId) {
