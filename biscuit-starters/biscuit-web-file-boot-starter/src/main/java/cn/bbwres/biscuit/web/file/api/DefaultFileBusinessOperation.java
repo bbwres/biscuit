@@ -24,7 +24,6 @@ import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessExpandParams;
 import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessParams;
 import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessRefOldParams;
 import cn.bbwres.biscuit.web.file.config.FileProperties;
-import cn.bbwres.biscuit.web.file.endpoint.vo.FileInfoParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
 import cn.bbwres.biscuit.web.file.service.CustomFileOperation;
@@ -77,7 +76,7 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
             throw new SystemRuntimeException(GlobalErrorCodeConstants.BAD_REQUEST);
         }
         if (fileBindBusinessExpandParams.getDeleteHistory() != null && fileBindBusinessExpandParams.getDeleteHistory()) {
-            List<FileInfoParams> list = fileInfoOperation.findByBusiness(fileBindBusinessExpandParams.getBusinessType(), fileBindBusinessExpandParams.getBusinessId());
+            List<FileInfo> list = fileInfoOperation.findByBusinessAndId(fileBindBusinessExpandParams.getBusinessType(), fileBindBusinessExpandParams.getBusinessId());
             if (!CollectionUtils.isEmpty(list)) {
                 try {
                     list.stream()
@@ -128,12 +127,8 @@ public class DefaultFileBusinessOperation implements FileBusinessOperation {
             return;
         }
 
-        for (FileInfo fileInfo : fileInfos) {
-            fileInfo.setBusinessType(fileBindBusinessRefOldParams.getBusinessType())
-                    .setBusinessId(fileBindBusinessRefOldParams.getBusinessId());
-        }
-
-        fileInfoOperation.updateFileInfo(fileInfos);
+        fileInfoOperation.updateFileInfo(fileBindBusinessRefOldParams.getBusinessType(),fileBindBusinessRefOldParams.getBusinessId(),
+                fileInfos.stream().map(FileInfo::getId).toList());
     }
 
     /**

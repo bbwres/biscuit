@@ -55,7 +55,9 @@ import java.util.UUID;
 @Slf4j
 public class S3StorageFileOperation implements FileOperation {
 
-    /** Constant <code>STORAGE_TYPE="s3"</code> */
+    /**
+     * Constant <code>STORAGE_TYPE="s3"</code>
+     */
     public static final String STORAGE_TYPE = "s3";
 
     private final FileStorageProperties fileStorageProperties;
@@ -115,7 +117,7 @@ public class S3StorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 上传文件
      * 返回的路径为 桶:/xxx/xx.jpg
      */
@@ -124,7 +126,7 @@ public class S3StorageFileOperation implements FileOperation {
         // 生成文件存储路径（按日期分目录，避免单目录文件过多）
         String dateDir = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String relativeDir = dateDir + "/";
-        String absoluteDir = fileInfo.getFileStorageMenu() + relativeDir;
+        String absoluteDir = (StringUtils.isBlank(fileInfo.getFileStorageMenu()) ? "" : fileInfo.getFileStorageMenu()) + relativeDir;
         // 4. 生成唯一文件名（UUID + 原始文件后缀，避免冲突）
         String fileName = UUID.randomUUID() + "." + fileInfo.getFileSuffix();
         String fileFullPath = absoluteDir + fileName;
@@ -146,7 +148,7 @@ public class S3StorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 根据文件信息获取文件流
      */
     @Override
@@ -161,7 +163,7 @@ public class S3StorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 复制文件
      */
     @Override
@@ -184,7 +186,7 @@ public class S3StorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 根据 fileInfo信息删除文件实体信息
      */
     @Override
@@ -200,7 +202,7 @@ public class S3StorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 当前的存储类型
      */
     @Override

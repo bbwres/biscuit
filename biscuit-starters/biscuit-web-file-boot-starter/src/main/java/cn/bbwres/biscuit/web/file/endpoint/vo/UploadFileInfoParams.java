@@ -39,7 +39,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(name = "上传文件请求参数")
+@Schema(description = "上传文件请求参数")
 public class UploadFileInfoParams implements Serializable {
 
     @Serial
@@ -48,27 +48,27 @@ public class UploadFileInfoParams implements Serializable {
     /**
      * 文件名称
      */
-    @Schema(name = "文件名称")
+    @Schema(description = "文件名称")
     @NotBlank(groups = {ValidateAddGroup.class})
     @Size(max = 512)
     private String fileName;
     /**
      * 文件扩展名称
      */
-    @Schema(name = "文件扩展名称")
+    @Schema(description = "文件扩展名称")
     @NotBlank(groups = {ValidateAddGroup.class})
     @Size(max = 128)
     private String fileSuffix;
     /**
      * 文件大小
      */
-    @Schema(name = "文件大小")
+    @Schema(description = "文件大小")
     @NotNull(groups = {ValidateAddGroup.class})
     private Long fileSize;
     /**
      * 文件的hash值
      */
-    @Schema(name = "文件的hash值")
+    @Schema(description = "文件的hash值")
     @Size(max = 512)
     private String fileHash;
 
@@ -76,14 +76,14 @@ public class UploadFileInfoParams implements Serializable {
     /**
      * 文件存储类型
      */
-    @Schema(name = "文件存储类型")
+    @Schema(description = "文件存储类型")
     private String fileStorageType;
 
 
     /**
      * 文件存储目录
      */
-    @Schema(name = "文件存储目录")
+    @Schema(description = "文件存储目录")
     private String fileStorageMenu;
 
 

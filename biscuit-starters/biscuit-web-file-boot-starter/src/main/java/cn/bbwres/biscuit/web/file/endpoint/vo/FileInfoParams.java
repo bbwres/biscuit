@@ -46,14 +46,14 @@ public class FileInfoParams extends FileInfo {
     /**
      * 文件的下载地址
      */
-    @Schema(name = "文件的下载地址,调用获取文件下载地址时才有值")
+    @Schema(description = "文件的下载地址,调用获取文件下载地址时才有值")
     private String downloadUrl;
 
 
     /**
      * 文件的预览地址
      */
-    @Schema(name = "文件的预览地址,调用获取文件下载地址时才有值")
+    @Schema(description = "文件的预览地址,调用获取文件下载地址时才有值")
     private String previewUrl;
 
 }

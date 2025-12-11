@@ -23,7 +23,6 @@ import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.web.file.config.FileProperties;
 import cn.bbwres.biscuit.web.file.endpoint.vo.DownloadFileInfoParams;
-import cn.bbwres.biscuit.web.file.endpoint.vo.FileInfoParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import cn.bbwres.biscuit.web.file.service.CustomFileOperation;
 import cn.bbwres.biscuit.web.file.service.FileInfoOperation;
@@ -89,14 +88,14 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
      */
     @Operation(summary = "根据业务id和业务类型获取出文件列表")
     @PostMapping(value = "/findFileInfoByBusiness")
-    public Result<List<FileInfoParams>> findFileInfoByBusiness(@RequestBody @Validated DownloadFileInfoParams downloadFileInfo) {
+    public Result<List<FileInfo>> findFileInfoByBusiness(@RequestBody @Validated DownloadFileInfoParams downloadFileInfo) {
         UserBaseInfo requestUser = WebFrameworkUtils.getRequestUser();
         if (!fileInfoOperation.checkFilePermission(downloadFileInfo.getBusinessType(), downloadFileInfo.getBusinessId(), requestUser)) {
             log.info("当前获取附件列表据失败！请求参数为:[{}],业务模块不允许获取!", downloadFileInfo);
             return Result.error(GlobalErrorCodeConstants.UNAUTHORIZED);
         }
         //获取文件id
-        return Result.success(fileInfoOperation.findByBusiness(downloadFileInfo.getBusinessType(), downloadFileInfo.getBusinessId()));
+        return Result.success(fileInfoOperation.findByBusinessAndId(downloadFileInfo.getBusinessType(), downloadFileInfo.getBusinessId()));
     }
 
 

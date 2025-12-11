@@ -206,7 +206,7 @@ public class ResourceServerConfig {
     @Bean
     public ServerAccessDeniedHandler customServerAccessDeniedHandler(GatewayProperties gatewayProperties) {
         return (serverWebExchange, e) -> {
-            Result<Void> result = new Result<>(gatewayProperties.getAccessDeniedCode(), e.getMessage());
+            Result<Void> result = new Result<>(gatewayProperties.getAccessDeniedCode(), e.getMessage(),false);
             return write(result, serverWebExchange.getResponse(), e);
         };
     }
@@ -231,7 +231,7 @@ public class ResourceServerConfig {
                 state = serverWebExchange.getRequest().getHeaders().getFirst(GatewayConstant.QUERY_PARAMS);
             }
             String url = gatewayProperties.getLoginStateUris().get(state);
-            Result<String> result = new Result<>(gatewayProperties.getAuthFailCode(), e.getMessage());
+            Result<String> result = new Result<>(gatewayProperties.getAuthFailCode(), e.getMessage(),false);
             result.setData(url);
             return write(result, serverWebExchange.getResponse(), e);
         };

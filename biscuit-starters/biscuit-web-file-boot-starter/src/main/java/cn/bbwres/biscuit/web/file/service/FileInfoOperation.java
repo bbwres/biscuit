@@ -20,7 +20,6 @@ package cn.bbwres.biscuit.web.file.service;
 
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessExpandParams;
-import cn.bbwres.biscuit.web.file.endpoint.vo.FileInfoParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
 
@@ -49,7 +48,7 @@ public interface FileInfoOperation {
      * 根据 文件业务类型和业务id 以及文件id查询文件列表
      *
      * @param businessType a {@link java.lang.String} object
-     * @param businessId a {@link java.lang.String} object
+     * @param businessId   a {@link java.lang.String} object
      * @param fileId       文件id
      * @return a {@link java.util.List} object
      */
@@ -66,14 +65,6 @@ public interface FileInfoOperation {
      */
     boolean checkFilePermission(String businessType, String businessId, UserBaseInfo requestUser, String... fileId);
 
-    /**
-     * 根据业务类型和业务id查询出关联的附件列表信息
-     *
-     * @param businessType a {@link java.lang.String} object
-     * @param businessId a {@link java.lang.String} object
-     * @return a {@link java.util.List} object
-     */
-    List<FileInfoParams> findByBusiness(String businessType, String businessId);
 
     /**
      * 根据文件hash查询临时文件中是否存在
@@ -102,11 +93,11 @@ public interface FileInfoOperation {
     void fileBindBusiness(FileBindBusinessExpandParams fileBindBusinessExpandParams, List<FileInfo> fileInfos);
 
     /**
-     * 更新文件信息
+     * 根据文件id 更新业务类型和业务id
      *
-     * @param fileInfos a {@link java.util.List} object
+     * @param fileInfoIds a {@link java.util.List} object
      */
-    void updateFileInfo(List<FileInfo> fileInfos);
+    void updateFileInfo(String businessType, String businessId ,List<String> fileInfoIds);
 
     /**
      * 保存文件信息

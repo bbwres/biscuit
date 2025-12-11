@@ -45,7 +45,9 @@ import java.util.UUID;
 @Slf4j
 public class LocalStorageFileOperation implements FileOperation {
 
-    /** Constant <code>STORAGE_TYPE="local"</code> */
+    /**
+     * Constant <code>STORAGE_TYPE="local"</code>
+     */
     public static final String STORAGE_TYPE = "local";
 
     private final FileStorageProperties fileStorageProperties;
@@ -65,7 +67,7 @@ public class LocalStorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 上传文件
      */
     @Override
@@ -76,7 +78,7 @@ public class LocalStorageFileOperation implements FileOperation {
         // 2. 生成文件存储路径（按日期分目录，避免单目录文件过多）
         String dateDir = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String relativeDir = dateDir + "/";
-        String absoluteDir = fileStorageProperties.getStoragePath() + fileInfo.getFileStorageMenu() + relativeDir;
+        String absoluteDir = fileStorageProperties.getStoragePath() + (StringUtils.isBlank(fileInfo.getFileStorageMenu()) ? "" : fileInfo.getFileStorageMenu()) + relativeDir;
         // 3. 创建日期子目录
         createDir(absoluteDir);
         // 4. 生成唯一文件名（UUID + 原始文件后缀，避免冲突）
@@ -96,7 +98,7 @@ public class LocalStorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 根据文件信息获取文件流
      */
     @Override
@@ -114,7 +116,7 @@ public class LocalStorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 复制文件
      */
     @Override
@@ -138,7 +140,7 @@ public class LocalStorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 根据 fileInfo信息删除文件实体信息
      */
     @Override
@@ -152,7 +154,7 @@ public class LocalStorageFileOperation implements FileOperation {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * 当前的存储类型
      */
     @Override
