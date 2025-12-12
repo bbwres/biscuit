@@ -35,6 +35,7 @@
         <module>biscuit-i18n-boot-starter</module>
         <module>biscuit-id-generator-boot-starter</module>
         <module>biscuit-mongodb-boot-starter</module>
+        <module>biscuit-micrometer-boot-starter</module>
         <module>biscuit-mybatis-boot-starter</module>
         <module>biscuit-mybatis-flex-boot-starter</module>
         <module>biscuit-nacos-boot-starter</module>

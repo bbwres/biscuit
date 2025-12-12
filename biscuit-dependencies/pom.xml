@@ -17,7 +17,8 @@
   ~  */
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.bbwres</groupId>
@@ -38,6 +39,7 @@
         <spring.cloud.alibaba.version>2025.0.0.0</spring.cloud.alibaba.version>
         <spring-security.version>6.5.5</spring-security.version>
         <spring.cloud.gateway.version>4.3.1</spring.cloud.gateway.version>
+        <micrometer.version>1.16.1</micrometer.version>
         <tomcat-embed.version>10.1.48</tomcat-embed.version>
         <netty.version>4.1.127.Final</netty.version>
         <okhttp.version>4.12.0</okhttp.version>
@@ -173,7 +175,6 @@
             </dependency>
 
 
-
             <dependency>
                 <groupId>cloud.tianai.captcha</groupId>
                 <artifactId>tianai-captcha-springboot-starter</artifactId>
@@ -204,6 +205,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>biscuit-mongodb-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>biscuit-micrometer-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -286,6 +292,13 @@
                 <version>${redisson.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-bom</artifactId>
+                <version>${micrometer.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-gateway-dependencies</artifactId>
