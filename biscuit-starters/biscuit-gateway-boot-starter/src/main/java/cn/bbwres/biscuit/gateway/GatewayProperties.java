@@ -42,15 +42,15 @@ public class GatewayProperties {
     /**
      * 检查token的请求path
      */
-    private String authorizationServerCheckTokenPath = "/api/auth/check_token";
+    private String authorizationServerCheckTokenPath = "/rpc-api/auth/check_token";
     /**
      * 获取登录授权的请求path
      */
-    private String authorizationServerLoginAuthResource = "/api/auth/login_auth_resource";
+    private String authorizationServerLoginAuthResource = "/rpc-api/auth/login_auth_resource";
     /**
      * 根据角色获取资源的请求path
      */
-    private String authorizationServerResourceByRole = "/api/auth/resource_by_role";
+    private String authorizationServerResourceByRole = "/rpc-api/auth/resource_by_role";
 
 
     /**
@@ -64,6 +64,11 @@ public class GatewayProperties {
      * /auth/oauth/token
      */
     private String[] noAuthUris;
+
+    /**
+     * 请求黑名单
+     */
+    private String[] blackUris= new String[]{"/rpc-api/**"};
 
     /**
      * 无权访问返回的错误码

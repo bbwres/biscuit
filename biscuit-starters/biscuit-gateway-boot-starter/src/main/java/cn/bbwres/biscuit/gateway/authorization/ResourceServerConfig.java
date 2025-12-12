@@ -96,8 +96,8 @@ public class ResourceServerConfig {
      */
     @Bean
     public AuthorizationManager authorizationManager(ResourceCacheService resourceCacheService,
-                                                     PathMatcher pathMatcher) {
-        return new AuthorizationManager(resourceCacheService, pathMatcher);
+                                                     PathMatcher pathMatcher, GatewayProperties gatewayProperties) {
+        return new AuthorizationManager(resourceCacheService, gatewayProperties,pathMatcher);
     }
 
     /**

@@ -18,11 +18,13 @@
 
 package cn.bbwres.biscuit.rpc.web;
 
-import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
-import lombok.RequiredArgsConstructor;
+import cn.bbwres.biscuit.rpc.properties.RpcProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -32,27 +34,33 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @version $Id: $Id
  */
 @Slf4j
-@RequiredArgsConstructor
 public class RpcWebAppConfigurer implements WebMvcConfigurer {
 
-    private final RpcServerHandlerInterceptorAdapter rpcServerHandlerInterceptorAdapter;
-    private final RpcSecurityProperties rpcSecurityProperties;
+    private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher(".");
+
+    private final RpcProperties rpcProperties;
+
+    public RpcWebAppConfigurer(RpcProperties rpcProperties) {
+        this.rpcProperties = rpcProperties;
+    }
 
 
     /**
-     * {@inheritDoc}
+     * rpc web api 配置
+     * 给默认的rpc包增加前缀
+     *
+     * @param configurer
      */
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        if (!rpcSecurityProperties.isEnable()) {
-            log.debug("当前未开启rpc接口安全校验");
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+      
+        if (StringUtils.isBlank(rpcProperties.getRpcApiPrefix())) {
+            log.info("rpcApiPrefix is empty,因此不配置rpc接口前缀");
             return;
         }
-        if (ObjectUtils.isEmpty(rpcSecurityProperties.getPathPatterns())) {
-            log.debug("当前开启了rpc接口安全校验，但是设置的拦截path为空!");
-            return;
-        }
-        //增加rpc服务端拦截器
-        registry.addInterceptor(rpcServerHandlerInterceptorAdapter).addPathPatterns(rpcSecurityProperties.getPathPatterns());
+        configurer.addPathPrefix(rpcProperties.getRpcApiPrefix(), clazz ->
+                (clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(Controller.class))
+                        && ANT_PATH_MATCHER.match(rpcProperties.getRpcApiPackage(), clazz.getPackage().getName()));
     }
+
 }

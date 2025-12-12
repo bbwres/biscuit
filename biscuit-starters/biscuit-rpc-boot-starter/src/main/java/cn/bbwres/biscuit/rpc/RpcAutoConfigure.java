@@ -27,19 +27,23 @@ import cn.bbwres.biscuit.rpc.properties.RpcProperties;
 import cn.bbwres.biscuit.rpc.properties.RpcSecurityProperties;
 import cn.bbwres.biscuit.rpc.security.*;
 import cn.bbwres.biscuit.rpc.utils.SecurityUtil;
+import cn.bbwres.biscuit.rpc.web.RpcSecurityWebAppConfigurer;
 import cn.bbwres.biscuit.rpc.web.RpcServerHandlerInterceptorAdapter;
 import cn.bbwres.biscuit.rpc.web.RpcWebAppConfigurer;
+import feign.Feign;
+import feign.RequestInterceptor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
@@ -56,6 +60,32 @@ import java.util.List;
 @EnableConfigurationProperties({RpcProperties.class, RpcSecurityProperties.class})
 public class RpcAutoConfigure {
 
+
+    /**
+     * feign 的全局配置
+     *
+     * @author zhanglinfeng
+     */
+    @Configuration
+    @ConditionalOnClass(Feign.class)
+    public static class FeignGlobalConfig {
+
+        /**
+         * 注册全局路径前缀拦截器
+         */
+        @Bean
+        public RequestInterceptor pathPrefixInterceptor(RpcProperties rpcProperties) {
+            return template -> {
+                if (StringUtils.isBlank(rpcProperties.getRpcApiPrefix())) {
+                    return;
+                }
+                String path = template.path();
+                template.uri(rpcProperties.getRpcApiPrefix() + path);
+            };
+        }
+    }
+
+
     /**
      * spring bean 的工具类
      *
@@ -66,6 +96,16 @@ public class RpcAutoConfigure {
         return new SecurityUtil();
     }
 
+    /**
+     * rpcWebAppConfigurer 配置
+     *
+     * @param rpcProperties 配置
+     * @return RpcWebAppConfigurer
+     */
+    @Bean("rpcWebAppConfigurer")
+    public RpcWebAppConfigurer rpcWebAppConfigurer(RpcProperties rpcProperties) {
+        return new RpcWebAppConfigurer(rpcProperties);
+    }
 
     /**
      * 安全算法容器
@@ -190,12 +230,12 @@ public class RpcAutoConfigure {
          * rpcWebAppConfigurer 配置
          *
          * @param rpcServerHandlerInterceptorAdapter 拦截器
-         * @return RpcWebAppConfigurer
+         * @return RpcSecurityWebAppConfigurer
          */
-        @Bean("rpcWebAppConfigurer")
-        public RpcWebAppConfigurer rpcWebAppConfigurer(RpcServerHandlerInterceptorAdapter rpcServerHandlerInterceptorAdapter,
-                                                       RpcSecurityProperties rpcSecurityProperties) {
-            return new RpcWebAppConfigurer(rpcServerHandlerInterceptorAdapter, rpcSecurityProperties);
+        @Bean("rpcSecurityWebAppConfigurer")
+        public RpcSecurityWebAppConfigurer rpcSecurityWebAppConfigurer(RpcServerHandlerInterceptorAdapter rpcServerHandlerInterceptorAdapter,
+                                                                       RpcSecurityProperties rpcSecurityProperties) {
+            return new RpcSecurityWebAppConfigurer(rpcServerHandlerInterceptorAdapter, rpcSecurityProperties);
         }
 
         /**

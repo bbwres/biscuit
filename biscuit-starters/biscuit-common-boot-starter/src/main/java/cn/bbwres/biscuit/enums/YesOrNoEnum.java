@@ -16,40 +16,51 @@
  *
  */
 
-package cn.bbwres.biscuit.rpc.properties;
-
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package cn.bbwres.biscuit.enums;
 
 /**
- * rpc 参数配置类
+ * 通用的yesOrNo 枚举
  *
  * @author zhanglinfeng
- * @version $Id: $Id
  */
-@Data
-@ConfigurationProperties("biscuit.rpc")
-public class RpcProperties {
+
+public enum YesOrNoEnum implements BaseEnum<Integer> {
+    /**
+     * 正常
+     */
+    YES(1, "是"),
+    /**
+     * 禁用
+     */
+    NO(0, "否"),
+    ;
+
+    YesOrNoEnum(Integer value, String displayName) {
+        this.value = value;
+        this.displayName = displayName;
+    }
+
+    private final Integer value;
+
+    private final String displayName;
 
     /**
-     * 是否透传用户信息
+     * 枚举value
+     *
+     * @return 枚举value
      */
-    private boolean transmitUserInfo = true;
+    @Override
+    public Integer getValue() {
+        return value;
+    }
 
     /**
-     * 透传的用户请求头名称
+     * 枚举的显示名字
+     *
+     * @return 枚举的显示名字
      */
-    private String userInfoHeaderName = "x-user-info";
-
-    /**
-     * rpc相关的api的前缀， 配置之后，rpcApi的接口默认需要增加此前缀才能访问
-     */
-    private String rpcApiPrefix = "/rpc-api";
-
-    /**
-     * rpc相关的api所在包的 Ant 路径规则
-     */
-    private String rpcApiPackage = "**.api.**";
-
-
+    @Override
+    public String getDisplayName() {
+        return displayName;
+    }
 }

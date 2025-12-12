@@ -19,11 +19,13 @@
 package cn.bbwres.biscuit.gateway.authorization;
 
 
+import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.cache.ResourceCacheService;
 import cn.bbwres.biscuit.gateway.constants.GatewayConstant;
 import cn.bbwres.biscuit.gateway.utils.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
@@ -54,6 +56,8 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
 
     private final ResourceCacheService resourceCacheService;
 
+    private final GatewayProperties gatewayProperties;
+
     private final PathMatcher pathMatcher;
 
     /**
@@ -69,6 +73,13 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
         ServerHttpRequest request = authorizationContext.getExchange().getRequest();
         String path = request.getURI().getPath();
         String requestMethod = request.getMethod().toString();
+
+        if (ArrayUtils.isNotEmpty(gatewayProperties.getBlackUris()) &&
+                AuthUtils.checkAuth(Set.of(gatewayProperties.getBlackUris()), requestMethod, path, pathMatcher)) {
+            log.info("当前请求匹配到了黑名单，拒绝访问!请求地址:[{}]", path);
+            return Mono.just(new AuthorizationDecision(false));
+        }
+
         //是否是已经认证
         //获取当前用户的角色和拥有的资源
         Mono<Set<String>> resourceMono = mono.filter(Authentication::isAuthenticated)

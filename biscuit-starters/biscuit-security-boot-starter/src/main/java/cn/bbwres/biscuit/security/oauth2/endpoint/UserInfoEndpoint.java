@@ -40,7 +40,7 @@ import java.util.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/rpc-api/auth")
 public class UserInfoEndpoint {
 
     private final OAuth2AuthorizationService oauth2AuthorizationService;
