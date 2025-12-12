@@ -68,7 +68,7 @@ public class GatewayProperties {
     /**
      * 请求黑名单
      */
-    private String[] blackUris= new String[]{"/rpc-api/**"};
+    private String[] blackUris= new String[]{"/*/rpc-api/**"};
 
     /**
      * 无权访问返回的错误码

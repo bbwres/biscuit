@@ -49,7 +49,7 @@ public class RpcProperties {
     /**
      * rpc相关的api所在包的 Ant 路径规则
      */
-    private String rpcApiPackage = "**.api.**";
+    private String rpcApiPackage = "**.module.*.api.**";
 
 
 }

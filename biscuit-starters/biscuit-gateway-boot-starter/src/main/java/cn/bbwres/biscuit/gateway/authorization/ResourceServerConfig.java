@@ -18,7 +18,6 @@
 
 package cn.bbwres.biscuit.gateway.authorization;
 
-import cn.bbwres.biscuit.constants.SystemAuthConstant;
 import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.gateway.GatewayProperties;
 import cn.bbwres.biscuit.gateway.cache.ResourceCacheService;
@@ -42,6 +41,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -97,7 +97,7 @@ public class ResourceServerConfig {
     @Bean
     public AuthorizationManager authorizationManager(ResourceCacheService resourceCacheService,
                                                      PathMatcher pathMatcher, GatewayProperties gatewayProperties) {
-        return new AuthorizationManager(resourceCacheService, gatewayProperties,pathMatcher);
+        return new AuthorizationManager(resourceCacheService, gatewayProperties, pathMatcher);
     }
 
     /**
@@ -168,6 +168,10 @@ public class ResourceServerConfig {
                 //无需登录鉴权
                 authorizeExchange.pathMatchers(gatewayProperties.getNoAuthUris()).permitAll();
             }
+            if (ArrayUtils.isNotEmpty(gatewayProperties.getBlackUris())) {
+                //无需登录鉴权
+                authorizeExchange.pathMatchers(gatewayProperties.getBlackUris()).denyAll();
+            }
             authorizeExchange.pathMatchers(HttpMethod.OPTIONS).permitAll()
                     .anyExchange().access(authorizationManager);
 
@@ -188,7 +192,7 @@ public class ResourceServerConfig {
             public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
                 return chain.filter(exchange)
-                        .contextWrite(Context.of("serverWebExchange", exchange)) ;
+                        .contextWrite(Context.of("serverWebExchange", exchange));
             }
         }, SecurityWebFiltersOrder.HTTP_HEADERS_WRITER);
 
@@ -206,8 +210,8 @@ public class ResourceServerConfig {
     @Bean
     public ServerAccessDeniedHandler customServerAccessDeniedHandler(GatewayProperties gatewayProperties) {
         return (serverWebExchange, e) -> {
-            Result<Void> result = new Result<>(gatewayProperties.getAccessDeniedCode(), e.getMessage(),false);
-            return write(result, serverWebExchange.getResponse(), e);
+            Result<Void> result = new Result<>(gatewayProperties.getAccessDeniedCode(), e.getMessage(), false);
+            return write(result, serverWebExchange.getRequest(), serverWebExchange.getResponse(), e);
         };
     }
 
@@ -231,9 +235,9 @@ public class ResourceServerConfig {
                 state = serverWebExchange.getRequest().getHeaders().getFirst(GatewayConstant.QUERY_PARAMS);
             }
             String url = gatewayProperties.getLoginStateUris().get(state);
-            Result<String> result = new Result<>(gatewayProperties.getAuthFailCode(), e.getMessage(),false);
+            Result<String> result = new Result<>(gatewayProperties.getAuthFailCode(), e.getMessage(), false);
             result.setData(url);
-            return write(result, serverWebExchange.getResponse(), e);
+            return write(result, serverWebExchange.getRequest(), serverWebExchange.getResponse(), e);
         };
     }
 
@@ -245,8 +249,8 @@ public class ResourceServerConfig {
      * @param e        e
      * @return Mono
      */
-    private Mono<Void> write(Result<?> body, ServerHttpResponse response, Exception e) {
-        log.info("当前用户访问当前地址失败!错误信息为:[{}]", e.getMessage());
+    private Mono<Void> write(Result<?> body, ServerHttpRequest request, ServerHttpResponse response, Exception e) {
+        log.info("当前用户访问当前地址[{}]失败!错误信息为:[{}]", request.getPath(),e.getMessage());
         String resultStr = JsonUtil.toJson(body);
         if (ObjectUtils.isEmpty(resultStr)) {
             resultStr = "error";

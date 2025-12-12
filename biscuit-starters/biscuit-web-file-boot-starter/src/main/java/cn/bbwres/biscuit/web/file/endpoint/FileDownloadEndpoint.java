@@ -70,8 +70,8 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
      * <p>Constructor for FileDownloadEndpoint.</p>
      *
      * @param customFileOperation a {@link cn.bbwres.biscuit.web.file.service.CustomFileOperation} object
-     * @param fileProperties a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
-     * @param fileInfoOperation a {@link cn.bbwres.biscuit.web.file.service.FileInfoOperation} object
+     * @param fileProperties      a {@link cn.bbwres.biscuit.web.file.config.FileProperties} object
+     * @param fileInfoOperation   a {@link cn.bbwres.biscuit.web.file.service.FileInfoOperation} object
      */
     public FileDownloadEndpoint(CustomFileOperation customFileOperation, FileProperties fileProperties, FileInfoOperation fileInfoOperation) {
         this.customFileOperation = customFileOperation;
@@ -103,7 +103,7 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
      * 下载文件
      *
      * @param downloadFileInfo a {@link cn.bbwres.biscuit.web.file.endpoint.vo.DownloadFileInfoParams} object
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object
+     * @param response         a {@link jakarta.servlet.http.HttpServletResponse} object
      * @throws java.io.IOException if any.
      */
     @Operation(summary = "下载文件")
@@ -133,7 +133,7 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
                 streamEntries.add(new ZipByteArrayUtil.StreamEntry(customFileOperation.downloadFile(fileInfo), fileInfo.getFileName()));
             }
             String fileName = UUID.randomUUID() + ".zip";
-            response.setHeader("Content-Disposition", "attchment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+            response.setHeader("Content-Disposition", "attchment;filename=" + fileName);
             ZipByteArrayUtil.compressMultipleInputStreamsToZip(streamEntries, response.getOutputStream());
             return;
         }
@@ -143,7 +143,9 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
             if (fileInfo.getFileSize() != null) {
                 response.setHeader("Content-Length", fileInfo.getFileSize() + "");
             }
-            response.setHeader("Content-Disposition", "attchment;filename=" + URLEncoder.encode(fileInfo.getFileName(), StandardCharsets.UTF_8));
+            String encoded = URLEncoder.encode(fileInfo.getFileName(), StandardCharsets.UTF_8);
+            String finalFileName = encoded.replace("+", "%20");
+            response.setHeader("Content-Disposition", "attchment;filename=" + finalFileName);
             IOUtils.copyLarge(inputStream, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
@@ -156,7 +158,7 @@ public class FileDownloadEndpoint extends BaseFileEndpoint {
      * 下载文件
      *
      * @param downloadFileInfo a {@link cn.bbwres.biscuit.web.file.endpoint.vo.DownloadFileInfoParams} object
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object
+     * @param response         a {@link jakarta.servlet.http.HttpServletResponse} object
      * @throws java.io.IOException if any.
      */
     @Operation(summary = "下载文件")

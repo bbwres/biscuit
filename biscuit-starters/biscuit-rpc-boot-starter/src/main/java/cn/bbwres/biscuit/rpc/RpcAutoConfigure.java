@@ -96,16 +96,6 @@ public class RpcAutoConfigure {
         return new SecurityUtil();
     }
 
-    /**
-     * rpcWebAppConfigurer 配置
-     *
-     * @param rpcProperties 配置
-     * @return RpcWebAppConfigurer
-     */
-    @Bean("rpcWebAppConfigurer")
-    public RpcWebAppConfigurer rpcWebAppConfigurer(RpcProperties rpcProperties) {
-        return new RpcWebAppConfigurer(rpcProperties);
-    }
 
     /**
      * 安全算法容器
@@ -161,6 +151,7 @@ public class RpcAutoConfigure {
     /**
      * 网关配置项
      */
+    @Configuration
     @ConditionalOnClass({GatewayProperties.class})
     protected static class GatewayAppConfigurer {
         /**
@@ -219,8 +210,28 @@ public class RpcAutoConfigure {
 
 
     /**
+     * webmvc 配置
+     */
+    @Configuration
+    @ConditionalOnClass(DelegatingWebMvcConfiguration.class)
+    public static class WebMvcConfigurer {
+        /**
+         * rpcWebAppConfigurer 配置
+         *
+         * @param rpcProperties 配置
+         * @return RpcWebAppConfigurer
+         */
+        @Bean("rpcWebAppConfigurer")
+        public RpcWebAppConfigurer rpcWebAppConfigurer(RpcProperties rpcProperties) {
+            return new RpcWebAppConfigurer(rpcProperties);
+        }
+
+    }
+
+    /**
      * 是否启用安全配置
      */
+    @Configuration
     @ConditionalOnProperty(name = "biscuit.rpc.security.enable", havingValue = "true", matchIfMissing = true)
     @ConditionalOnClass(DelegatingWebMvcConfiguration.class)
     public static class SecurityConfigurer {
