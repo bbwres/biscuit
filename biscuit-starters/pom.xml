@@ -49,6 +49,7 @@
         <module>biscuit-security-captcha-boot-starter</module>
         <module>biscuit-operation-log-starter</module>
         <module>biscuit-generator-code-maven-plugin</module>
+        <module>biscuit-utils-boot-starter</module>
     </modules>
 
 

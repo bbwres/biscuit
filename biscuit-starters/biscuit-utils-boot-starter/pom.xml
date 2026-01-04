@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.bbwres</groupId>
+        <artifactId>biscuit-starters</artifactId>
+        <version>3.0.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>biscuit-utils-boot-starter</artifactId>
+    <description>工具类包</description>
+    <modules>
+        <module>biscuit-utils-webclient-boot-starter</module>
+        <module>biscuit-utils-okhttp-boot-starter</module>
+    </modules>
+    <packaging>pom</packaging>
+
+
+</project>
