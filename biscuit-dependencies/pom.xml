@@ -43,7 +43,7 @@
         <spring.cloud.gateway.version>4.3.2</spring.cloud.gateway.version>
         <micrometer.version>1.16.1</micrometer.version>
         <zipkin.version>3.5.1</zipkin.version>
-        <tomcat-embed.version>10.1.48</tomcat-embed.version>
+        <tomcat-embed.version>10.1.55</tomcat-embed.version>
         <netty.version>4.1.130.Final</netty.version>
         <okhttp.version>4.12.0</okhttp.version>
         <nimbus-jose-jwt.version>10.5</nimbus-jose-jwt.version>
@@ -55,7 +55,7 @@
         <mybatis-plus.version>3.5.14</mybatis-plus.version>
         <mybatis-flex.version>1.11.4</mybatis-flex.version>
         <mysql.version>9.4.0</mysql.version>
-        <postgresql.version>42.7.7</postgresql.version>
+        <postgresql.version>42.7.11</postgresql.version>
 
         <dynamic.datasource.version>4.3.1</dynamic.datasource.version>
         <snakeyaml.version>2.5</snakeyaml.version>
@@ -65,7 +65,7 @@
         <jsoup.version>1.21.2</jsoup.version>
         <redisson.version>3.51.0</redisson.version>
         <ttl.version>2.14.5</ttl.version>
-        <logback.version>1.5.19</logback.version>
+        <logback.version>1.5.25</logback.version>
         <tianai-captcha.version>1.5.3</tianai-captcha.version>
 
     </properties>
