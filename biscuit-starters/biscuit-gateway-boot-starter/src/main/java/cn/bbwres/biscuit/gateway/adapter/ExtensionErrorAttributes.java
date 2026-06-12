@@ -81,7 +81,8 @@ public class ExtensionErrorAttributes extends DefaultErrorAttributes {
         }
 
         if (error instanceof ResponseStatusException responseStatusException) {
-            errorCode = GlobalErrorCodeConstants.GLOBAL_HTTP_CODE_PREFIX.getCode() + responseStatusException.getStatusCode();
+            errorCode = GlobalErrorCodeConstants.GLOBAL_HTTP_CODE_PREFIX.getCode()
+                    + responseStatusException.getStatusCode().value();
         }
         return errorCode;
     }

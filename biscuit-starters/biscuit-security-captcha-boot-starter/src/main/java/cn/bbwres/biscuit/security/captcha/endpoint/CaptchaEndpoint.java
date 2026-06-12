@@ -47,7 +47,7 @@ public class CaptchaEndpoint {
      *
      * @return
      */
-    @PostMapping("/create")
+    @GetMapping("/create")
     @ResponseBody
     public ApiResponse<ImageCaptchaVO> createCaptcha(@RequestParam(value = "type", required = false) String type) {
         if (ObjectUtils.isEmpty(type)) {
