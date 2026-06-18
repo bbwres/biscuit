@@ -47,7 +47,7 @@ public class CaptchaEndpoint {
      *
      * @return
      */
-    @GetMapping("/create")
+    @PostMapping("/create")
     @ResponseBody
     public ApiResponse<ImageCaptchaVO> createCaptcha(@RequestParam(value = "type", required = false) String type) {
         if (ObjectUtils.isEmpty(type)) {
@@ -66,11 +66,15 @@ public class CaptchaEndpoint {
     @PostMapping("/checkCaptcha")
     @ResponseBody
     public ApiResponse<?> checkCaptcha(@RequestBody ImageCaptchaTrackData data) {
-        return imageCaptchaApplication.matching(data.id, data.imageCaptchaTrack);
+        ApiResponse<?> apiResponse = imageCaptchaApplication.matching(data.id, data.data);
+        if (apiResponse.isSuccess() && apiResponse.getData() == null) {
+            return ApiResponse.ofSuccess(data.id);
+        }
+        return apiResponse;
     }
 
 
-    public record ImageCaptchaTrackData(String id, ImageCaptchaTrack imageCaptchaTrack) {
+    public record ImageCaptchaTrackData(String id, ImageCaptchaTrack data) {
     }
 
 

@@ -22,13 +22,18 @@ import cn.bbwres.biscuit.i18n.support.SystemMessageSource;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginEventListener;
 import cn.bbwres.biscuit.security.oauth2.event.AuthenticationLoginService;
 import cn.bbwres.biscuit.security.oauth2.event.DefaultAuthenticationLoginServiceImpl;
+import cn.bbwres.biscuit.security.oauth2.filter.password.DecryptedPasswordCryptoService;
+import cn.bbwres.biscuit.security.oauth2.filter.password.PasswordDecryptFilter;
+import cn.bbwres.biscuit.security.oauth2.filter.password.RSADecryptedPasswordCryptoService;
 import cn.bbwres.biscuit.security.oauth2.properties.BiscuitSecurityProperties;
+import cn.bbwres.biscuit.security.oauth2.properties.PasswordSecurityProperties;
 import cn.bbwres.biscuit.security.oauth2.service.redis.RedisCheckUserLockService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +44,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 
 /**
  * 授权认证配置
@@ -47,7 +53,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @AutoConfiguration
 @EnableWebSecurity
-@EnableConfigurationProperties(BiscuitSecurityProperties.class)
+@EnableConfigurationProperties({BiscuitSecurityProperties.class,
+        PasswordSecurityProperties.class})
 public class BiscuitSecurityConfig {
 
     /**
@@ -133,5 +140,44 @@ public class BiscuitSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
+
+    /**
+     * 登陆密码解密配置
+     */
+    @Configuration
+    @ConditionalOnProperty(prefix = "biscuit.security.password", name = "enabled", havingValue = "true")
+    public static class PasswordDecryptConfig {
+        /**
+         * 登录密码解密过滤器
+         *
+         * @param authorizationServerSettings    OAuth2 端点配置
+         * @param properties                     密码安全配置
+         * @param decryptedPasswordCryptoService 解密
+         * @return PasswordDecryptFilter
+         */
+        @Bean
+        @ConditionalOnMissingBean
+        public PasswordDecryptFilter passwordDecryptFilter(AuthorizationServerSettings authorizationServerSettings,
+                                                           PasswordSecurityProperties properties,
+                                                           DecryptedPasswordCryptoService decryptedPasswordCryptoService) {
+            return new PasswordDecryptFilter(authorizationServerSettings, properties, decryptedPasswordCryptoService);
+        }
+
+
+        /**
+         * RSA 密码解密
+         *
+         * @return DecryptedPasswordCryptoService
+         */
+        @Bean
+        @ConditionalOnMissingBean
+        public DecryptedPasswordCryptoService decryptedPasswordCryptoService() {
+            return new RSADecryptedPasswordCryptoService();
+        }
+
+    }
+
+
 }
 

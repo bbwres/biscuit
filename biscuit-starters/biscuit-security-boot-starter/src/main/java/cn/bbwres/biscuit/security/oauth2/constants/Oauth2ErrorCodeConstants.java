@@ -43,10 +43,6 @@ public interface Oauth2ErrorCodeConstants {
      */
     ErrorCode OAUTH2_USER_LOCKED = new ErrorCode("101001003", "oauth2.user_locked");
 
-    /**
-     * 用户被禁用
-     */
-    ErrorCode OAUTH2_USER_DISABLE = new ErrorCode("101001003", "oauth2.user_disable");
 
     /**
      * 用户已经过期
@@ -59,6 +55,15 @@ public interface Oauth2ErrorCodeConstants {
     ErrorCode OAUTH2_INVALID_TOKEN = new ErrorCode("101001007", "oauth2.invalid_token");
     ErrorCode OAUTH2_ACCESS_DENIED = new ErrorCode("101001008", "oauth2.access_denied");
     ErrorCode OAUTH2_INVALID_CAPTCHA = new ErrorCode("101001009", "oauth2.invalid_captcha");
+    /**
+     * 用户被禁用
+     */
+    ErrorCode OAUTH2_USER_DISABLE = new ErrorCode("101001010", "oauth2.user_disable");
+
+    /**
+     * 密码格式错误
+     */
+    ErrorCode OAUTH2_PASSWORD_PAYLOAD_INVALID = new ErrorCode("101001011", "oauth2.password_payload_invalid");
 
 
     /**
