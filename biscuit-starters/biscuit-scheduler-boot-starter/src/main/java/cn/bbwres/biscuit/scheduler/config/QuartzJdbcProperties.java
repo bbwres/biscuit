@@ -82,7 +82,7 @@ public class QuartzJdbcProperties {
     /**
      * jobStoreClass
      */
-    private String jobStoreClass = "org.quartz.impl.jdbcjobstore.JobStoreTX";
+    private String jobStoreClass = "org.springframework.scheduling.quartz.LocalDataSourceJobStore";
 
     /**
      * driverDelegateClass

@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.quartz.QuartzProperties;
 import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
@@ -55,7 +56,7 @@ import java.util.Properties;
  * @version $Id: $Id
  */
 @Slf4j
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(QuartzJdbcProperties.class)
 public class JobAutoConfigure {
 
@@ -68,7 +69,7 @@ public class JobAutoConfigure {
      */
     @Bean
     @Primary
-    @ConditionalOnProperty(prefix = "spring.quartz.jdbc", name = "jobStoreType", havingValue = "JDBC")
+    @ConditionalOnProperty(prefix = "spring.quartz.jdbc", name = "job-store-type", havingValue = "JDBC")
     public QuartzProperties quartzProperties(QuartzJdbcProperties quartzJdbcProperties) {
         //基础参数
         QuartzProperties quartzProperties = new QuartzProperties();
