@@ -84,10 +84,10 @@ public @interface JobDefinition {
     boolean useContext() default false;
 
     /**
-     * 失火策略
+     * 失火策略 默认 所有暂停期间错过的执行全部忽略，一次都不补
      * @return
      */
-    int misfireInstruction() default CronTrigger.MISFIRE_INSTRUCTION_SMART_POLICY;
+    int misfireInstruction() default CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING;
 
     /**
      * 任务参数
